@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import { SparqlClient } from "./simple-client";
 
 export class SparqlNotebookController {
   readonly controllerId = "sparql-notebook-controller-id";
@@ -37,10 +38,26 @@ export class SparqlNotebookController {
     execution.start(Date.now()); // Keep track of elapsed time to execute cell.
 
     /* Do some execution here; not implemented */
+    const resultJson = await SparqlClient.select(cell.document.getText());
+
+    let resultHtml = `<table>
+    <tr>`;
+    resultJson.head.vars.forEach((heading: string) => {
+      resultHtml += `\n        <th>${heading}</th>\n`;
+    });
+    resultJson.results.bindings.forEach((result: any) => {
+      resultHtml += "    <tr>";
+      resultJson.head.vars.forEach((heading: string) => {
+        resultHtml += `\n        <td>${result[heading].value}</td>\n`;
+      });
+      resultHtml += "    </tr>\n";
+    });
+    resultHtml += "</table>";
 
     execution.replaceOutput([
       new vscode.NotebookCellOutput([
-        vscode.NotebookCellOutputItem.text("Dummy output text!"),
+        vscode.NotebookCellOutputItem.text(resultHtml, "text/html"),
+        vscode.NotebookCellOutputItem.json(resultJson),
       ]),
     ]);
     execution.end(true, Date.now());
