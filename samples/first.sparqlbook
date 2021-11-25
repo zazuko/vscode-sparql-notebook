@@ -1,0 +1,1 @@
+[{"kind":2,"language":"sparql","value":"SELECT * WHERE {\n    ?foo ?bar ?buz .\n} LIMIT 1"}]
