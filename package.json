@@ -10,7 +10,8 @@
     "Other"
   ],
   "activationEvents": [
-    "onNotebook:sparql-notebook"
+    "onNotebook:sparql-notebook",
+    "onView:sparql-notebook-connections"
   ],
   "main": "./out/extension.js",
   "contributes": {

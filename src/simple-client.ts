@@ -7,18 +7,18 @@ export class SparqlClient {
     //  headers: { "X-Custom-Header": "foobar" },
   });
 
-  static async select(sparqlQuery: string) {
+  static async query(sparqlQuery: string) {
     try {
       const params = new URLSearchParams();
       params.append("query", sparqlQuery);
       const config = {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
-          Accept: "application/sparql-results+json",
+          Accept: "application/sparql-results+json,text/turtle",
         },
       };
       const response = await this.endpoint.post("/", params, config);
-      return response.data;
+      return response;
     } catch (error) {
       console.error(error);
     }
