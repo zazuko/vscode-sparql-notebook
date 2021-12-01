@@ -80,6 +80,7 @@ export class SparqlNotebookController {
   private _writeTurtleResult(resultTTL: string): vscode.NotebookCellOutput {
     return new vscode.NotebookCellOutput([
       vscode.NotebookCellOutputItem.text(resultTTL, "text/x-turtle"),
+      vscode.NotebookCellOutputItem.text(resultTTL, "text/plain"),
     ]);
   }
 
