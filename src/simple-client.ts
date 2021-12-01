@@ -1,26 +1,35 @@
 const axios = require("axios").default;
 
 export class SparqlClient {
-  static endpoint = axios.create({
+  private endpoint = axios.create({
     baseURL: "https://int.lindas.admin.ch/query",
     //  timeout: 1000,
     //  headers: { "X-Custom-Header": "foobar" },
   });
+  // "https://int.lindas.admin.ch/query"
 
-  static async query(sparqlQuery: string) {
-    try {
-      const params = new URLSearchParams();
-      params.append("query", sparqlQuery);
-      const config = {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          Accept: "application/sparql-results+json,text/turtle",
-        },
-      };
-      const response = await this.endpoint.post("/", params, config);
-      return response;
-    } catch (error) {
-      console.error(error);
-    }
+  constructor(endpointUrl: string, user: string, password: string) {
+    this.endpoint = axios.create({
+      baseURL: endpointUrl,
+      //  timeout: 1000,
+      //  headers: { "X-Custom-Header": "foobar" },
+      auth: {
+        username: user,
+        password: password,
+      },
+    });
+  }
+
+  public async query(sparqlQuery: string) {
+    const params = new URLSearchParams();
+    params.append("query", sparqlQuery);
+    const config = {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        Accept: "application/sparql-results+json,text/turtle",
+      },
+    };
+    const response = await this.endpoint.post("/", params, config);
+    return response;
   }
 }

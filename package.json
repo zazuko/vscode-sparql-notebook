@@ -26,7 +26,73 @@
           }
         ]
       }
-    ]
+    ],
+    "menus": {
+      "view/item/context": [
+        {
+          "command": "sparql-notebook.connect",
+          "when": "view == sparql-notebook-connections &&  viewItem == database",
+          "group": "inline"
+        },
+        {
+          "command": "sparql-notebook.connect",
+          "when": "view == sparql-notebook-connections &&  viewItem == database"
+        },
+        {
+          "command": "sparql-notebook.deleteConnectionConfiguration",
+          "when": "view == sparql-notebook-connections &&  viewItem == database"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "sparql-notebook.addNewConnectionConfiguration",
+          "when": "view == sparql-notebook-connections",
+          "group": "navigation"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "sparql-notebook.connect",
+        "title": "Connect to Database",
+        "icon": {
+          "dark": "assets/dark/dbconnection.svg",
+          "light": "assets/light/dbconnection.svg"
+        }
+      },
+      {
+        "command": "sparql-notebook.addNewConnectionConfiguration",
+        "title": "Create New Connection Configuration",
+        "icon": {
+          "light": "assets/light/plus.svg",
+          "dark": "assets/dark/plus.svg"
+        }
+      },
+      {
+        "command": "sparql-notebook.deleteConnectionConfiguration",
+        "title": "Delete Connection Configuration"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "sparql-notebook",
+          "title": "Sparql Notebook",
+          "icon": "assets/logo.svg"
+        }
+      ]
+    },
+    "views": {
+      "sparql-notebook": [
+        {
+          "id": "sparql-notebook-connections",
+          "name": "Sparql Connections",
+          "visibility": "visible",
+          "icon": "assets/logo.svg",
+          "contextualTitle": "Connections"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",

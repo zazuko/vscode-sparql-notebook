@@ -1,4 +1,6 @@
+import { clearLine } from "readline";
 import * as vscode from "vscode";
+import { globalConnection } from "./extension";
 import { SparqlClient } from "./simple-client";
 
 export class SparqlNotebookController {
@@ -36,9 +38,19 @@ export class SparqlNotebookController {
     const execution = this._controller.createNotebookCellExecution(cell);
     execution.executionOrder = ++this._executionOrder;
     execution.start(Date.now()); // Keep track of elapsed time to execute cell.
-
-    const queryResult = await SparqlClient.query(cell.document.getText()).catch(
-      (error) => {
+    if (globalConnection.connection === null) {
+      vscode.window.showErrorMessage("Not connected to a SPARQL Endpoint");
+      execution.end(true, Date.now());
+      return;
+    }
+    const client = new SparqlClient(
+      globalConnection.connection.data.endpointURL,
+      globalConnection.connection.data.user,
+      globalConnection.connection.data.passwordKey
+    );
+    const queryResult = await client
+      .query(cell.document.getText())
+      .catch((error) => {
         execution.replaceOutput([
           new vscode.NotebookCellOutput([
             vscode.NotebookCellOutputItem.error(error),
@@ -46,8 +58,7 @@ export class SparqlNotebookController {
         ]);
         execution.end(true, Date.now());
         return;
-      }
-    );
+      });
 
     // content type
     const contentType = queryResult.headers["content-type"];
@@ -69,7 +80,6 @@ export class SparqlNotebookController {
   private _writeTurtleResult(resultTTL: string): vscode.NotebookCellOutput {
     return new vscode.NotebookCellOutput([
       vscode.NotebookCellOutputItem.text(resultTTL, "text/x-turtle"),
-      vscode.NotebookCellOutputItem.text(resultTTL),
     ]);
   }
 
@@ -78,10 +88,12 @@ export class SparqlNotebookController {
       // ASK Query result
       return new vscode.NotebookCellOutput([this._writeJson(resultJson)]);
     }
-    return new vscode.NotebookCellOutput([
+    const cell = new vscode.NotebookCellOutput([
       this._writeHtml(resultJson),
       this._writeJson(resultJson),
     ]);
+
+    return cell;
   }
 
   private _writeHtml(resultJson: any): vscode.NotebookCellOutputItem {
