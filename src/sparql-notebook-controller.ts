@@ -1,4 +1,3 @@
-import { clearLine } from "readline";
 import * as vscode from "vscode";
 import { globalConnection } from "./extension";
 import { SparqlClient } from "./simple-client";
