@@ -2,7 +2,10 @@
   "name": "sparql-notebook",
   "displayName": "sparql-notebook",
   "description": "SPARQL Notebook",
-  "version": "0.0.1",
+  "repository": {
+    "url": "https://github.com/zazuko/vscode-sparql-notebook.git"
+  },
+  "version": "0.0.2",
   "engines": {
     "vscode": "^1.62.0"
   },
