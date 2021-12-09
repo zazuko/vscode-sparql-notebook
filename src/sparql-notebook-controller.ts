@@ -107,7 +107,11 @@ export class SparqlNotebookController {
       resultHtml += "    <tr>";
 
       resultJson.head.vars.forEach((heading: string) => {
-        resultHtml += `\n        <td>${result[heading]?.value ?? ""}</td>\n`;
+        resultHtml += `\n        <td>${
+          result[heading]?.value
+            ?.replaceAll("<", "&lt;")
+            ?.replaceAll(">", "&gt;") ?? ""
+        }</td>\n`;
       });
       resultHtml += "    </tr>\n";
     });

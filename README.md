@@ -16,4 +16,4 @@ Open any `.sparqlbook` file with the `Open With` menu option. Then, select the `
 
 You can install it with
 
-`code --install-extension sparql-notebook-0.0.3.vsix`
+`code --install-extension sparql-notebook-0.0.4.vsix`
