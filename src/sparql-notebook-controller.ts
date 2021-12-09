@@ -105,8 +105,9 @@ export class SparqlNotebookController {
     });
     resultJson.results.bindings.forEach((result: any) => {
       resultHtml += "    <tr>";
+
       resultJson.head.vars.forEach((heading: string) => {
-        resultHtml += `\n        <td>${result[heading].value}</td>\n`;
+        resultHtml += `\n        <td>${result[heading]?.value ?? ""}</td>\n`;
       });
       resultHtml += "    </tr>\n";
     });
