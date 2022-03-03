@@ -1,6 +1,6 @@
 # sparql-notebook
 
-Open SQL files in the VS Code Notebook interface. Execute query blocks and view output interactively.
+Open `*.sparqlbook` files in the VS Code Notebook interface. Execute query blocks and view output interactively.
 
 ![sparql-notebook](https://user-images.githubusercontent.com/8033981/156473713-33e81d5c-e401-4caf-a307-9464cd901ef0.gif)
 
