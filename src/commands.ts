@@ -45,11 +45,7 @@ export const addNewConnectionConfiguration =
       return;
     }
 
-    const user = await getUserInput("User", true);
-    if (!user) {
-      vscode.window.showErrorMessage(`A valid user is required.`);
-      return;
-    }
+    const user = await getUserInput("User", false);
     const password = await getUserInput("Password", false, {
       password: true,
     });
@@ -58,7 +54,7 @@ export const addNewConnectionConfiguration =
     const config: ConnectionData = {
       name: displayName,
       endpointURL: endpointURL || "",
-      user: user,
+      user: user ?? "",
       passwordKey,
     };
     const existing = context.globalState
