@@ -98,7 +98,48 @@ export class SparqlNotebookController {
   }
 
   private _writeHtml(resultJson: any): vscode.NotebookCellOutputItem {
-    let resultHtml = `<table>
+    let resultHtml = `
+    <style>
+  
+*, *:before, *:after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+table {
+  background-color: rgb(46, 53, 62);
+  border-radius: 0.25em;
+  border-collapse: collapse;
+  margin: 1em;
+}
+th {
+  border-bottom: 1px solid #364043;
+  color: #28b1de;
+  font-size: 0.85em;
+  font-weight: 600;
+  padding: 0.5em 1em;
+  text-align: left;
+}
+td {
+  color: lightgrey;
+  font-weight: 400;
+  padding: 0.65em 1em;
+  text-align: left;
+}
+tr > td:last-of-type {
+  text-align: right;
+}
+tbody tr {
+  transition: background 0.25s ease;
+}
+tbody tr:hover {
+  background: #014055;
+}
+
+
+    </style>
+    <table>
     <tr>`;
     resultJson.head.vars.forEach((heading: string) => {
       resultHtml += `\n        <th>${heading}</th>\n`;
