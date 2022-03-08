@@ -25,7 +25,9 @@ export class SparqlClient {
     params.append("query", sparqlQuery);
     const config = {
       headers: {
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         "Content-Type": "application/x-www-form-urlencoded",
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         Accept: "application/sparql-results+json,text/turtle",
       },
     };

@@ -2,15 +2,23 @@
   "name": "sparql-notebook",
   "displayName": "sparql-notebook",
   "description": "SPARQL Notebook",
+  "publisher": "Zazuko",
+  "license": "SEE LICENSE IN LICENSE.md",
+  "icon": "images/zazuko.png",
+  "preview": true,
   "repository": {
     "url": "https://github.com/zazuko/vscode-sparql-notebook.git"
   },
-  "version": "0.0.4",
+  "version": "0.0.7",
   "engines": {
     "vscode": "^1.62.0"
   },
   "categories": [
-    "Other"
+    "Notebooks",
+    "Data Science"
+  ],
+  "keywords": [
+    "sparql"
   ],
   "activationEvents": [
     "onNotebook:sparql-notebook",
