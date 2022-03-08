@@ -78,8 +78,8 @@ export class SparqlNotebookController {
 
   private _writeTurtleResult(resultTTL: string): vscode.NotebookCellOutput {
     return new vscode.NotebookCellOutput([
+      // vscode.NotebookCellOutputItem.text(resultTTL, "application/x-turtle"),
       vscode.NotebookCellOutputItem.text(resultTTL, "text/x-turtle"),
-      vscode.NotebookCellOutputItem.text(resultTTL, "text/turtle"),
       vscode.NotebookCellOutputItem.text(resultTTL, "text/plain"),
     ]);
   }
@@ -87,14 +87,12 @@ export class SparqlNotebookController {
   private _writeSparqlJsonResult(resultJson: any): vscode.NotebookCellOutput {
     if (resultJson.hasOwnProperty("boolean")) {
       // ASK Query result
-      return new vscode.NotebookCellOutput([this._writeJson(resultJson)]);
+      return new vscode.NotebookCellOutput([this._writeHtml(resultJson)]);
     }
-    const cell = new vscode.NotebookCellOutput([
+    return new vscode.NotebookCellOutput([
       this._writeHtml(resultJson),
-      this._writeJson(resultJson),
+      this._writeJson(JSON.stringify(resultJson, null, "   ")),
     ]);
-
-    return cell;
   }
 
   private _writeHtml(resultJson: any): vscode.NotebookCellOutputItem {
@@ -162,7 +160,7 @@ tbody tr:hover {
   }
 
   private _writeJson(jsonResult: any): vscode.NotebookCellOutputItem {
-    return vscode.NotebookCellOutputItem.json(jsonResult);
+    return vscode.NotebookCellOutputItem.text(jsonResult, "text/x-json");
   }
 
   private _writeError(error: any): vscode.NotebookCellOutput {

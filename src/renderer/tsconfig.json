@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "outDir": "out",
+    "rootDir": ".",
+    "allowJs": true,
+    "module": "es6",
+    "sourceMap": true,
+    "lib": ["ES2019", "DOM"],
+    "types": ["vscode-notebook-renderer"]
+  },
+  "include": ["*.js", "*.d.ts"],
+  "exclude": ["webpack.config.js", "../../node_modules"]
+}
