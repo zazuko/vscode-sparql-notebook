@@ -2,7 +2,7 @@
 
 Open `*.sparqlbook` files in the VS Code Notebook interface. Connect to a SPARQL Endpoint and execute query blocks and view output interactively.
 
-![sparql-notebook](https://user-images.githubusercontent.com/8033981/157272006-e3b75ba3-66de-4879-8533-fad6a9bf4487.gif)
+![sparql-notebook](https://user-images.githubusercontent.com/8033981/157274845-e722bace-16aa-4055-8a07-0b8fc5a8b112.gif)
 
 ## Features
 
