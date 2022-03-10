@@ -60,7 +60,7 @@ export class SparqlNotebookController {
       });
 
     // content type
-    const contentType = queryResult.headers["content-type"];
+    const contentType = queryResult.headers["content-type"].split(";")[0];
     const data = queryResult.data;
 
     if (contentType === "application/sparql-results+json") {
@@ -72,6 +72,9 @@ export class SparqlNotebookController {
     } else if (contentType === "application/json") {
       // stardog is returning and error as json
       execution.replaceOutput([this._writeError(data)]);
+    } else {
+      console.log("unknown content type", contentType);
+      console.log("data", data);
     }
     execution.end(true, Date.now());
   }
