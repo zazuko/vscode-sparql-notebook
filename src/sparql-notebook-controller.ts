@@ -6,7 +6,7 @@ export class SparqlNotebookController {
   readonly controllerId = "sparql-notebook-controller-id";
   readonly notebookType = "sparql-notebook";
   readonly label = "Sparql Notebook";
-  readonly supportedLanguages = ["sparql", "rdfmapping"];
+  readonly supportedLanguages = ["sparql"];
 
   private readonly _controller: vscode.NotebookController;
   private _executionOrder = 0;
