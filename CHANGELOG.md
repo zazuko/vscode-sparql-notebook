@@ -2,6 +2,12 @@
 
 All notable changes to the "vscode-sparql-notebook" extension will be documented in this file.
 
+## 0.0.10
+
+Feature: Configure endpoint per cell. Add a comment like `# [ednpoint=http://....]` to your SPARQL Query.
+
+Feature: New rendering for TTL ouput
+
 ## 0.0.9
 
 Fix: content type with charset `application/sparql-results+json;charset=utf-8` not recognised

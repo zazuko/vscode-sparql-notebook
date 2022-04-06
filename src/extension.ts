@@ -47,8 +47,10 @@ export interface DbConnection {
   data: ConnectionData;
 }
 
+/*
 export interface Conn {
   release: () => void;
   query: (q: string) => Promise<any>;
   destroy: () => void;
 }
+*/
