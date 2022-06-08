@@ -1,12 +1,12 @@
 # VSCode SPARQL Notebook
 
-This extension provides a *SPARQL Notebook* mode for [Visual Studio Code](https://code.visualstudio.com). This is a powerful way to document SPARQL queries and make them execute as notebook code cells.
+This extension provides a _SPARQL Notebook_ mode for [Visual Studio Code](https://code.visualstudio.com). This is a powerful way to document SPARQL queries and make them execute as notebook code cells.
 
 Use a SPARQL notebook to:
 
-* Provide hands-on SPARQL training
-* Document data available via SPARQL
-* Validate data via SPARQL
+- Provide hands-on SPARQL training
+- Document data available via SPARQL
+- Validate data via SPARQL
 
 This notebook can render SPARQL SELECT results and RDF graphs via SPARQL CONSTRUCT queries.
 
@@ -21,6 +21,7 @@ This extension is still pretty raw but it works for us [tm]. Bug reports & contr
 - Open any `.sparqlbook` file as a Notebook.
 - Execute query blocks in the Notebook UI and view output.
 - Configure endpoint connections in the SPARQL Notebook side panel.
+
 ## Installation
 
 You can install it directly from the Visual Studio Code Extension tab. It is available on the [Marketplace](https://marketplace.visualstudio.com/items?itemName=Zazuko.sparql-notebook)
@@ -29,8 +30,20 @@ You can install it directly from the Visual Studio Code Extension tab. It is ava
 
 Open any `.sparqlbook` file with the `Open With` menu option. Then, select the `SPARQL Notebook` format. Connect to a SPARQL Endpoint and execute query blocks and view output interactively.
 
+## FAQ
+
+### Show SELECT Results as a Table
+
+Technically that means set the default renderer for MIME-Type `application/sparql-results+json`.
+
+1. in the output cell, choose `application/sparql-results+json`
+2. Open the Command Palette (Ctrl+Shift+P or Cmd+Shift+P on Mac),
+3. Search for "mime" and click: "Notebook: Save Mimetype Display Order"
+4. You will be prompted to choose either to ...
+   - enable that default setting globally (choose "User Settings")
+   - or locally for that specific workspace (choose "Workspace Settings")
+
 ## Contribute
 
 This extension uses the [
 Notebook API ](https://code.visualstudio.com/api/extension-guides/notebook). Contributions & bug fixes are always welcome!
-

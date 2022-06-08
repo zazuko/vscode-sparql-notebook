@@ -9,7 +9,7 @@
   "repository": {
     "url": "https://github.com/zazuko/vscode-sparql-notebook.git"
   },
-  "version": "0.0.10",
+  "version": "0.0.11",
   "engines": {
     "vscode": "^1.62.0"
   },
@@ -24,7 +24,7 @@
     "onNotebook:sparql-notebook",
     "onView:sparql-notebook-connections"
   ],
-  "main": "./out/extension.js",
+  "main": "./dist/extension.js",
   "contributes": {
     "notebooks": [
       {
@@ -35,6 +35,16 @@
           {
             "filenamePattern": "*.sparqlbook"
           }
+        ]
+      }
+    ],
+    "notebookRenderer": [
+      {
+        "id": "sparql-notebook-json-result",
+        "entrypoint": "./dist/sparqlResultJsonRenderer.js",
+        "displayName": "SPARQL JSON Result",
+        "mimeTypes": [
+          "application/sparql-results+json"
         ]
       }
     ],
@@ -123,18 +133,28 @@
     "@types/mocha": "^9.0.0",
     "@types/node": "14.x",
     "@types/vscode": "^1.62.0",
+    "@types/vscode-notebook-renderer": "^1.60.0",
     "@typescript-eslint/eslint-plugin": "^5.1.0",
     "@typescript-eslint/parser": "^5.1.0",
     "@vscode/test-electron": "^1.6.2",
     "eslint": "^8.1.0",
     "glob": "^7.1.7",
     "mocha": "^9.1.3",
-    "typescript": "^4.4.4",
     "ts-loader": "^9.2.5",
+    "typescript": "^4.4.4",
     "webpack": "^5.52.1",
     "webpack-cli": "^4.8.0"
   },
   "dependencies": {
-    "axios": "^0.24.0"
+    "@types/react": "^18.0.12",
+    "@types/webpack-env": "^1.17.0",
+    "axios": "^0.24.0",
+    "css-loader": "^6.7.1",
+    "fork-ts-checker-webpack-plugin": "^7.2.11",
+    "httpyac": "^5.4.2",
+    "preact": "^10.7.3",
+    "style-loader": "^3.3.1",
+    "thread-loader": "^3.0.4",
+    "webpack-env": "^0.8.0"
   }
 }

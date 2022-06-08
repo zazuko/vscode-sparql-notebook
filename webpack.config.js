@@ -1,48 +1,153 @@
-//@ts-check
-
-"use strict";
-
+const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
+const { DefinePlugin } = require("webpack");
 const path = require("path");
 
-//@ts-check
-/** @typedef {import('webpack').Configuration} WebpackConfig **/
+const devServerPort = 8111;
 
-/** @type WebpackConfig */
-const extensionConfig = {
-  target: "node", // vscode extensions run in a Node.js-context 📖 -> https://webpack.js.org/configuration/node/
-  mode: "none", // this leaves the source code as close as possible to the original (when packaging we set this to 'production')
+module.exports = [
+  (env, argv) => {
+    /**@type {import('webpack').Configuration}*/
+    const config = {
+      target: "node",
+      mode: "none",
 
-  entry: "./src/extension.ts", // the entry point of this extension, 📖 -> https://webpack.js.org/configuration/entry-context/
-  output: {
-    // the bundle is stored in the 'dist' folder (check package.json), 📖 -> https://webpack.js.org/configuration/output/
-    path: path.resolve(__dirname, "dist"),
-    filename: "extension.js",
-    libraryTarget: "commonjs2",
-  },
-  externals: {
-    vscode: "commonjs vscode", // the vscode-module is created on-the-fly and must be excluded. Add other modules that cannot be webpack'ed, 📖 -> https://webpack.js.org/configuration/externals/
-    // modules added here also need to be added in the .vscodeignore file
-  },
-  resolve: {
-    // support reading TypeScript and JavaScript files, 📖 -> https://github.com/TypeStrong/ts-loader
-    extensions: [".ts", ".js"],
-  },
-  module: {
-    rules: [
-      {
-        test: /\.ts$/,
-        exclude: /node_modules/,
-        use: [
+      entry: "./src/extension/extension.ts",
+      output: {
+        path: path.resolve(__dirname, "dist"),
+        filename: "extension.js",
+        library: {
+          type: "commonjs2",
+        },
+      },
+      devtool:
+        argv.mode === "development"
+          ? "eval-cheap-module-source-map"
+          : "nosources-source-map",
+      externals: {
+        vscode: "commonjs vscode",
+        httpyac: "httpyac",
+      },
+      resolve: {
+        extensions: [".ts", ".js"],
+      },
+      module: {
+        rules: [
           {
-            loader: "ts-loader",
+            test: /\.ts$/,
+            exclude: /node_modules/,
+            use: [
+              {
+                loader: "thread-loader",
+              },
+              {
+                loader: "ts-loader",
+                options: {
+                  happyPackMode: true,
+                },
+              },
+            ],
           },
         ],
       },
-    ],
+      plugins: [
+        new ForkTsCheckerWebpackPlugin({
+          async: true,
+          typescript: {
+            diagnosticOptions: {
+              semantic: true,
+              syntactic: true,
+            },
+          },
+        }),
+      ],
+      cache: {
+        type: "memory",
+      },
+    };
+    return config;
   },
-  devtool: "nosources-source-map",
-  infrastructureLogging: {
-    level: "log", // enables logging required for problem matchers
+  (env, argv) => {
+    /**@type {import('webpack').Configuration}*/
+    const config = {
+      mode: argv.mode,
+      devtool:
+        argv.mode === "development"
+          ? "eval-cheap-module-source-map"
+          : "nosources-source-map",
+      entry: {
+        sparqlResultJsonRenderer: "./src/renderer/sparql-result-json.tsx",
+        //  rfc7230Renderer: "./src/renderer/rfc7230Renderer.tsx",
+      },
+      output: {
+        path: path.join(__dirname, "dist"),
+        filename: "[name].js",
+        libraryTarget: "module",
+      },
+      experiments: {
+        outputModule: true,
+      },
+      resolve: {
+        extensions: [".ts", ".tsx", ".js", ".jsx", ".css"],
+      },
+      module: {
+        rules: [
+          {
+            test: /\.tsx?$/,
+            use: [
+              {
+                loader: "thread-loader",
+              },
+              {
+                loader: "ts-loader",
+                options: {
+                  happyPackMode: true,
+                  configFile: "src/renderer/tsconfig.json",
+                  transpileOnly: true,
+                  compilerOptions: {
+                    noEmit: false,
+                  },
+                },
+              },
+            ],
+          },
+          {
+            test: /\.css$/,
+            use: [
+              "style-loader",
+              {
+                loader: "css-loader",
+              },
+            ],
+          },
+          {
+            test: /\.ttf$/,
+            use: ["file-loader"],
+          },
+        ],
+      },
+      devServer: {
+        port: devServerPort,
+        hot: true,
+        disableHostCheck: true,
+        writeToDisk: true,
+        headers: { "Access-Control-Allow-Origin": "*" },
+      },
+      plugins: [
+        new ForkTsCheckerWebpackPlugin({
+          async: true,
+          typescript: {
+            tsconfig: "src/renderer/tsconfig.json",
+            diagnosticOptions: {
+              semantic: true,
+              syntactic: true,
+            },
+          },
+        }),
+      ],
+      optimization: {
+        minimize: true,
+      },
+    };
+    return config;
   },
-};
-module.exports = [extensionConfig];
+];

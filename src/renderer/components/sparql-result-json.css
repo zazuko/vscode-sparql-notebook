@@ -1,0 +1,60 @@
+*, *:before, *:after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body.vscode-dark table {
+  background-color: rgb(46, 53, 62);
+}
+body.vscode-light table {
+  background-color: rgb(240, 240, 240);
+}
+table {
+  border-radius: 0.25em;
+  border-collapse: collapse;
+  margin-top: 1em;
+  margin-left: 0;
+  margin-right: 0;
+  margin-bottom: 1em;
+  padding-left: 0;
+  padding-right: 0;
+}
+body.vscode-dark th {
+  color: #28b1de;
+}
+body.vscode-light th {
+  color: #d810c4a8;
+}
+
+th {
+  border-bottom: 1px solid #364043;
+  font-size: 0.85em;
+  font-weight: 600;
+  padding: 0.5em 1em;
+  text-align: left;
+}
+body.vscode-light td {
+  color: black;
+
+}
+body.vscode-dark td {
+  color: lightgrey;
+
+}
+td {
+  font-weight: 400;
+  padding: 0.65em 1em;
+  text-align: left;
+}
+tr > td:last-of-type {
+  text-align: right;
+}
+tr > th:last-of-type {
+  text-align: right;
+}
+body.vscode-dark tr:hover {
+  background: #014055;
+}
+body.vscode-light tr:hover {
+  background: #a9b8bd;
+}

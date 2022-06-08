@@ -99,78 +99,13 @@ export class SparqlNotebookController {
   }
 
   private _writeSparqlJsonResult(resultJson: any): vscode.NotebookCellOutput {
-    if (resultJson.hasOwnProperty("boolean")) {
-      // ASK Query result
-      return new vscode.NotebookCellOutput([this._writeHtml(resultJson)]);
-    }
     return new vscode.NotebookCellOutput([
-      this._writeHtml(resultJson),
       this._writeJson(JSON.stringify(resultJson, null, "   ")),
+      vscode.NotebookCellOutputItem.json(
+        resultJson,
+        "application/sparql-results+json"
+      ),
     ]);
-  }
-
-  private _writeHtml(resultJson: any): vscode.NotebookCellOutputItem {
-    let resultHtml = `
-    <style>
-  
-*, *:before, *:after {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-table {
-  background-color: rgb(46, 53, 62);
-  border-radius: 0.25em;
-  border-collapse: collapse;
-  margin: 1em;
-}
-th {
-  border-bottom: 1px solid #364043;
-  color: #28b1de;
-  font-size: 0.85em;
-  font-weight: 600;
-  padding: 0.5em 1em;
-  text-align: left;
-}
-td {
-  color: lightgrey;
-  font-weight: 400;
-  padding: 0.65em 1em;
-  text-align: left;
-}
-tr > td:last-of-type {
-  text-align: right;
-}
-tbody tr {
-  transition: background 0.25s ease;
-}
-tbody tr:hover {
-  background: #014055;
-}
-
-
-    </style>
-    <table>
-    <tr>`;
-    resultJson.head.vars.forEach((heading: string) => {
-      resultHtml += `\n        <th>${heading}</th>\n`;
-    });
-    resultJson.results.bindings.forEach((result: any) => {
-      resultHtml += "    <tr>";
-
-      resultJson.head.vars.forEach((heading: string) => {
-        resultHtml += `\n        <td>${
-          result[heading]?.value
-            ?.replaceAll("<", "&lt;")
-            ?.replaceAll(">", "&gt;") ?? ""
-        }</td>\n`;
-      });
-      resultHtml += "    </tr>\n";
-    });
-    resultHtml += "</table>";
-
-    return vscode.NotebookCellOutputItem.text(resultHtml, "text/html");
   }
 
   private _writeJson(jsonResult: any): vscode.NotebookCellOutputItem {
