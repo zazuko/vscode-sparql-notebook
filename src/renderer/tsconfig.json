@@ -1,13 +1,12 @@
 {
+  "extends": "../tsconfig-base.json",
   "compilerOptions": {
-    "outDir": "out",
+    "noEmit": true,
     "rootDir": ".",
-    "allowJs": true,
-    "module": "es6",
-    "sourceMap": true,
-    "lib": ["ES2019", "DOM"],
-    "types": ["vscode-notebook-renderer"]
-  },
-  "include": ["*.js", "*.d.ts"],
-  "exclude": ["webpack.config.js", "../../node_modules"]
+    "module": "esnext",
+    "lib": ["ES2019", "dom"],
+    "jsx": "react",
+    "jsxFactory": "h",
+    "types": ["webpack-env", "vscode-notebook-renderer"]
+  }
 }

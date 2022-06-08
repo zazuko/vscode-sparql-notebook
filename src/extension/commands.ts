@@ -114,7 +114,9 @@ export const connectToDatabase =
     try {
       const c = globalConnection.connection.data;
       const client = new SparqlClient(c.endpointURL, c.user, c.passwordKey);
+
       const result = await client.query("SELECT * WHERE {?s ?p ?o.} LIMIT 1");
+      console.log(result);
       connectionsSidepanel.setActive(match.name);
       vscode.window.showInformationMessage(
         `Successfully connected to "${match.name}"`
