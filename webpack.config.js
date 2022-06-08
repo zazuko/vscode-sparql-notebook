@@ -1,153 +1,116 @@
-const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
-const { DefinePlugin } = require("webpack");
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+//@ts-check
+
+"use strict";
+
 const path = require("path");
+const webpack = require("webpack");
 
-const devServerPort = 8111;
-
-module.exports = [
-  (env, argv) => {
-    /**@type {import('webpack').Configuration}*/
-    const config = {
-      target: "node",
-      mode: "none",
-
-      entry: "./src/extension/extension.ts",
-      output: {
-        path: path.resolve(__dirname, "dist"),
-        filename: "extension.js",
-        library: {
-          type: "commonjs2",
-        },
-      },
-      devtool:
-        argv.mode === "development"
-          ? "eval-cheap-module-source-map"
-          : "nosources-source-map",
-      externals: {
-        vscode: "commonjs vscode",
-        httpyac: "httpyac",
-      },
-      resolve: {
-        extensions: [".ts", ".js"],
-      },
-      module: {
-        rules: [
+/**@type {import('webpack').Configuration}*/
+const config = {
+  entry: "./src/extension/extension.ts",
+  devtool: "source-map",
+  externals: {
+    vscode: "commonjs vscode",
+  },
+  resolve: {
+    extensions: [".ts", ".js"],
+    fallback: {
+      url: require.resolve("url/"),
+      os: require.resolve("os-browserify/browser"),
+      path: require.resolve("path-browserify"),
+      fs: false,
+    },
+  },
+  plugins: [
+    new webpack.DefinePlugin({
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      "process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV),
+    }),
+  ],
+  module: {
+    rules: [
+      {
+        test: /\.tsx?$/,
+        exclude: /node_modules/,
+        use: [
           {
-            test: /\.ts$/,
-            exclude: /node_modules/,
-            use: [
-              {
-                loader: "thread-loader",
+            loader: "ts-loader",
+            options: {
+              configFile: path.resolve(
+                __dirname,
+                "src/extension/tsconfig.json"
+              ),
+              projectReferences: true,
+              compilerOptions: {
+                module: "esnext",
               },
-              {
-                loader: "ts-loader",
-                options: {
-                  happyPackMode: true,
-                },
-              },
-            ],
+            },
           },
         ],
       },
-      plugins: [
-        new ForkTsCheckerWebpackPlugin({
-          async: true,
-          typescript: {
-            diagnosticOptions: {
-              semantic: true,
-              syntactic: true,
-            },
-          },
-        }),
-      ],
-      cache: {
-        type: "memory",
-      },
-    };
-    return config;
+    ],
   },
-  (env, argv) => {
-    /**@type {import('webpack').Configuration}*/
-    const config = {
-      mode: argv.mode,
-      devtool:
-        argv.mode === "development"
-          ? "eval-cheap-module-source-map"
-          : "nosources-source-map",
-      entry: {
-        sparqlResultJsonRenderer: "./src/renderer/sparql-result-json.tsx",
-        //  rfc7230Renderer: "./src/renderer/rfc7230Renderer.tsx",
-      },
-      output: {
-        path: path.join(__dirname, "dist"),
-        filename: "[name].js",
-        libraryTarget: "module",
-      },
-      experiments: {
-        outputModule: true,
-      },
-      resolve: {
-        extensions: [".ts", ".tsx", ".js", ".jsx", ".css"],
-      },
-      module: {
-        rules: [
+};
+
+const nodeConfig = {
+  ...config,
+  target: "node",
+  output: {
+    // the bundle is stored in the 'dist' folder (check package.json), 📖 -> https://webpack.js.org/configuration/output/
+    path: path.resolve(__dirname, "dist"),
+    filename: "extension-node.js",
+    libraryTarget: "commonjs2",
+    devtoolModuleFilenameTemplate: "../[resource-path]",
+  },
+};
+
+const rendererConfig = {
+  ...config,
+  entry: "./src/renderer/sparql-result-json.tsx",
+  output: {
+    path: path.resolve(__dirname, "dist"),
+    filename: "renderer.js",
+    libraryTarget: "module",
+  },
+  resolve: {
+    extensions: [".ts", ".tsx", ".css"],
+  },
+  experiments: {
+    outputModule: true,
+  },
+  module: {
+    rules: [
+      {
+        test: /\.tsx?$/,
+        exclude: /node_modules/,
+        use: [
           {
-            test: /\.tsx?$/,
-            use: [
-              {
-                loader: "thread-loader",
+            loader: "ts-loader",
+            options: {
+              configFile: path.resolve(__dirname, "src/renderer/tsconfig.json"),
+              projectReferences: true,
+              compilerOptions: {
+                module: "esnext",
               },
-              {
-                loader: "ts-loader",
-                options: {
-                  happyPackMode: true,
-                  configFile: "src/renderer/tsconfig.json",
-                  transpileOnly: true,
-                  compilerOptions: {
-                    noEmit: false,
-                  },
-                },
-              },
-            ],
-          },
-          {
-            test: /\.css$/,
-            use: [
-              "style-loader",
-              {
-                loader: "css-loader",
-              },
-            ],
-          },
-          {
-            test: /\.ttf$/,
-            use: ["file-loader"],
+            },
           },
         ],
       },
-      devServer: {
-        port: devServerPort,
-        hot: true,
-        disableHostCheck: true,
-        writeToDisk: true,
-        headers: { "Access-Control-Allow-Origin": "*" },
+      {
+        test: /\.css$/i,
+        use: ["style-loader", "css-loader"],
       },
-      plugins: [
-        new ForkTsCheckerWebpackPlugin({
-          async: true,
-          typescript: {
-            tsconfig: "src/renderer/tsconfig.json",
-            diagnosticOptions: {
-              semantic: true,
-              syntactic: true,
-            },
-          },
-        }),
-      ],
-      optimization: {
-        minimize: true,
+      {
+        test: /\.svg$/,
+        loader: "svg-inline-loader",
       },
-    };
-    return config;
+    ],
   },
-];
+};
+
+module.exports = [nodeConfig, rendererConfig];

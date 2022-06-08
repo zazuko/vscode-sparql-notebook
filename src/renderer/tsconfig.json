@@ -1,12 +1,11 @@
 {
   "extends": "../tsconfig-base.json",
   "compilerOptions": {
-    "noEmit": true,
+    "composite": true,
     "rootDir": ".",
-    "module": "esnext",
     "lib": ["ES2019", "dom"],
     "jsx": "react",
     "jsxFactory": "h",
-    "types": ["webpack-env", "vscode-notebook-renderer"]
+    "types": ["vscode-notebook-renderer", "node"]
   }
 }

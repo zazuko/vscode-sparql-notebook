@@ -24,7 +24,7 @@
     "onNotebook:sparql-notebook",
     "onView:sparql-notebook-connections"
   ],
-  "main": "./dist/extension.js",
+  "main": "./dist/extension-node.js",
   "contributes": {
     "notebooks": [
       {
@@ -41,7 +41,7 @@
     "notebookRenderer": [
       {
         "id": "sparql-notebook-json-result",
-        "entrypoint": "./dist/sparqlResultJsonRenderer.js",
+        "entrypoint": "./dist/renderer.js",
         "displayName": "SPARQL JSON Result",
         "mimeTypes": [
           "application/sparql-results+json"
@@ -116,17 +116,18 @@
     }
   },
   "scripts": {
-    "vscode:prepublish": "npm run package",
-    "compile": "webpack",
-    "watch": "webpack --watch",
-    "package": "webpack --mode production --devtool hidden-source-map",
-    "compile-tests": "tsc -p . --outDir out",
-    "watch-tests": "tsc -p . -w --outDir out",
-    "pretest": "npm run compile-tests && npm run compile && npm run lint",
-    "lint": "eslint src --ext ts",
-    "test": "node ./out/test/runTest.js",
-    "package-vsce": "npx vsce package",
-    "publish": "npx vsce publish"
+    "vscode:prepublish": "npm run compile",
+    "compile": "webpack --mode none",
+    "watch": "webpack --mode none --watch",
+    "lint": "eslint --config .eslintrc.json ./src/**/*.ts",
+    "ts-compile": "tsc -b",
+    "integration-test": "npm run ts-compile && node ./out/extension/test-integration/runTest.js",
+    "unit-test": "npm run ts-compile && npx mocha ./out/extension/test-unit",
+    "compile-lint-test": "npm run compile && npm run lint && npm run unit-test",
+    "precommit": "npm run lint",
+    "deploy": "npx vsce publish --web --noVerify",
+    "package": "npx vsce package",
+    "update-api": "npx vscode-dts dev"
   },
   "devDependencies": {
     "@types/glob": "^7.1.4",
@@ -138,23 +139,19 @@
     "@typescript-eslint/parser": "^5.1.0",
     "@vscode/test-electron": "^1.6.2",
     "eslint": "^8.1.0",
-    "glob": "^7.1.7",
-    "mocha": "^9.1.3",
+    "glob": "^8.0.3",
+    "mocha": "^10.0.0",
     "ts-loader": "^9.2.5",
     "typescript": "^4.4.4",
-    "webpack": "^5.52.1",
-    "webpack-cli": "^4.8.0"
+    "webpack": "^5.73.0",
+    "webpack-cli": "^4.5.0"
   },
   "dependencies": {
     "@types/react": "^18.0.12",
     "@types/webpack-env": "^1.17.0",
     "axios": "^0.24.0",
     "css-loader": "^6.7.1",
-    "fork-ts-checker-webpack-plugin": "^7.2.11",
-    "httpyac": "^5.4.2",
     "preact": "^10.7.3",
-    "style-loader": "^3.3.1",
-    "thread-loader": "^3.0.4",
-    "webpack-env": "^0.8.0"
+    "style-loader": "^3.3.1"
   }
 }
