@@ -42,9 +42,12 @@ Technically that means set the default renderer for MIME-Type `application/sparq
 4. You will be prompted to choose either to ...
    - enable that default setting globally (choose "User Settings")
    - or locally for that specific workspace (choose "Workspace Settings")
-   
+
 ![save_mimetype_order](https://user-images.githubusercontent.com/8033981/172578922-73a4a3f5-3a55-4fc1-b961-bb4ce4df945c.gif)
 
+### Export as Markdown
+
+Right click a `.sparqlbook`file and select `Export to Markdown`.
 
 ## Contribute
 

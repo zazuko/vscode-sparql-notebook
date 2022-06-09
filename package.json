@@ -102,7 +102,7 @@
         "title": "Delete Connection Configuration"
       },
       {
-        "title": "Sparql Notebook: Export To Markdown",
+        "title": "Export to Markdown",
         "command": "sparql-notebook.exportToMarkdown"
       }
     ],

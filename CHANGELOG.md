@@ -6,6 +6,8 @@ All notable changes to the "vscode-sparql-notebook" extension will be documented
 
 Feature: New `application/sparql-results+json` renderer with dark and light mode support.
 
+Feature: Export Notebook as Markdown.
+
 ## 0.0.10
 
 Feature: Configure endpoint per cell. Add a comment like `# [ednpoint=http://....]` to your SPARQL Query.
