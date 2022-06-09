@@ -7,7 +7,6 @@ import { SparqlAskResultJson } from './components/sparql-ask-result-json';
 
 export const activate: ActivationFunction = () => ({
   renderOutputItem(outputItem: OutputItem, element: HTMLElement) {
-    console.log(outputItem);
     if (outputItem.json().hasOwnProperty("boolean")) {
       render(<SparqlAskResultJson sparqlResult={outputItem.json()} />, element);
     } else {

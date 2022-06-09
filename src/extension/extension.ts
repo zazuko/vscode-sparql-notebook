@@ -8,7 +8,7 @@ import {
   connectToDatabase,
   deleteConnectionConfiguration,
 } from "./commands";
-
+import { exportToMarkdown } from "./export-command";
 export const storageKey = "sparql-notebook-connections";
 export const globalConnection: { connection: DbConnection | null } = {
   connection: null,
@@ -38,6 +38,13 @@ export function activate(context: vscode.ExtensionContext) {
   vscode.commands.registerCommand(
     "sparql-notebook.connect",
     connectToDatabase(context, connectionsSidepanel)
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
+      "sparql-notebook.exportToMarkdown",
+      exportToMarkdown
+    )
   );
 }
 

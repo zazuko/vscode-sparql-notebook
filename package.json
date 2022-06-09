@@ -22,6 +22,7 @@
   ],
   "activationEvents": [
     "onNotebook:sparql-notebook",
+    "onCommand:sparql-notebook.exportToMarkdown",
     "onView:sparql-notebook-connections"
   ],
   "main": "./dist/extension-node.js",
@@ -70,6 +71,13 @@
           "when": "view == sparql-notebook-connections",
           "group": "navigation"
         }
+      ],
+      "explorer/context": [
+        {
+          "when": "resourceExtname == .sparqlbook",
+          "command": "sparql-notebook.exportToMarkdown",
+          "group": "sparql-notebook"
+        }
       ]
     },
     "commands": [
@@ -92,6 +100,10 @@
       {
         "command": "sparql-notebook.deleteConnectionConfiguration",
         "title": "Delete Connection Configuration"
+      },
+      {
+        "title": "Sparql Notebook: Export To Markdown",
+        "command": "sparql-notebook.exportToMarkdown"
       }
     ],
     "viewsContainers": {
