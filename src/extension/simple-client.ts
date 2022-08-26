@@ -31,7 +31,7 @@ export class SparqlClient {
         Accept: "application/sparql-results+json,text/turtle",
       },
     };
-    const response = await this.endpoint.post("/", params, config);
+    const response = await this.endpoint.post("", params, config);
     return response;
   }
 }
