@@ -56,8 +56,9 @@ export class SparqlNotebookController {
       );
     }
 
+    const query = cell.document.getText();
     const queryResult = await client
-      .query(cell.document.getText())
+      .query(query)
       .catch((error) => {
         execution.replaceOutput([
           new vscode.NotebookCellOutput([
@@ -70,7 +71,43 @@ export class SparqlNotebookController {
 
     // content type
     const contentType = queryResult.headers["content-type"].split(";")[0];
-    const data = queryResult.data;
+    let data = queryResult.data;
+
+    // get namespaces
+    let namespaces: any = {};
+    let nsRegex = /[Pp][Rr][Ee][Ff][Ii][Xx] ([^:]*):[ ]*<([^>]*)>/g;
+    var m: any = true;
+    do {
+      m = nsRegex.exec(query);
+      if (m) {
+        namespaces[m[1]] = m[2];
+      }
+    } while (m);
+    console.log("found namespaces", namespaces);
+
+    // format namespaces
+    let bindings: any[] = data.results.bindings;
+    bindings = bindings.map(triple => {
+      const variables = Object.keys(triple);
+
+      for (const variable of variables) {
+        const tripleVariable = triple[variable];
+
+        if (tripleVariable.type == "uri") {
+          for (const namespace of Object.keys(namespaces)) {
+            const newValue = tripleVariable.value.replace(namespaces[namespace], namespace + ":");
+            if (newValue != tripleVariable.value) {
+              tripleVariable.value = newValue;
+              break;
+            }
+          }
+        }
+
+        triple[variable] = tripleVariable;
+      }
+      return triple;
+    })
+    data.results.bindings = bindings;
 
     if (contentType === "application/sparql-results+json") {
       // sparql ask or select
@@ -139,5 +176,5 @@ export class SparqlNotebookController {
     return endpoints.shift();
   }
 
-  dispose() {}
+  dispose() { }
 }
