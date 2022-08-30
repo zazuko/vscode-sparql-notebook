@@ -125,7 +125,19 @@
           "contextualTitle": "Connections"
         }
       ]
-    }
+    },
+    "configuration":[
+      {
+        "title": "SPARQL Notebook",
+        "properties": {
+          "sparqlbook.useNamespaces":{
+            "type": "boolean",
+            "default": false,
+            "description": "Format output using prefixes from query."
+          }
+        }
+      }
+    ]
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
