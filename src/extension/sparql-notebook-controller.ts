@@ -57,34 +57,35 @@ export class SparqlNotebookController {
     }
 
     const query = cell.document.getText();
-    const queryResult = await client
-      .query(query)
-      .catch((error) => {
-        execution.replaceOutput([
-          new vscode.NotebookCellOutput([
-            vscode.NotebookCellOutputItem.error(error),
-          ]),
-        ]);
-        execution.end(true, Date.now());
-        return;
-      });
+    const queryResult = await client.query(query).catch((error) => {
+      execution.replaceOutput([
+        new vscode.NotebookCellOutput([
+          vscode.NotebookCellOutputItem.error(error),
+        ]),
+      ]);
+      execution.end(true, Date.now());
+      return;
+    });
 
     // content type
     const contentType = queryResult.headers["content-type"].split(";")[0];
-    const data = this._parseNamespacesAndFormatBindings(queryResult.data, query);
 
     if (contentType === "application/sparql-results+json") {
       // sparql ask or select
+      const data = this._parseNamespacesAndFormatBindings(
+        queryResult.data,
+        query
+      );
       execution.replaceOutput([this._writeSparqlJsonResult(data)]);
     } else if (contentType === "text/turtle") {
       // sparql construct
-      execution.replaceOutput([this._writeTurtleResult(data)]);
+      execution.replaceOutput([this._writeTurtleResult(queryResult.data)]);
     } else if (contentType === "application/json") {
       // stardog is returning and error as json
-      execution.replaceOutput([this._writeError(data)]);
+      execution.replaceOutput([this._writeError(queryResult.data)]);
     } else {
       console.log("unknown content type", contentType);
-      console.log("data", data);
+      console.log("data", queryResult.data);
     }
     execution.end(true, Date.now());
   }
@@ -141,9 +142,11 @@ export class SparqlNotebookController {
   }
 
   private _parseNamespacesAndFormatBindings(data: any, query: string): any {
-    const configuration = vscode.workspace.getConfiguration('sparqlbook');
+    const configuration = vscode.workspace.getConfiguration("sparqlbook");
     const useNamespaces = configuration.get("useNamespaces");
-    if (!useNamespaces) { return data; }
+    if (!useNamespaces) {
+      return data;
+    }
 
     // get namespaces from prefixes in query
     let namespaces: any = {};
@@ -158,7 +161,7 @@ export class SparqlNotebookController {
 
     // format uri in triples using namespaces
     let bindings: any[] = data.results.bindings;
-    bindings = bindings.map(triple => {
+    bindings = bindings.map((triple) => {
       const variables = Object.keys(triple);
 
       for (const variable of variables) {
@@ -166,7 +169,10 @@ export class SparqlNotebookController {
 
         if (tripleVariable.type === "uri") {
           for (const namespace of Object.keys(namespaces)) {
-            const newValue = tripleVariable.value.replace(namespaces[namespace], namespace + ":");
+            const newValue = tripleVariable.value.replace(
+              namespaces[namespace],
+              namespace + ":"
+            );
 
             if (newValue !== tripleVariable.value) {
               tripleVariable.value = newValue;
@@ -184,5 +190,5 @@ export class SparqlNotebookController {
     return data;
   }
 
-  dispose() { }
+  dispose() {}
 }
