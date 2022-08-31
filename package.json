@@ -9,7 +9,7 @@
   "repository": {
     "url": "https://github.com/zazuko/vscode-sparql-notebook.git"
   },
-  "version": "0.0.11",
+  "version": "0.0.12",
   "engines": {
     "vscode": "^1.62.0"
   },
@@ -125,7 +125,19 @@
           "contextualTitle": "Connections"
         }
       ]
-    }
+    },
+    "configuration":[
+      {
+        "title": "SPARQL Notebook",
+        "properties": {
+          "sparqlbook.useNamespaces":{
+            "type": "boolean",
+            "default": false,
+            "description": "Format output using prefixes from query."
+          }
+        }
+      }
+    ]
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
