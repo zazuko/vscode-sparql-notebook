@@ -149,7 +149,7 @@
     "unit-test": "npm run ts-compile && npx mocha ./out/extension/test-unit",
     "compile-lint-test": "npm run compile && npm run lint && npm run unit-test",
     "precommit": "npm run lint",
-    "deploy": "npx vsce publish --web --noVerify",
+    "deploy": "npx vsce publish",
     "package": "npx vsce package",
     "update-api": "npx vscode-dts dev"
   },
