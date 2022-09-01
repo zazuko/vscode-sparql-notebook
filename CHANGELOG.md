@@ -2,6 +2,10 @@
 
 All notable changes to the "vscode-sparql-notebook" extension will be documented in this file.
 
+## 0.0.13
+
+Fix: ASK query with 'sparqlbook.useNamespaces' true.
+
 ## 0.0.12
 
 Fix: Query POST created invalid route for this sparql database: Oxigraph. Remove tailoring '/' from the endpoint.
