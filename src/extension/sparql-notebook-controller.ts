@@ -69,23 +69,27 @@ export class SparqlNotebookController {
 
     // content type
     const contentType = queryResult.headers["content-type"].split(";")[0];
+    const data = queryResult.data;
 
     if (contentType === "application/sparql-results+json") {
-      // sparql ask or select
-      const data = this._parseNamespacesAndFormatBindings(
-        queryResult.data,
-        query
-      );
-      execution.replaceOutput([this._writeSparqlJsonResult(data)]);
+      if (data.hasOwnProperty("boolean")) {
+        // sparql ask
+        execution.replaceOutput([this._writeSparqlJsonResult(data)]);
+      }
+      else {
+        // sparql select
+        const dataWithNamespaces = this._parseNamespacesAndFormatBindings(data, query);
+        execution.replaceOutput([this._writeSparqlJsonResult(dataWithNamespaces)]);
+      }
     } else if (contentType === "text/turtle") {
       // sparql construct
-      execution.replaceOutput([this._writeTurtleResult(queryResult.data)]);
+      execution.replaceOutput([this._writeTurtleResult(data)]);
     } else if (contentType === "application/json") {
       // stardog is returning and error as json
-      execution.replaceOutput([this._writeError(queryResult.data)]);
+      execution.replaceOutput([this._writeError(data)]);
     } else {
       console.log("unknown content type", contentType);
-      console.log("data", queryResult.data);
+      console.log("data", data);
     }
     execution.end(true, Date.now());
   }
