@@ -2,6 +2,12 @@
 
 All notable changes to the "vscode-sparql-notebook" extension will be documented in this file.
 
+## 0.0.14
+
+Fix: Error handling.
+
+Special Thanks: Vojtěch Musílek
+
 ## 0.0.13
 
 Fix: ASK query with 'sparqlbook.useNamespaces' true.
