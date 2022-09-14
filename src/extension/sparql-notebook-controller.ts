@@ -58,18 +58,29 @@ export class SparqlNotebookController {
 
     const query = cell.document.getText();
     const queryResult = await client.query(query).catch((error) => {
+      let message = "error";
+      if (error.hasOwnProperty("message")) {
+        message = error.message;
+        if (error.hasOwnProperty("response") && error.response.hasOwnProperty("data")) {
+          message += "\n" + error.response.data;
+        }
+      }
       execution.replaceOutput([
-        new vscode.NotebookCellOutput([
-          vscode.NotebookCellOutputItem.error(error),
-        ]),
+        this._writeError(message)
       ]);
-      execution.end(true, Date.now());
-      return;
+      return "error";
     });
+
+    // return on error
+    if (queryResult === "error") {
+      execution.end(false, Date.now());
+      return;
+    }
 
     // content type
     const contentType = queryResult.headers["content-type"].split(";")[0];
     const data = queryResult.data;
+    let isSuccess = true;
 
     if (contentType === "application/sparql-results+json") {
       if (data.hasOwnProperty("boolean")) {
@@ -86,12 +97,14 @@ export class SparqlNotebookController {
       execution.replaceOutput([this._writeTurtleResult(data)]);
     } else if (contentType === "application/json") {
       // stardog is returning and error as json
-      execution.replaceOutput([this._writeError(data)]);
+      execution.replaceOutput([this._writeError(data.message)]);
+      isSuccess = false;
     } else {
       console.log("unknown content type", contentType);
       console.log("data", data);
+      isSuccess = false;
     }
-    execution.end(true, Date.now());
+    execution.end(isSuccess, Date.now());
   }
 
   private _writeTurtleResult(resultTTL: string): vscode.NotebookCellOutput {
@@ -118,11 +131,11 @@ export class SparqlNotebookController {
     return vscode.NotebookCellOutputItem.text(jsonResult, "text/x-json");
   }
 
-  private _writeError(error: any): vscode.NotebookCellOutput {
+  private _writeError(message: any): vscode.NotebookCellOutput {
     return new vscode.NotebookCellOutput([
       vscode.NotebookCellOutputItem.error({
         name: "SPARQL error",
-        message: error.message,
+        message: message,
       }),
     ]);
   }
