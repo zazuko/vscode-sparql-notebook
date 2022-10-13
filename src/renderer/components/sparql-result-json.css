@@ -46,10 +46,7 @@ td {
   padding: 0.65em 1em;
   text-align: left;
 }
-tr > td:last-of-type {
-  text-align: right;
-}
-tr > th:last-of-type {
+tr > th:last-of-type:not(:first-of-type) {
   text-align: right;
 }
 body.vscode-dark tr:hover {
