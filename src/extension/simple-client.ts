@@ -20,18 +20,30 @@ export class SparqlClient {
     });
   }
 
-  public async query(sparqlQuery: string) {
+  public async query(sparqlQuery: string, execution?: any) {
     const params = new URLSearchParams();
     params.append("query", sparqlQuery);
-    const config = {
+
+    const abortController = new AbortController();
+
+    const options = {
       headers: {
         // eslint-disable-next-line @typescript-eslint/naming-convention
         "Content-Type": "application/x-www-form-urlencoded",
         // eslint-disable-next-line @typescript-eslint/naming-convention
         Accept: "application/sparql-results+json,text/turtle",
+        signal: abortController.signal
       },
     };
-    const response = await this.endpoint.post("", params, config);
+    if (execution) {
+      execution.token.onCancellationRequested((_: any) => {
+        console.warn('Request cancelled');
+        const k = abortController.abort();
+        console.log('kill', abortController);
+
+      });
+    }
+    const response = await this.endpoint.post("", params, options);
     return response;
   }
 }

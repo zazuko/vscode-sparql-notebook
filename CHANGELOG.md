@@ -2,7 +2,13 @@
 
 All notable changes to the "vscode-sparql-notebook" extension will be documented in this file.
 
-# 0.0.15
+##  0.0.16
+
+Feature: Initial support for abort query.
+
+Improve error handling
+
+##  0.0.15
 
 Fix: SELECT result first column CSS
 

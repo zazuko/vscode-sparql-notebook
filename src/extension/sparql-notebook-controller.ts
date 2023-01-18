@@ -28,6 +28,7 @@ export class SparqlNotebookController {
     _notebook: vscode.NotebookDocument,
     _controller: vscode.NotebookController
   ): void {
+
     for (let cell of cells) {
       this._doExecution(cell);
     }
@@ -36,46 +37,40 @@ export class SparqlNotebookController {
   private async _doExecution(cell: vscode.NotebookCell): Promise<void> {
     const execution = this._controller.createNotebookCellExecution(cell);
     execution.executionOrder = ++this._executionOrder;
-    execution.start(Date.now()); // Keep track of elapsed time to execute cell.
 
-    let client: SparqlClient | null = null;
-    const sparqlQuery = cell.document.getText();
-    const documentEndpoint = this._getEndpointFromQuery(sparqlQuery);
-    if (documentEndpoint) {
-      client = new SparqlClient(documentEndpoint, "", "");
-    } else {
-      if (globalConnection.connection === null) {
-        vscode.window.showErrorMessage("Not connected to a SPARQL Endpoint");
-        execution.end(true, Date.now());
-        return;
-      }
-      client = new SparqlClient(
-        globalConnection.connection.data.endpointURL,
-        globalConnection.connection.data.user,
-        globalConnection.connection.data.passwordKey
-      );
-    }
+    // Keep track of elapsed time to execute cell.
+    execution.start(Date.now());
 
-    const query = cell.document.getText();
-    const queryResult = await client.query(query).catch((error) => {
-      let message = "error";
-      if (error.hasOwnProperty("message")) {
-        message = error.message;
-        if (error.hasOwnProperty("response") && error.response.hasOwnProperty("data")) {
-          message += "\n" + error.response.data;
-        }
-      }
+    const sparqlQueryText = cell.document.getText();
+
+    // you can configure the endpoint within the query like this # [endpoint='xxxx']
+    const client = this._getDocumentOrConnectionClient(sparqlQueryText);
+
+    if (!client) {
+      const errorMessage = "Not connected to a SPARQL Endpoint";
+      vscode.window.showErrorMessage(errorMessage);
       execution.replaceOutput([
-        this._writeError(message)
+        this._writeError(errorMessage)
       ]);
-      return "error";
-    });
-
-    // return on error
-    if (queryResult === "error") {
-      execution.end(false, Date.now());
+      execution.end(true, Date.now());
       return;
     }
+
+    // execute the query
+    const queryResult = await client.query(sparqlQueryText, execution).catch((error) => {
+      let errorMessage = error.message ?? "error";
+
+      if (error.hasOwnProperty("response") && error.response.hasOwnProperty("data")) {
+        errorMessage += "\n" + error.response.data;
+      }
+
+      execution.replaceOutput([
+        this._writeError(errorMessage)
+      ]);
+      console.error('SPARQL execution error:', errorMessage);
+      execution.end(false, Date.now());
+      return;
+    });
 
     // content type
     const contentType = queryResult.headers["content-type"].split(";")[0];
@@ -86,25 +81,37 @@ export class SparqlNotebookController {
       if (data.hasOwnProperty("boolean")) {
         // sparql ask
         execution.replaceOutput([this._writeSparqlJsonResult(data)]);
+        execution.end(isSuccess, Date.now());
+        return;
       }
-      else {
-        // sparql select
-        const dataWithNamespaces = this._parseNamespacesAndFormatBindings(data, query);
-        execution.replaceOutput([this._writeSparqlJsonResult(dataWithNamespaces)]);
-      }
-    } else if (contentType === "text/turtle") {
+      // sparql select
+      const dataWithNamespaces = this._parseNamespacesAndFormatBindings(data, sparqlQueryText);
+      execution.replaceOutput([this._writeSparqlJsonResult(dataWithNamespaces)]);
+      execution.end(isSuccess, Date.now());
+      return;
+    }
+
+    if (contentType === "text/turtle") {
       // sparql construct
       execution.replaceOutput([this._writeTurtleResult(data)]);
-    } else if (contentType === "application/json") {
+      execution.end(isSuccess, Date.now());
+      return;
+    }
+
+    if (contentType === "application/json") {
       // stardog is returning and error as json
       execution.replaceOutput([this._writeError(data.message)]);
       isSuccess = false;
-    } else {
-      console.log("unknown content type", contentType);
-      console.log("data", data);
-      isSuccess = false;
+      execution.end(isSuccess, Date.now());
+      return;
     }
+    // we should never reach this point
+    const errorMessage = `Error: Unknown content type ${contentType}\n\n${data}`;
+    console.error(errorMessage);
+    isSuccess = false;
+    execution.replaceOutput([this._writeError(errorMessage)]);
     execution.end(isSuccess, Date.now());
+    return;
   }
 
   private _writeTurtleResult(resultTTL: string): vscode.NotebookCellOutput {
@@ -207,5 +214,32 @@ export class SparqlNotebookController {
     return data;
   }
 
-  dispose() {}
+  dispose() { }
+
+  /**
+   * You can configure the endpoint within the query like this # [endpoint='url'] 
+   * or use the sparql notebook connection settings. This function will return the
+   * a SPARQL Client according your configuration. The endpoint in the SPARQL query 
+   * has precedence. 
+    
+   * @param sparqlQuery 
+   * @returns a SPARQL Client according to your configuration. 
+   */
+  private _getDocumentOrConnectionClient(sparqlQuery: string): SparqlClient | null {
+    const documentEndpoint = this._getEndpointFromQuery(sparqlQuery);
+    if (documentEndpoint) {
+      return new SparqlClient(documentEndpoint, "", "");
+    }
+
+    if (globalConnection.connection === null) {
+      return null;
+    }
+
+    return new SparqlClient(
+      globalConnection.connection.data.endpointURL,
+      globalConnection.connection.data.user,
+      globalConnection.connection.data.passwordKey
+    );
+
+  }
 }
