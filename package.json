@@ -50,6 +50,12 @@
       }
     ],
     "menus": {
+      "commandPalette": [
+        {
+          "command": "sparql-notebook.exportToMarkdown",
+          "when": "false"
+        }
+      ],
       "view/item/context": [
         {
           "command": "sparql-notebook.connect",

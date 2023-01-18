@@ -13,6 +13,9 @@ async function loadNotebook(uri: vscode.Uri) {
 }
 
 export const exportToMarkdown = async (documentToExportUri: vscode.Uri) => {
+  if (!documentToExportUri) {
+    return;
+  }
   const currentNotebook = await loadNotebook(documentToExportUri);
 
   if (currentNotebook) {
