@@ -43,6 +43,9 @@ export class SparqlNotebookSerializer implements vscode.NotebookSerializer {
       });
     }
 
-    return new TextEncoder().encode(JSON.stringify(contents));
+    return new TextEncoder()
+      .encode(
+        JSON.stringify(contents, null, 2)
+      );
   }
 }

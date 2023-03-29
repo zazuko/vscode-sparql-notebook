@@ -2,6 +2,10 @@
 
 All notable changes to the "vscode-sparql-notebook" extension will be documented in this file.
 
+##  0.0.17
+
+Format *.sparqlnotebook files to improve version control. 
+
 ##  0.0.16
 
 Feature: Initial support for abort query.
