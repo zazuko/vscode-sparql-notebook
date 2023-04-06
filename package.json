@@ -89,10 +89,10 @@
     "commands": [
       {
         "command": "sparql-notebook.connect",
-        "title": "Connect to Database",
+        "title": "Connect to SPARQL Endpoint",
         "icon": {
-          "dark": "assets/dark/dbconnection.svg",
-          "light": "assets/light/dbconnection.svg"
+          "dark": "assets/dark/endpoint-connected.svg",
+          "light": "assets/light/endpoint-connected.svg"
         }
       },
       {

@@ -1,7 +1,8 @@
 import * as vscode from "vscode";
+
 import { SparqlNotebookController } from "./sparql-notebook-controller";
 import { SparqlNotebookSerializer } from "./sparql-notebook-serializer";
-import { ConnectionData, SparqlNotebookConnections } from "./db-connection";
+import { EndpointConfiguration, EndpointConnections } from "./sparql-connection-menu";
 
 import {
   addNewConnectionConfiguration,
@@ -9,8 +10,10 @@ import {
   deleteConnectionConfiguration,
 } from "./commands";
 import { exportToMarkdown } from "./export-command";
+
 export const storageKey = "sparql-notebook-connections";
-export const globalConnection: { connection: DbConnection | null } = {
+
+export const globalConnection: { connection: EndpointConnection | null } = {
   connection: null,
 };
 
@@ -23,7 +26,7 @@ export function activate(context: vscode.ExtensionContext) {
   );
   context.subscriptions.push(new SparqlNotebookController());
 
-  const connectionsSidepanel = new SparqlNotebookConnections(context);
+  const connectionsSidepanel = new EndpointConnections(context);
   vscode.window.registerTreeDataProvider(storageKey, connectionsSidepanel);
 
   vscode.commands.registerCommand(
@@ -48,8 +51,8 @@ export function activate(context: vscode.ExtensionContext) {
   );
 }
 
-export function deactivate() {}
+export function deactivate() { }
 
-export interface DbConnection {
-  data: ConnectionData;
+export interface EndpointConnection {
+  data: EndpointConfiguration;
 }
