@@ -1,9 +1,9 @@
 import * as vscode from "vscode";
 import {
-  ConnectionData,
-  ConnectionListItem,
-  SparqlNotebookConnections,
-} from "./db-connection";
+  EndpointConfiguration,
+  EndpointConnectionListItem,
+  EndpointConnections,
+} from "./sparql-connection-menu";
 
 import { SparqlClient } from "./simple-client";
 
@@ -12,11 +12,11 @@ import { storageKey, globalConnection } from "./extension";
 export const deleteConnectionConfiguration =
   (
     context: vscode.ExtensionContext,
-    connectionsSidepanel: SparqlNotebookConnections
+    connectionsSidepanel: EndpointConnections
   ) =>
-    async (item: ConnectionListItem) => {
+    async (item: EndpointConnectionListItem) => {
       const without = context.globalState
-        .get<ConnectionData[]>(storageKey, [])
+        .get<EndpointConfiguration[]>(storageKey, [])
         .filter(({ name }) => name !== item.config.name);
       context.globalState.update(storageKey, without);
       await context.secrets.delete(item.config.name);
@@ -31,7 +31,7 @@ export const deleteConnectionConfiguration =
 export const addNewConnectionConfiguration =
   (
     context: vscode.ExtensionContext,
-    connectionsSidepanel: SparqlNotebookConnections
+    connectionsSidepanel: EndpointConnections
   ) =>
     async () => {
       const displayName = await getUserInput("Database Display Name ", true);
@@ -51,14 +51,14 @@ export const addNewConnectionConfiguration =
       });
       const passwordKey = `sparql-notebook.${displayName}`;
       await context.secrets.store(passwordKey, password || "");
-      const config: ConnectionData = {
+      const config: EndpointConfiguration = {
         name: displayName,
         endpointURL: endpointURL || "",
         user: user ?? "",
         passwordKey,
       };
       const existing = context.globalState
-        .get<ConnectionData[]>(storageKey, [])
+        .get<EndpointConfiguration[]>(storageKey, [])
         .filter(({ name }) => name !== displayName);
       existing.push(config);
       context.globalState.update(storageKey, existing);
@@ -68,9 +68,9 @@ export const addNewConnectionConfiguration =
 export const connectToDatabase =
   (
     context: vscode.ExtensionContext,
-    connectionsSidepanel: SparqlNotebookConnections
+    connectionsSidepanel: EndpointConnections
   ) =>
-    async (item?: ConnectionListItem) => {
+    async (item?: EndpointConnectionListItem) => {
       let selectedName: string;
       if (!item) {
         const names = context.globalState
@@ -88,7 +88,7 @@ export const connectToDatabase =
         selectedName = item.config.name;
       }
       const match = context.globalState
-        .get<ConnectionData[]>(storageKey, [])
+        .get<EndpointConfiguration[]>(storageKey, [])
         .find(({ name }) => name === selectedName);
       if (!match) {
         vscode.window.showErrorMessage(
@@ -121,11 +121,10 @@ export const connectToDatabase =
         vscode.window.showInformationMessage(
           `Successfully connected to "${match.name}"`
         );
-      } catch (err) {
+      } catch (err: any) {
         console.log(err);
         vscode.window.showErrorMessage(
-          // @ts-ignore
-          `Failed to connect to "${match.name}": ${err.message}`
+          `Failed to connect to "${match.name}": ${err?.message}`
         );
         globalConnection.connection = null;
         connectionsSidepanel.setActive(null);
