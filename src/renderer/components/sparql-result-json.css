@@ -1,14 +1,19 @@
-*, *:before, *:after {
+*,
+*:before,
+*:after {
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
+  box-sizing: border-box !important;
 }
+
 body.vscode-dark table {
-  background-color: rgb(46, 53, 62);
+  background-color: rgb(46, 53, 62) !important;
 }
+
 body.vscode-light table {
-  background-color: rgb(240, 240, 240);
+  background-color: rgb(240, 240, 240) !important;
 }
+
 table {
   border-radius: 0.25em;
   border-collapse: collapse;
@@ -19,39 +24,47 @@ table {
   padding-left: 0;
   padding-right: 0;
 }
+
 body.vscode-dark th {
-  color: #28b1de;
+  color: #28b1de !important;
 }
+
 body.vscode-light th {
-  color: #d810c4a8;
+  color: #d810c4a8 !important;
 }
 
 th {
-  border-bottom: 1px solid #364043;
+  border-bottom: 1px solid #364043 !important;
   font-size: 0.85em;
   font-weight: 600;
   padding: 0.5em 1em;
   text-align: left;
 }
+
 body.vscode-light td {
-  color: black;
+  color: black !important;
 
 }
+
 body.vscode-dark td {
-  color: lightgrey;
+  color: lightgrey !important;
 
 }
+
 td {
   font-weight: 400;
   padding: 0.65em 1em;
   text-align: left;
 }
-tr > th:last-of-type:not(:first-of-type) {
-  text-align: right;
+
+tr>th:last-of-type:not(:first-of-type) {
+  text-align: right !important;
 }
+
 body.vscode-dark tr:hover {
-  background: #014055;
+  background: #014055 !important;
 }
+
 body.vscode-light tr:hover {
-  background: #a9b8bd;
+  background: #a9b8bd !important;
 }

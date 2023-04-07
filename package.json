@@ -11,7 +11,7 @@
   },
   "version": "0.0.17",
   "engines": {
-    "vscode": "^1.62.0"
+    "vscode": "^1.77.0"
   },
   "categories": [
     "Notebooks",
@@ -25,7 +25,8 @@
     "onCommand:sparql-notebook.exportToMarkdown",
     "onView:sparql-notebook-connections"
   ],
-  "main": "./dist/extension-node.js",
+  "main": "./out/extension.js",
+  "browser": "./out/extension/extension.web.js",
   "contributes": {
     "notebooks": [
       {
@@ -42,7 +43,7 @@
     "notebookRenderer": [
       {
         "id": "sparql-notebook-json-result",
-        "entrypoint": "./dist/renderer.js",
+        "entrypoint": "./out/renderer.js",
         "displayName": "SPARQL JSON Result",
         "mimeTypes": [
           "application/sparql-results+json"
@@ -147,43 +148,42 @@
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
-    "compile": "webpack --mode none",
-    "watch": "webpack --mode none --watch",
-    "lint": "eslint --config .eslintrc.json ./src/**/*.ts",
-    "ts-compile": "tsc -b",
-    "integration-test": "npm run ts-compile && node ./out/extension/test-integration/runTest.js",
-    "unit-test": "npm run ts-compile && npx mocha ./out/extension/test-unit",
-    "compile-lint-test": "npm run compile && npm run lint && npm run unit-test",
-    "precommit": "npm run lint",
+    "compile": "webpack --mode production",
+    "lint": "eslint src --ext ts",
+    "watch": "webpack --mode development --watch",
+    "pretest": "webpack --mode development && npm run lint",
+    "test": "node ./out/test/runTest.js",
     "deploy": "npx vsce publish",
-    "package": "npx vsce package",
-    "update-api": "npx vscode-dts dev"
+    "package": "npx vsce package"
   },
   "devDependencies": {
-    "@types/glob": "^7.1.4",
-    "@types/mocha": "^9.0.0",
-    "@types/node": "14.x",
-    "@types/vscode": "^1.62.0",
-    "@types/vscode-notebook-renderer": "^1.60.0",
-    "@typescript-eslint/eslint-plugin": "^5.1.0",
-    "@typescript-eslint/parser": "^5.1.0",
-    "@vscode/test-electron": "^1.6.2",
+    "@types/vscode": "^1.77.0",
+    "@types/glob": "^8.1.0",
+    "@types/mocha": "^10.0.1",
+    "@types/node": "16.x",
+    "@types/webpack-env": "^1.18.0",
+    "@typescript-eslint/eslint-plugin": "^5.56.0",
+    "@typescript-eslint/parser": "^5.56.0",
     "@types/react": "^18.0.18",
-    "eslint": "^8.23.0",
-    "glob": "^8.0.3",
-    "mocha": "^10.0.0",
-    "ts-loader": "^9.3.1",
-    "typescript": "^4.4.4",
-    "webpack": "^5.73.0",
-    "webpack-cli": "^4.5.0",
-    "css-loader": "^6.7.1",
+    "eslint": "^8.36.0",
+    "glob": "^8.1.0",
+    "mocha": "^10.2.0",
+    "typescript": "^4.9.5",
+    "ts-loader": "^9.4.2",
+    "webpack": "^5.78.0",
+    "webpack-cli": "^5.0.1",
+    "@vscode/test-electron": "^2.3.0",
+    "@types/vscode-notebook-renderer": "^1.60.0",
+    "fork-ts-checker-webpack-plugin": "^5.0.14",
+    "css-loader": "^6.7.3",
     "os-browserify": "^0.3.0",
     "path-browserify": "^1.0.1",
-    "style-loader": "^3.3.1",
-    "url": "^0.11.0"
+    "style-loader": "^3.3.2",
+    "url": "^0.11.0",
+    "util": "^0.12.5"
   },
   "dependencies": {
-    "axios": "^1.2.2",
-    "preact": "^10.11.3"
+    "axios": "^1.3.5",
+    "preact": "^10.13.2"
   }
 }

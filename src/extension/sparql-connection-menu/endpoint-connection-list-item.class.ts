@@ -23,7 +23,6 @@ export class EndpointConnectionListItem extends vscode.TreeItem {
                 dark: path.join(assetsPath, "dark", "endpoint.svg"),
                 light: path.join(assetsPath, "light", "endpoint.svg"),
             };
-            console.log(this.iconPath)
             this.description = "Inactive";
         }
         this.contextValue = "database";
