@@ -9,7 +9,7 @@
   "repository": {
     "url": "https://github.com/zazuko/vscode-sparql-notebook.git"
   },
-  "version": "0.0.17",
+  "version": "0.0.18",
   "engines": {
     "vscode": "^1.77.0"
   },
@@ -21,9 +21,7 @@
     "sparql"
   ],
   "activationEvents": [
-    "onNotebook:sparql-notebook",
-    "onCommand:sparql-notebook.exportToMarkdown",
-    "onView:sparql-notebook-connections"
+    "onNotebook:sparql-notebook"
   ],
   "main": "./out/extension.js",
   "browser": "./out/extension/extension.web.js",
