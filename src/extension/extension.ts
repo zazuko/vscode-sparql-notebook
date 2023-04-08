@@ -1,7 +1,6 @@
 import * as vscode from "vscode";
 
 import { SparqlNotebookController } from "./sparql-notebook-controller";
-import { SparqlNotebookSerializer } from "./sparql-notebook-serializer";
 import { EndpointConfiguration, EndpointConnections } from "./sparql-connection-menu";
 
 import {
@@ -9,7 +8,10 @@ import {
   connectToDatabase,
   deleteConnectionConfiguration,
 } from "./commands";
+
 import { exportToMarkdown } from "./export-command";
+
+import { SparqlNotebookSerializer } from "./file-io";
 
 export const storageKey = "sparql-notebook-connections";
 

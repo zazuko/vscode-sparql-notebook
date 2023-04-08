@@ -1,7 +1,8 @@
 import { promises as fs } from "fs";
 import * as vscode from "vscode";
 import { TextEncoder } from "util";
-import { SparqlNotebookSerializer } from "./sparql-notebook-serializer";
+
+import { SparqlNotebookSerializer } from "./file-io";
 
 async function loadNotebook(uri: vscode.Uri) {
   const data = await fs.readFile(uri.fsPath);

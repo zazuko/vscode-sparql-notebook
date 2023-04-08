@@ -1,11 +1,7 @@
-const axios = require("axios").default;
+import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
 
 export class SparqlClient {
-  private endpoint = axios.create({
-    baseURL: "https://int.lindas.admin.ch/query",
-    //  timeout: 1000,
-    //  headers: { "X-Custom-Header": "foobar" },
-  });
+  private endpoint: AxiosInstance;
   // "https://int.lindas.admin.ch/query"
 
   constructor(endpointUrl: string, user: string, password: string) {
@@ -26,14 +22,14 @@ export class SparqlClient {
 
     const abortController = new AbortController();
 
-    const options = {
+    const options: AxiosRequestConfig = {
       headers: {
         // eslint-disable-next-line @typescript-eslint/naming-convention
-        "Content-Type": "application/x-www-form-urlencoded",
+        'Content-Type': 'application/x-www-form-urlencoded',
         // eslint-disable-next-line @typescript-eslint/naming-convention
-        Accept: "application/sparql-results+json,text/turtle",
-        signal: abortController.signal
+        Accept: 'application/sparql-results+json,text/turtle',
       },
+      signal: abortController.signal
     };
     if (execution) {
       execution.token.onCancellationRequested((_: any) => {
@@ -43,7 +39,7 @@ export class SparqlClient {
 
       });
     }
-    const response = await this.endpoint.post("", params, options);
+    const response = await this.endpoint.post('', params, options);
     return response;
   }
 }
