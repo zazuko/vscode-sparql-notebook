@@ -5,7 +5,7 @@ import {
   EndpointConnections,
 } from "./sparql-connection-menu";
 
-import { SparqlClient } from "./simple-client";
+import { SparqlClient } from "./sparql-client";
 
 import { storageKey, globalConnection } from "./extension";
 

@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { globalConnection } from "./extension";
-import { SparqlClient } from "./simple-client";
+import { SparqlClient } from "./sparql-client";
 
 export class SparqlNotebookController {
   readonly controllerId = "sparql-notebook-controller-id";
@@ -73,6 +73,13 @@ export class SparqlNotebookController {
     });
 
     // content type
+    if (!queryResult) {
+      execution.replaceOutput([
+        this._writeError('No result')
+      ]);
+      execution.end(false, Date.now());
+      return;
+    }
     const contentType = queryResult.headers["content-type"].split(";")[0];
     const data = queryResult.data;
     let isSuccess = true;
