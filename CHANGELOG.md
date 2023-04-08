@@ -1,6 +1,13 @@
 # Change Log
 
 All notable changes to the "vscode-sparql-notebook" extension will be documented in this file.
+##  0.0.18
+
+Updated webpack build to improve performance and reduce file size
+
+Added support for Visual Studio Code version 1.77
+
+Minor bug fixes and improvements 
 
 ##  0.0.17
 
