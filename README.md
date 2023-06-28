@@ -49,6 +49,12 @@ Technically that means set the default renderer for MIME-Type `application/sparq
 
 Right click a `.sparqlbook`file and select `Export to Markdown`.
 
+### Use query files
+
+You can attach a query file to a cell. The query file will be loaded and executed when the cell is executed. The query file can be a `.sparql` or `.rq` file.
+
+The query files will be updated on notebook save.
+
 ## Contribute
 
 This extension uses the [

@@ -26,7 +26,9 @@ export function activate(context: vscode.ExtensionContext) {
       new SparqlNotebookSerializer()
     )
   );
-  context.subscriptions.push(new SparqlNotebookController());
+
+  const sparqlNotebookController = new SparqlNotebookController();
+  context.subscriptions.push(sparqlNotebookController);
 
   const connectionsSidepanel = new EndpointConnections(context);
   vscode.window.registerTreeDataProvider(storageKey, connectionsSidepanel);
@@ -51,6 +53,11 @@ export function activate(context: vscode.ExtensionContext) {
       exportToMarkdown
     )
   );
+
+  vscode.commands.registerCommand(
+    "sparql-notebook.addQueryFromFile",
+    addQueryFromFile
+  );
 }
 
 export function deactivate() { }
@@ -58,3 +65,49 @@ export function deactivate() { }
 export interface EndpointConnection {
   data: EndpointConfiguration;
 }
+
+async function addQueryFromFile(cell: vscode.NotebookCell) {
+  const activeNotebook = cell.notebook;
+
+  if (activeNotebook) {
+    const options = {
+      canSelectFiles: true,
+      canSelectMany: false,
+      filters: {
+        'SPARQL Query Files': ['sparql', 'rq'],
+        'All Files': ['*']
+      }
+    };
+
+    const fileUri = await vscode.window.showOpenDialog(options);
+    if (fileUri && fileUri.length > 0) {
+      const filePath = fileUri[0].fsPath;
+      const relativeFilePath = vscode.workspace.asRelativePath(filePath);
+
+      try {
+        const fileContent = vscode.workspace.fs.readFile(fileUri[0]);
+        const newCell = new vscode.NotebookCellData(vscode.NotebookCellKind.Code, `# from file ${relativeFilePath}\n${(await fileContent).toString()}`, 'sparql');
+        newCell.metadata = {
+          file: filePath
+        };
+        // Logic to add the notebook cell using the fileContent
+        const notebookEdit = vscode.NotebookEdit.replaceCells(new vscode.NotebookRange(cell.index, cell.index + 1), [newCell]);
+        const edit = new vscode.WorkspaceEdit();
+        edit.set(activeNotebook.uri, [notebookEdit]);
+        vscode.workspace.applyEdit(edit);
+      } catch (error) {
+        // Handle file read error
+        vscode.window.showErrorMessage(`Error reading file ${relativeFilePath}: ${error}`);
+        console.error('Error reading file:', error);
+      }
+
+    } else {
+      // User cancelled the file open dialog
+      // Handle accordingly
+    }
+  }
+
+}
+
+
+

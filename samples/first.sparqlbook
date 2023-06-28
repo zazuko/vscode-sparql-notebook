@@ -1,1 +1,62 @@
-[{"kind":1,"language":"markdown","value":"# Test Notebook\n\nThis is a sample notebook. You can add Code and Mardown cells."},{"kind":2,"language":"sparql","value":"#\n# Test [endpoint=https://query.wikidata.org/bigdata/namespace/wdq/sparql] Test \n# \nPREFIX schema: <http://schema.org/>\nPREFIX wd: <http://www.wikidata.org/entity/>\nPREFIX wdt: <http://www.wikidata.org/prop/direct/>\nPREFIX wikibase: <http://wikiba.se/ontology#>\nPREFIX bd: <http://www.bigdata.com/rdf#>\n\n\nSELECT DISTINCT ?ms ?msLabel ?hos ?hosLabel \n \nWHERE {\n  ?ms wdt:P463 wd:Q458;\n      wdt:P35 ?hos .\n      SERVICE wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\". }\n}"},{"kind":1,"language":"markdown","value":"get canton berne"},{"kind":2,"language":"sparql","value":"#\n# [endpoint=https://lindas.admin.ch/query]\n#\nPREFIX gont: <https://gont.ch/>\nPREFIX schema: <http://schema.org/>\nSELECT ?name ?abbr ?date WHERE {\n    { \n        ?canton a gont:Canton;\n            gont:cantonAbbreviation ?abbr ;\n            gont:date ?date ;\n            gont:longName ?name . \n    } UNION {\n        gont:Canton ?p ?o .\n    }\n} "},{"kind":2,"language":"sparql","value":"#\n# [endpoint=https://lindas.admin.ch/query]\n#\nPREFIX gont: <https://gont.ch/>\nPREFIX schema: <http://schema.org/>\nSELECT ?name WHERE {\n    { \n        ?canton a gont:Canton;\n            gont:cantonAbbreviation ?abbr ;\n            gont:date ?date ;\n            gont:longName ?name . \n    } UNION {\n        gont:Canton ?p ?o .\n    }\n} "},{"kind":2,"language":"sparql","value":"# [endpoint=https://lindas.admin.ch/query]\n\nPREFIX canton: <http://classifications.data.admin.ch/canton/>\nPREFIX gont: <https://gont.ch/>\nPREFIX purl: <http://purl.org/dc/terms/> \nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n\nDESCRIBE canton:BL\n"},{"kind":2,"language":"sparql","value":"# [endpoint=https://lindas.admin.ch/query]\n\nASK {\n    ?s ?p ?o .\n} LIMIT 1"},{"kind":2,"language":"sparql","value":"# [endpoint=https://lindas.admin.ch/query]\n\nASK {\n    ?s a <http://example.org/doesnotexist> .\n} LIMIT 1"},{"kind":2,"language":"sparql","value":"# Q.6.2\nPREFIX foaf: <http://xmlns.com/foaf/0.1/>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX dbo: <http://dbpedia.org/ontology/>\n\nSELECT DISTINCT ?artist ?eventStart ?eventMedia ?eventMediaThumbnail ?eventLabel ?eventMediaLink\nWHERE {\n  ?work a dbo:Artwork ;\n          dbo:author ?artist .\n  ?artist dbo:birthDate ?eventStart;\n          dbo:thumbnail ?eventMedia, ?eventMediaThumbnail ;\n          rdfs:label ?eventLabel ;\n          foaf:isPrimaryTopicOf ?eventMediaLink .\n  BIND (YEAR(?eventStart) as ?birthYear)\n  FILTER (LANG(?eventLabel) = \"en\")\n  FILTER (?birthYear > 1401 && ?birthYear < 1600)\n}\n"}]
+[
+  {
+    "kind": 1,
+    "language": "markdown",
+    "value": "# Test Notebook\n\nThis is a sample notebook. You can add Code and Mardown cells.",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "#\n# Test [endpoint=https://query.wikidata.org/bigdata/namespace/wdq/sparql] Test \n# \nPREFIX schema: <http://schema.org/>\nPREFIX wd: <http://www.wikidata.org/entity/>\nPREFIX wdt: <http://www.wikidata.org/prop/direct/>\nPREFIX wikibase: <http://wikiba.se/ontology#>\nPREFIX bd: <http://www.bigdata.com/rdf#>\n\n\nSELECT DISTINCT ?ms ?msLabel ?hos ?hosLabel \n \nWHERE {\n  ?ms wdt:P463 wd:Q458;\n      wdt:P35 ?hos .\n      SERVICE wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\". }\n}",
+    "metadata": {}
+  },
+  {
+    "kind": 1,
+    "language": "markdown",
+    "value": "get canton berne",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "#\n# [endpoint=https://lindas.admin.ch/query]\n#\nPREFIX gont: <https://gont.ch/>\nPREFIX schema: <http://schema.org/>\nSELECT ?name ?abbr ?date WHERE {\n    { \n        ?canton a gont:Canton;\n            gont:cantonAbbreviation ?abbr ;\n            gont:date ?date ;\n            gont:longName ?name . \n    } UNION {\n        gont:Canton ?p ?o .\n    }\n} ",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "#\n# [endpoint=https://lindas.admin.ch/query]\n#\nPREFIX gont: <https://gont.ch/>\nPREFIX schema: <http://schema.org/>\nSELECT ?name WHERE {\n    { \n        ?canton a gont:Canton;\n            gont:cantonAbbreviation ?abbr ;\n            gont:date ?date ;\n            gont:longName ?name . \n    } UNION {\n        gont:Canton ?p ?o .\n    }\n} ",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "# [endpoint=https://lindas.admin.ch/query]\n#\nPREFIX canton: <http://classifications.data.admin.ch/canton/>\nPREFIX gont: <https://gont.ch/>\nPREFIX purl: <http://purl.org/dc/terms/> \nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n\nDESCRIBE canton:BL\n",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "# [endpoint=https://lindas.admin.ch/query]\n\nASK {\n    ?s ?p ?o .\n} LIMIT 1",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "# [endpoint=https://lindas.admin.ch/query]\n\nASK {\n    ?s a <http://example.org/doesnotexist> .\n} LIMIT 1",
+    "metadata": {}
+  },
+  {
+    "kind": 1,
+    "language": "markdown",
+    "value": "wohooh\n\n```{sparql}\n",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "# Q.6.2\nPREFIX foaf: <http://xmlns.com/foaf/0.1/>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX dbo: <http://dbpedia.org/ontology/>\n\nSELECT DISTINCT ?artist ?eventStart ?eventMedia ?eventMediaThumbnail ?eventLabel ?eventMediaLink\nWHERE {\n  ?work a dbo:Artwork ;\n          dbo:author ?artist .\n  ?artist dbo:birthDate ?eventStart;\n          dbo:thumbnail ?eventMedia, ?eventMediaThumbnail ;\n          rdfs:label ?eventLabel ;\n          foaf:isPrimaryTopicOf ?eventMediaLink .\n  BIND (YEAR(?eventStart) as ?birthYear)\n  FILTER (LANG(?eventLabel) = \"en\")\n  FILTER (?birthYear > 1401 && ?birthYear < 1600)\n}\n",
+    "metadata": {}
+  }
+]

@@ -1,0 +1,16 @@
+[
+  {
+    "kind": 1,
+    "language": "markdown",
+    "value": "# External SPARQL Query from File\n\n",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "# from file queries/z-external-query.sparql\n#\n# [endpoint=https://lindas.admin.ch/query]\n#\n# this is a comment\n#\n# this is another comment\n#\n# this is a third comment\nPREFIX gont: <https://gont.ch/>\nPREFIX schema: <http://schema.org/>\nSELECT ?name ?abbr ?date WHERE {\n    { \n        ?canton a gont:Canton;\n            gont:cantonAbbreviation ?abbr ;\n            gont:date ?date ;\n            gont:longName ?name . \n    } UNION {\n        gont:Canton ?p ?o .\n    }\n    \n    \n} ",
+    "metadata": {
+      "file": "/Users/benjaminhofstetter/code/zazuko/github/vscode-sparql-notebook/samples/queries/z-external-query.sparql"
+    }
+  }
+]
