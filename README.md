@@ -55,6 +55,9 @@ You can attach a query file to a cell. The query file will be loaded and execute
 
 The query files will be updated on notebook save.
 
+![ext-query](https://github.com/zazuko/vscode-sparql-notebook/assets/8033981/68da289e-1d1f-4b6d-9986-bcfc455aa15a)
+
+
 ## Contribute
 
 This extension uses the [
