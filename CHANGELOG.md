@@ -1,6 +1,11 @@
 # Change Log
 
 All notable changes to the "vscode-sparql-notebook" extension will be documented in this file.
+
+## 0.0.19
+
+Feature: Attach .sparql or .rq files to cells
+
 ##  0.0.18
 
 Updated webpack build to improve performance and reduce file size
@@ -11,7 +16,7 @@ Minor bug fixes and improvements
 
 ##  0.0.17
 
-Format *.sparqlnotebook files to improve version control. 
+Format *.sparqlbook files to improve version control. 
 
 ##  0.0.16
 
@@ -49,13 +54,13 @@ Feature: Export Notebook as Markdown.
 
 ## 0.0.10
 
-Feature: Configure endpoint per cell. Add a comment like `# [ednpoint=http://....]` to your SPARQL Query.
+Feature: Configure endpoint per cell. Add a comment like `# [endpoint=http://....]` to your SPARQL Query.
 
-Feature: New rendering for TTL ouput
+Feature: New rendering for TTL output
 
 ## 0.0.9
 
-Fix: content type with charset `application/sparql-results+json;charset=utf-8` not recognised
+Fix: content type with charset `application/sparql-results+json;charset=utf-8` not recognized
 
 ## 0.0.8
 

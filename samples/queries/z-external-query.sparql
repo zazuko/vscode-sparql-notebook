@@ -1,0 +1,22 @@
+#
+# [endpoint=https://lindas.admin.ch/query]
+#
+# this is a comment
+#
+# this is another comment
+#
+# this is a third comment
+PREFIX gont: <https://gont.ch/>
+PREFIX schema: <http://schema.org/>
+SELECT ?name ?abbr ?date WHERE {
+    { 
+        ?canton a gont:Canton;
+            gont:cantonAbbreviation ?abbr ;
+            gont:date ?date ;
+            gont:longName ?name . 
+    } UNION {
+        gont:Canton ?p ?o .
+    }
+    
+    
+} 

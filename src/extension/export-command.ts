@@ -27,7 +27,11 @@ export const exportToMarkdown = async (documentToExportUri: vscode.Uri) => {
       if (cell.kind === vscode.NotebookCellKind.Markup) {
         markdown += `${cell.value}\n`;
       } else if (cell.kind === vscode.NotebookCellKind.Code) {
-        markdown += `\n\`\`\`sparql\n${cell.value}\n\`\`\`\n`;
+        let sparqlQuery = cell.value;
+        if (cell.metadata?.file) {
+          sparqlQuery = cell.value.replace(/^# from file.*\n/, '');
+        }
+        markdown += `\n\`\`\`sparql\n${sparqlQuery}\n\`\`\`\n`;
       }
     });
     const newDocUri = vscode.Uri.file(`${documentToExportUri?.fsPath}.md`);
