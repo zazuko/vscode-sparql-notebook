@@ -2,6 +2,9 @@
 
 All notable changes to the "vscode-sparql-notebook" extension will be documented in this file.
 
+## 0.0.20
+
+Update readme
 ## 0.0.19
 
 Feature: Attach .sparql or .rq files to cells

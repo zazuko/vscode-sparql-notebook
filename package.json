@@ -9,7 +9,7 @@
   "repository": {
     "url": "https://github.com/zazuko/vscode-sparql-notebook.git"
   },
-  "version": "0.0.19",
+  "version": "0.0.20",
   "engines": {
     "vscode": "^1.77.0"
   },
@@ -24,7 +24,6 @@
     "onNotebook:sparql-notebook"
   ],
   "main": "./out/extension.js",
-  "browser": "./out/extension/extension.web.js",
   "contributes": {
     "notebooks": [
       {
@@ -170,7 +169,7 @@
     "package": "npx vsce package"
   },
   "devDependencies": {
-    "@types/vscode": "^1.79.1",
+    "@types/vscode": "^1.77.0",
     "@types/glob": "^8.1.0",
     "@types/mocha": "^10.0.1",
     "@types/node": "16.x",
