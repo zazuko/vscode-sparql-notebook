@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { storageKey } from "../extension";
 
-import { EndpointConfiguration } from "./endpoint-configuration.model";
+import { EndpointConfiguration } from "../model/endpoint-configuration";
 import { EndpointConnectionListItem } from "./endpoint-connection-list-item.class";
 
 export class EndpointConnections
