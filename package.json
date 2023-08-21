@@ -9,7 +9,7 @@
   "repository": {
     "url": "https://github.com/zazuko/vscode-sparql-notebook.git"
   },
-  "version": "0.0.20",
+  "version": "0.0.21",
   "engines": {
     "vscode": "^1.77.0"
   },
@@ -176,7 +176,7 @@
     "@types/webpack-env": "^1.18.1",
     "@typescript-eslint/eslint-plugin": "^5.60.1",
     "@typescript-eslint/parser": "^5.60.1",
-    "@types/react": "^18.2.14",
+    "@types/react": "^18.2.20",
     "eslint": "^8.43.0",
     "glob": "^10.3.0",
     "mocha": "^10.2.0",
@@ -196,6 +196,6 @@
   },
   "dependencies": {
     "axios": "^1.4.0",
-    "preact": "^10.15.1"
+    "preact": "^10.17.1"
   }
 }
