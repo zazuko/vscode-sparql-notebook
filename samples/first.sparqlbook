@@ -64,5 +64,17 @@
     "language": "sparql",
     "value": "PREFIX ld: <https://ld.example.com/>\nPREFIX data: <https://ld.example.com/data/>\n\nselect  * where { \n\t?s a <https://ld.example.com/vocab/Application> .\n    ?s ?p ?o \n} \nlimit 10",
     "metadata": {}
+  },
+  {
+    "kind": 1,
+    "language": "markdown",
+    "value": "Bnode",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "# [endpoint=http://test.lindas.admin.ch/query]\nPREFIX schema: <http://schema.org/>\n\nSELECT ?propertyShape ?p ?o  WHERE {\n   BIND (<https://politics.ld.admin.ch/vocabulary/party> as ?set)\n   ?set <http://www.w3.org/ns/shacl#property> ?propertyShape . \n   ?propertyShape ?p ?o .\n} ",
+    "metadata": {}
   }
 ]

@@ -140,7 +140,6 @@ export class SparqlNotebookController {
       ),
     ]);
     outputItem.metadata = { prefixMap: prefixMap };
-
     return outputItem;
   }
 
