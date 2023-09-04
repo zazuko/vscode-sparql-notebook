@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { SparqlResultJson } from '../../model/sparql-result-json.model';
 import { LiteralComponent } from '../literal-component/literal-component';
 import { UriComponent } from '../uri-component/uri-component';
+import { BNodeComponent } from '../bnode-component/bnode-component';
 
 import './sparql-json-result-component.css';
 
@@ -31,6 +32,8 @@ export const SparqlResultJsonComponent: React.FC<SparqlResultJsonComponentProps>
                                     <LiteralComponent term={result[heading]} />
                                 ) : result[heading].type === 'uri' ? (
                                     <UriComponent term={result[heading]} />
+                                ) : result[heading].type === 'bnode' ? (
+                                    <BNodeComponent term={result[heading]} />
                                 ) : null ?? ''
                                 }
 
