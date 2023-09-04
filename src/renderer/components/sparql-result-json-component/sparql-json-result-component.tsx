@@ -7,20 +7,19 @@ import { UriComponent } from '../uri-component/literal-component';
 
 import './sparql-json-result-component.css';
 
-interface SparqlResultJsonViewProps {
+interface SparqlResultJsonComponentProps {
     sparqlResult: SparqlResultJson;
 }
 
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
-export const SparqlResultJsonComponent: React.FC<SparqlResultJsonViewProps> = ({ sparqlResult }) => {
+export const SparqlResultJsonComponent: React.FC<SparqlResultJsonComponentProps> = ({ sparqlResult }) => {
     const [showDatatype, setShowDatatype] = useState(false);
 
     const handleToggleDatatype = () => {
         console.log('handleToggleDatatype', JSON.stringify(sparqlResult));
         setShowDatatype(!showDatatype);
     };
-
 
     return (
         <>
