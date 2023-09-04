@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import { Term } from '../../model/sparql-result-json.model';
+import { prefix } from '../../prefix.class';
 
 interface UriComponentProps {
     term: Term;
@@ -16,11 +17,20 @@ export const UriComponent: React.FC<UriComponentProps> = ({ term }) => {
                 throw new Error('Term is not an uri');
             }
 
+            const href = term.value;
+            const prefixedValue = prefix.shrink(term.value);
+            const value = prefixedValue.length > 0 ? prefixedValue : term.value;
+
+            const isPrefixed = href !== value;
+
             const uri: Uri = {
-                value: term.value,
-                href: term.value,
+                value,
+                href,
+                isPrefixed
             };
+
             setUri(uri);
+            console.log(uri);
             return;
         }
         setUri(null);
@@ -29,7 +39,7 @@ export const UriComponent: React.FC<UriComponentProps> = ({ term }) => {
 
     return (
         <div style={{ display: 'flex', flexDirection: 'row' }}>
-            <a href={uri?.href}>&lt;{uri?.value}&gt;</a>
+            <a href={uri?.href}>{(uri?.isPrefixed ? '' : '<') + uri?.value + (uri?.isPrefixed ? '' : '>')}</a>
         </div>
     );
 };
@@ -37,4 +47,5 @@ export const UriComponent: React.FC<UriComponentProps> = ({ term }) => {
 interface Uri {
     value: string;
     href: string;
+    isPrefixed: boolean;
 }

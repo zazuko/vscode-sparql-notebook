@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 
 import { Term } from '../../model/sparql-result-json.model';
 
+import { prefix } from '../../prefix.class';
+
 import './literal-component.css';
 
 interface LiteralComponentProps {

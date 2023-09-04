@@ -197,6 +197,7 @@
   },
   "dependencies": {
     "@vscode/webview-ui-toolkit": "^1.2.2",
+    "@zazuko/prefixes": "^2.0.0",
     "axios": "^1.5.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"

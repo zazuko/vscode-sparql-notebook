@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { globalConnection } from "./extension";
 import { SparqlClient } from "./sparql-client";
-
+import { PrefixMap } from './model/prefix-map';
 export class SparqlNotebookController {
   readonly controllerId = "sparql-notebook-controller-id";
   readonly notebookType = "sparql-notebook";
@@ -92,8 +92,8 @@ export class SparqlNotebookController {
         return;
       }
       // sparql select
-      const dataWithNamespaces = this._parseNamespacesAndFormatBindings(data, sparqlQueryText);
-      execution.replaceOutput([this._writeSparqlJsonResult(dataWithNamespaces)]);
+      const prefixMap = this._extractNamespacesFromQuery(sparqlQueryText);
+      execution.replaceOutput([this._writeSparqlJsonResult(data, prefixMap)]);
       execution.end(isSuccess, Date.now());
       return;
     }
@@ -131,14 +131,17 @@ export class SparqlNotebookController {
     ]);
   }
 
-  private _writeSparqlJsonResult(resultJson: any): vscode.NotebookCellOutput {
-    return new vscode.NotebookCellOutput([
+  private _writeSparqlJsonResult(resultJson: any, prefixMap: PrefixMap = {}): vscode.NotebookCellOutput {
+    const outputItem = new vscode.NotebookCellOutput([
       this._writeJson(JSON.stringify(resultJson, null, "   ")),
       vscode.NotebookCellOutputItem.json(
         resultJson,
         "application/sparql-results+json"
       ),
     ]);
+    outputItem.metadata = { prefixMap: prefixMap };
+
+    return outputItem;
   }
 
   private _writeJson(jsonResult: any): vscode.NotebookCellOutputItem {
@@ -172,53 +175,23 @@ export class SparqlNotebookController {
     return endpoints.shift();
   }
 
-  private _parseNamespacesAndFormatBindings(data: any, query: string): any {
+  private _extractNamespacesFromQuery(query: string): PrefixMap {
     const configuration = vscode.workspace.getConfiguration("sparqlbook");
     const useNamespaces = configuration.get("useNamespaces");
     if (!useNamespaces) {
-      return data;
+      return {};
     }
 
     // get namespaces from prefixes in query
-    let namespaces: any = {};
-    let nsRegex = /[Pp][Rr][Ee][Ff][Ii][Xx] ([^:]*):[ ]*<([^>]*)>/g;
-    var m: any = true;
-    do {
-      m = nsRegex.exec(query);
-      if (m) {
-        namespaces[m[1]] = m[2];
-      }
-    } while (m);
+    let namespaces: PrefixMap = {};
+    let prefixRegex = /[Pp][Rr][Ee][Ff][Ii][Xx] ([^:]*):[ ]*<([^>]*)>/g;
 
-    // format uri in triples using namespaces
-    let bindings: any[] = data.results.bindings;
-    bindings = bindings.map((triple) => {
-      const variables = Object.keys(triple);
-
-      for (const variable of variables) {
-        const tripleVariable = triple[variable];
-
-        if (tripleVariable.type === "uri") {
-          for (const namespace of Object.keys(namespaces)) {
-            const newValue = tripleVariable.value.replace(
-              namespaces[namespace],
-              namespace + ":"
-            );
-
-            if (newValue !== tripleVariable.value) {
-              tripleVariable.value = newValue;
-              break;
-            }
-          }
-        }
-
-        triple[variable] = tripleVariable;
-      }
-      return triple;
-    });
-
-    data.results.bindings = bindings;
-    return data;
+    // get namespaces from prefixes in query
+    let match;
+    while ((match = prefixRegex.exec(query)) !== null) {
+      namespaces[match[1]] = match[2];
+    }
+    return namespaces;
   }
 
   dispose() { }
@@ -250,3 +223,5 @@ export class SparqlNotebookController {
 
   }
 }
+
+

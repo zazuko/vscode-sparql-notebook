@@ -62,7 +62,7 @@
   {
     "kind": 2,
     "language": "sparql",
-    "value": "select  * where { \n\t?s a <https://ld.example.com/vocab/Application> .\n    ?s ?p ?o \n} \n",
+    "value": "PREFIX ld: <https://ld.example.com/>\nPREFIX data: <https://ld.example.com/data/>\n\nselect  * where { \n\t?s a <https://ld.example.com/vocab/Application> .\n    ?s ?p ?o \n} \nlimit 10",
     "metadata": {}
   }
 ]

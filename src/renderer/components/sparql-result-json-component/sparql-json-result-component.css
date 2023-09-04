@@ -75,3 +75,8 @@ body.vscode-dark tr:hover {
 body.vscode-light tr:hover {
     background: #a9b8bd !important;
 }
+
+a {
+    white-space: nowrap;
+    text-decoration: none;
+}

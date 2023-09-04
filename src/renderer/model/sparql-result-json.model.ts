@@ -1,7 +1,6 @@
 export interface SparqlAskResult {
   boolean: boolean;
 }
-
 export interface SparqlResultJson {
   head: {
     vars: string[];
@@ -13,6 +12,14 @@ export interface SparqlResultJson {
   };
 }
 
+export interface SparqlResultJsonWithPrefixMap extends SparqlResultJson {
+  prefixMap: PrefixMap
+}
+
+export type PrefixMap = {
+  [key: string]: string;
+};
+
 export interface Term {
   type: string;
   value: string;
@@ -20,3 +27,4 @@ export interface Term {
   // eslint-disable-next-line @typescript-eslint/naming-convention
   "xml:lang"?: string;
 };
+

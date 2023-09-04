@@ -1,14 +1,14 @@
 import { VSCodeButton } from '@vscode/webview-ui-toolkit/react';
 import { useState } from 'react';
 
-import { SparqlResultJson } from '../../model/sparql-result-json.model';
+import { SparqlResultJsonWithPrefixMap } from '../../model/sparql-result-json.model';
 import { LiteralComponent } from '../literal-component/literal-component';
-import { UriComponent } from '../uri-component/literal-component';
+import { UriComponent } from '../uri-component/uri-component';
 
 import './sparql-json-result-component.css';
 
 interface SparqlResultJsonComponentProps {
-    sparqlResult: SparqlResultJson;
+    sparqlResult: SparqlResultJsonWithPrefixMap;
 }
 
 
