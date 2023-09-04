@@ -9,8 +9,7 @@
       "ES2019",
       "dom"
     ],
-    "jsx": "react",
-    "jsxFactory": "h",
+    "jsx": "react-jsx",
     "types": [
       "webpack-env",
       "vscode-notebook-renderer"

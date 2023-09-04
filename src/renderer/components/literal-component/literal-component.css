@@ -1,0 +1,13 @@
+.row {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.value {
+    white-space: pre !important;
+}
+
+.meta {
+    color: grey !important;
+    font-size: 10px !important;
+}

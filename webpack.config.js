@@ -48,6 +48,11 @@ const extensionConfig = {
 };
 
 const rendererConfig = {
+  performance: {
+    hints: false,
+    maxEntrypointSize: 512000,
+    maxAssetSize: 512000
+  },
   mode: "none",
   devtool: 'nosources-source-map',
   target: 'web',
@@ -116,5 +121,4 @@ const rendererConfig = {
     }),
   ],
 };
-
 module.exports = [extensionConfig, rendererConfig];
