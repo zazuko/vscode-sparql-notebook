@@ -2,6 +2,10 @@
 
 All notable changes to the "vscode-sparql-notebook" extension will be documented in this file.
 
+## 0.0.23
+
+Fix: Add a component for blank node rendering for `application/sparql-results+json`.
+
 ## 0.0.22
 
 Feature: New react renderer for `application/sparql-results+json`.
