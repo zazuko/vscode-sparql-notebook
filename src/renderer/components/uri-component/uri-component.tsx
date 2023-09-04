@@ -30,7 +30,6 @@ export const UriComponent: React.FC<UriComponentProps> = ({ term }) => {
             };
 
             setUri(uri);
-            console.log(uri);
             return;
         }
         setUri(null);

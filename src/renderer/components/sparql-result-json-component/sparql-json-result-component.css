@@ -27,14 +27,17 @@ table {
 
 body.vscode-dark th {
     color: #28b1de !important;
+    border: 1px dashed #364043 !important;
 }
 
 body.vscode-light th {
     color: #d810c4a8 !important;
+    border: 1px dashed #ebebeb !important;
+
 }
 
 th {
-    border-bottom: 1px solid #364043 !important;
+    border: 1px dotted #364043 !important;
     font-size: 0.85em;
     font-weight: 600;
     padding: 0.5em 1em;
@@ -43,11 +46,13 @@ th {
 
 body.vscode-light td {
     color: black !important;
-
+    border: 1px dashed #ebebeb !important;
 }
 
 body.vscode-dark td {
     color: lightgrey !important;
+    border: 1px dashed #364043 !important;
+
 
 }
 
@@ -55,6 +60,7 @@ td {
     font-weight: 400;
     padding: 0.65em 1em;
     text-align: left;
+
 }
 
 body.vscode-dark tr:hover {

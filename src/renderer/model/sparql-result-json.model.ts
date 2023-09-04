@@ -12,10 +12,6 @@ export interface SparqlResultJson {
   };
 }
 
-export interface SparqlResultJsonWithPrefixMap extends SparqlResultJson {
-  prefixMap: PrefixMap
-}
-
 export type PrefixMap = {
   [key: string]: string;
 };
