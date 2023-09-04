@@ -12,7 +12,7 @@ export const activate: ActivationFunction = () => ({
       root.render(<SparqlAskResultComponent sparqlAsResult={outputItem.json()} />);
     } else {
       const prefixMap = (outputItem.metadata as any)?.prefixMap ?? {};
-      prefix.addPrefixMap(prefixMap);
+      prefix.loadMap(prefixMap);
       root.render(<SparqlResultJsonComponent sparqlResult={outputItem.json()} />);
     }
   },

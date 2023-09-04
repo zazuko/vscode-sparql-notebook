@@ -4,15 +4,29 @@ import { PrefixMap } from './model/sparql-result-json.model';
 
 class Prefixes {
     private _prefixes = prefixes;
+    private _loadedKeys: string[] = [];
 
-    add(prefix: string, uri: string) {
+    private _add(prefix: string, uri: string) {
         this._prefixes[prefix] = uri;
     }
 
-    addPrefixMap(prefixes: PrefixMap) {
-        Object.keys(prefixes).forEach(prefix => {
-            this.add(prefix, prefixes[prefix]);
+    loadMap(prefixes: PrefixMap) {
+        const loadedKeys = Object.keys(prefixes);
+
+        // delete all old keys
+        this._loadedKeys.forEach(key => {
+            delete this._prefixes[key];
         });
+
+        this._loadedKeys = loadedKeys;
+
+        Object.keys(prefixes).forEach(prefix => {
+            this._add(prefix, prefixes[prefix]);
+        });
+    }
+
+    clear() {
+
     }
 
     shrink(uri: string): string {

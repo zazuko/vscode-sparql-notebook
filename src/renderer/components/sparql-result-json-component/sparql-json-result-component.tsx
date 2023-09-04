@@ -1,4 +1,3 @@
-import { VSCodeButton } from '@vscode/webview-ui-toolkit/react';
 import { useState } from 'react';
 
 import { SparqlResultJsonWithPrefixMap } from '../../model/sparql-result-json.model';
@@ -16,41 +15,33 @@ interface SparqlResultJsonComponentProps {
 export const SparqlResultJsonComponent: React.FC<SparqlResultJsonComponentProps> = ({ sparqlResult }) => {
     const [showDatatype, setShowDatatype] = useState(false);
 
-    const handleToggleDatatype = () => {
-        console.log('handleToggleDatatype', JSON.stringify(sparqlResult));
-        setShowDatatype(!showDatatype);
-    };
-
     return (
-        <>
-            <VSCodeButton onClick={handleToggleDatatype}>Show Datatype</VSCodeButton>
-            <table>
-                <thead>
+        <table>
+            <thead>
+                <tr>
+                    {sparqlResult.head.vars.map((heading: string) => (
+                        <th>{heading}</th>
+                    ))}
+                </tr>
+            </thead>
+            <tbody>
+                {sparqlResult.results.bindings.map((result: any) => (
                     <tr>
                         {sparqlResult.head.vars.map((heading: string) => (
-                            <th>{heading}</th>
+                            <td>
+                                {result[heading].type === 'literal' ? (
+                                    <LiteralComponent term={result[heading]} />
+                                ) : result[heading].type === 'uri' ? (
+                                    <UriComponent term={result[heading]} />
+                                ) : null ?? ''
+                                }
+
+                            </td>
                         ))}
                     </tr>
-                </thead>
-                <tbody>
-                    {sparqlResult.results.bindings.map((result: any) => (
-                        <tr>
-                            {sparqlResult.head.vars.map((heading: string) => (
-                                <td>
-                                    {result[heading].type === 'literal' ? (
-                                        <LiteralComponent term={result[heading]} />
-                                    ) : result[heading].type === 'uri' ? (
-                                        <UriComponent term={result[heading]} />
-                                    ) : null ?? ''
-                                    }
-
-                                </td>
-                            ))}
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-        </>
+                ))}
+            </tbody>
+        </table>
     );
 };
 

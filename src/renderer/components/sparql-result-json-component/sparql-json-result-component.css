@@ -57,17 +57,6 @@ td {
     text-align: left;
 }
 
-tr>th:last-of-type:not(:first-of-type) {
-    text-align: right !important;
-
-}
-
-
-
-tr>td:last-of-type:not(:first-of-type) .row {
-    justify-content: flex-end ! important;
-}
-
 body.vscode-dark tr:hover {
     background: #014055 !important;
 }
