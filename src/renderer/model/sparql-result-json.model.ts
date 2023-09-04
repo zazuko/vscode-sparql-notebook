@@ -2,11 +2,21 @@ export interface SparqlAskResult {
   boolean: boolean;
 }
 
-export interface SparqlJsonResult {
+export interface SparqlResultJson {
   head: {
     vars: string[];
   };
   results: {
-    bindings: any[];
+    bindings: {
+      [key: string]: Term;
+    }[];
   };
 }
+
+export interface Term {
+  type: string;
+  value: string;
+  datatype?: string;
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  "xml:lang"?: string;
+};

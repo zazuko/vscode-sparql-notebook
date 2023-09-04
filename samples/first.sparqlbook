@@ -58,5 +58,11 @@
     "language": "sparql",
     "value": "# Q.6.2\nPREFIX foaf: <http://xmlns.com/foaf/0.1/>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX dbo: <http://dbpedia.org/ontology/>\n\nSELECT DISTINCT ?artist ?eventStart ?eventMedia ?eventMediaThumbnail ?eventLabel ?eventMediaLink\nWHERE {\n  ?work a dbo:Artwork ;\n          dbo:author ?artist .\n  ?artist dbo:birthDate ?eventStart;\n          dbo:thumbnail ?eventMedia, ?eventMediaThumbnail ;\n          rdfs:label ?eventLabel ;\n          foaf:isPrimaryTopicOf ?eventMediaLink .\n  BIND (YEAR(?eventStart) as ?birthYear)\n  FILTER (LANG(?eventLabel) = \"en\")\n  FILTER (?birthYear > 1401 && ?birthYear < 1600)\n}\n",
     "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "select  * where { \n\t?s a <https://ld.example.com/vocab/Application> .\n    ?s ?p ?o \n} \n",
+    "metadata": {}
   }
 ]
