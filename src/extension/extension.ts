@@ -13,6 +13,7 @@ import { exportToMarkdown } from "./commands/export/export-to-markdown";
 import { addQueryFromFile } from "./commands/code-cell/add-query-from-file";
 
 import { EndpointConnection } from "./model/endpoint-connection";
+import { activateFormProvider } from "./new-connection-view/new-connection-view";
 export const storageKey = "sparql-notebook-connections";
 
 // holds the current connection
@@ -37,6 +38,7 @@ export function activate(context: vscode.ExtensionContext) {
   const connectionsSidepanel = new EndpointConnections(context);
   vscode.window.registerTreeDataProvider(storageKey, connectionsSidepanel);
 
+  activateFormProvider(context);
   // register the commands
   //   connection related commands
   vscode.commands.registerCommand(

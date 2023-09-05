@@ -156,7 +156,22 @@ const webExtensionConfig = {
       use: [{
         loader: 'ts-loader'
       }]
-    }]
+    },
+    // Allow importing CSS modules:
+    {
+      test: /\.css$/,
+      use: [
+        'style-loader',
+        {
+          loader: 'css-loader',
+          options: {
+            importLoaders: 1,
+            modules: false,
+          },
+        },
+      ],
+    }
+    ]
   },
   plugins: [
     new webpack.optimize.LimitChunkCountPlugin({

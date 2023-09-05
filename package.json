@@ -142,6 +142,13 @@
           "visibility": "visible",
           "icon": "assets/logo.svg",
           "contextualTitle": "Connections"
+        },
+        {
+          "type": "webview",
+          "id": "sparql-notebook.connectionForm",
+          "name": "New SPARQL Connection",
+          "contextualTitle": "New Connection",
+          "visibility": "visible"
         }
       ]
     },

@@ -1,6 +1,7 @@
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import Form from './Form';
+import { render } from 'react-dom';
+
+import { NewConnectionForm } from './components/new-connection-form/new-connection-form';
 
 const vscode = acquireVsCodeApi();
 
@@ -27,5 +28,5 @@ function handleSubmit(form: HTMLFormElement) {
 
 document.addEventListener('DOMContentLoaded', () => {
   const root = document.getElementById('root');
-  ReactDOM.render(<Form handleSubmit={handleSubmit} />, root);
+  render(<NewConnectionForm handleSubmit={handleSubmit} />, root);
 });
