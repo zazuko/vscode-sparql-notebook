@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "module": "commonjs",
+    // "target": "es5",
+    "lib": [
+      "ES2019",
+      "dom"
+    ],
+    "outDir": "../dist/webview",
+    "moduleResolution": "node",
+    "strict": true,
+  }
+}

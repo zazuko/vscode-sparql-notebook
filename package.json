@@ -176,6 +176,7 @@
     "@types/react-dom": "^18.2.7",
     "@types/vscode": "^1.77.0",
     "@types/vscode-notebook-renderer": "^1.72.0",
+    "@types/vscode-webview": "^1.57.2",
     "@types/webpack-env": "^1.18.1",
     "@typescript-eslint/eslint-plugin": "^5.60.1",
     "@typescript-eslint/parser": "^5.60.1",
