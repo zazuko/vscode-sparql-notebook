@@ -27,7 +27,7 @@ export class SparqlClient {
         // eslint-disable-next-line @typescript-eslint/naming-convention
         'Content-Type': 'application/x-www-form-urlencoded',
         // eslint-disable-next-line @typescript-eslint/naming-convention
-        Accept: 'application/sparql-results+json,text/turtle',
+        Accept: sparqlQuery.toLowerCase().includes("construct") ? 'text/turtle' : 'application/sparql-results+json',
       },
       signal: abortController.signal
     };
