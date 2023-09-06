@@ -6,7 +6,7 @@ import {
   VSCodeOption,
   VSCodeCheckbox,
 } from '@vscode/webview-ui-toolkit/react';
-
+import { vscode } from '../../main';
 import './new-connection-form.css';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -14,6 +14,10 @@ export const NewConnectionForm: React.FC<{ handleSubmit: (form: HTMLFormElement)
   handleSubmit,
 }) => {
 
+
+  function handleFileChange(e: any) {
+    console.log(e.target.files[0]);
+  }
   const formRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
@@ -28,11 +32,14 @@ export const NewConnectionForm: React.FC<{ handleSubmit: (form: HTMLFormElement)
 
   return (
     <form ref={formRef}>
-      <VSCodeTextField name="displayName" type="text"></VSCodeTextField>
-      <VSCodeTextField name="url" type="text"></VSCodeTextField>
-      <VSCodeTextField name="password" type="text"></VSCodeTextField>
+      <VSCodeTextField name="displayName" type="text">Name</VSCodeTextField>
+      <VSCodeTextField name="url" type="text">Endpoint URL</VSCodeTextField>
+      <VSCodeTextField name="user" type="text">Username</VSCodeTextField>
+      <VSCodeTextField name="password" type="password">Password</VSCodeTextField>
+      <VSCodeTextField name="password2" type="password">Password</VSCodeTextField>
 
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <input type="file" accept=".nq" onChange={handleFileChange} />
         <VSCodeButton
           appearance="secondary"
           onClick={() => {

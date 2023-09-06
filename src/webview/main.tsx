@@ -3,7 +3,7 @@ import { render } from 'react-dom';
 
 import { NewConnectionForm } from './components/new-connection-form/new-connection-form';
 
-const vscode = acquireVsCodeApi();
+export const vscode = acquireVsCodeApi();
 
 function createConnection(config: any) {
   vscode.postMessage({ type: 'create_connection', data: config });
