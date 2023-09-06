@@ -59,9 +59,13 @@ export class SparqlNotebookController {
     // execute the query
     const queryResult = await client.query(sparqlQueryText, execution).catch((error) => {
       let errorMessage = error.message ?? "error";
-
       if (error.hasOwnProperty("response") && error.response.hasOwnProperty("data")) {
-        errorMessage += "\n" + error.response.data;
+        if (error.response.data.message) {
+          // stardog
+          errorMessage += "\n" + error.response.data.message;
+        } else {
+          errorMessage += "\n" + error.response.data;
+        }
       }
 
       execution.replaceOutput([
