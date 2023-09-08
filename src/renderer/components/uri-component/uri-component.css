@@ -1,0 +1,15 @@
+.uri-component .link-icon {
+    visibility: hidden;
+    margin-left: 12px;
+    cursor: default;
+    font-size: 10px;
+}
+
+.uri-component:hover .link-icon {
+    visibility: visible;
+}
+
+.link-icon.disappear {
+    opacity: 0;
+    transition: opacity 0.8s ease-in-out;
+}
