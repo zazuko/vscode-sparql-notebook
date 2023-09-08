@@ -2,15 +2,12 @@ import { useEffect, useRef } from 'react';
 import {
   VSCodeButton,
   VSCodeTextField,
-  VSCodeDropdown,
-  VSCodeOption,
-  VSCodeCheckbox,
 } from '@vscode/webview-ui-toolkit/react';
-import { vscode } from '../../main';
-import './new-connection-form.css';
+
+import './connection-form.css';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
-export const NewConnectionForm: React.FC<{ handleSubmit: (form: HTMLFormElement) => void }> = ({
+export const ConnectionForm: React.FC<{ handleSubmit: (form: HTMLFormElement) => void }> = ({
   handleSubmit,
 }) => {
 

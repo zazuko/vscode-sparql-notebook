@@ -5,7 +5,7 @@ import {
     EndpointConnections,
 } from "../../sparql-connection-menu";
 
-import { storageKey } from "../../extension";
+import { extensionId, storageKey } from "../../extension";
 
 
 export const addConnection =
@@ -35,7 +35,7 @@ export const addConnection =
             });
 
             // create a key for the password
-            const passwordKey = `sparql-notebook.${displayName}`;
+            const passwordKey = `${extensionId}.${displayName}`;
 
             // store the password in the secret store
             await context.secrets.store(passwordKey, password || "");

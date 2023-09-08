@@ -1,9 +1,9 @@
 import * as vscode from "vscode";
-import { globalConnection } from "./extension";
+import { extensionId, globalConnection } from "./extension";
 import { SparqlClient } from "./sparql-client";
 import { PrefixMap } from './model/prefix-map';
 export class SparqlNotebookController {
-  readonly controllerId = "sparql-notebook-controller-id";
+  readonly controllerId = `${extensionId}-controller-id`;
   readonly notebookType = "sparql-notebook";
   readonly label = "Sparql Notebook";
   readonly supportedLanguages = ["sparql"];

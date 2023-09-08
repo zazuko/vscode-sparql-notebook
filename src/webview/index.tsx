@@ -1,13 +1,20 @@
-import * as React from 'react';
-import { render } from 'react-dom';
-
-import { NewConnectionForm } from './components/new-connection-form/new-connection-form';
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import { ConnectionForm } from './components/connection-form/connection-form';
 
 export const vscode = acquireVsCodeApi();
 
 function createConnection(config: any) {
   vscode.postMessage({ type: 'create_connection', data: config });
 }
+
+import './index.css';
+
+createRoot(document.getElementById('root') as HTMLElement).render(
+  <StrictMode>
+    <ConnectionForm handleSubmit={handleSubmit} />
+  </StrictMode>
+);
 
 function handleSubmit(form: HTMLFormElement) {
   // @ts-ignore
@@ -26,7 +33,4 @@ function handleSubmit(form: HTMLFormElement) {
   createConnection(data);
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  const root = document.getElementById('root');
-  render(<NewConnectionForm handleSubmit={handleSubmit} />, root);
-});
+

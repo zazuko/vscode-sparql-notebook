@@ -13,8 +13,10 @@ import { exportToMarkdown } from "./commands/export/export-to-markdown";
 import { addQueryFromFile } from "./commands/code-cell/add-query-from-file";
 
 import { EndpointConnection } from "./model/endpoint-connection";
-import { activateFormProvider } from "./new-connection-view/new-connection-view";
-export const storageKey = "sparql-notebook-connections";
+import { activateFormProvider } from "./connection-view/connection-view";
+
+export const extensionId = "sparql-notebook";
+export const storageKey = `${extensionId}-connections`;
 
 // holds the current connection
 export const globalConnection: { connection: EndpointConnection | null } = {
@@ -25,7 +27,7 @@ export const globalConnection: { connection: EndpointConnection | null } = {
 export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.workspace.registerNotebookSerializer(
-      "sparql-notebook",
+      extensionId,
       new SparqlNotebookSerializer()
     )
   );
@@ -42,30 +44,30 @@ export function activate(context: vscode.ExtensionContext) {
   // register the commands
   //   connection related commands
   vscode.commands.registerCommand(
-    "sparql-notebook.deleteConnectionConfiguration",
+    `${extensionId}.deleteConnectionConfiguration`,
     deleteConnection(context, connectionsSidepanel)
   );
 
   vscode.commands.registerCommand(
-    "sparql-notebook.addNewConnectionConfiguration",
+    `${extensionId}.addNewConnectionConfiguration`,
     addConnection(context, connectionsSidepanel)
   );
   vscode.commands.registerCommand(
-    "sparql-notebook.connect",
+    `${extensionId}.connect`,
     connectToDatabase(context, connectionsSidepanel)
   );
 
   //  export related commands
   context.subscriptions.push(
     vscode.commands.registerCommand(
-      "sparql-notebook.exportToMarkdown",
+      `${extensionId}.exportToMarkdown`,
       exportToMarkdown
     )
   );
 
   // code cell related commands
   vscode.commands.registerCommand(
-    "sparql-notebook.addQueryFromFile",
+    `${extensionId}.addQueryFromFile`,
     addQueryFromFile
   );
 }

@@ -128,7 +128,7 @@ const webExtensionConfig = {
   mode: 'none', // this leaves the source code as close as possible to the original (when packaging we set this to 'production')
   target: 'webworker', // extensions run in a webworker context
   entry: {
-    'extension': './src/webview/main.tsx'
+    'extension': './src/webview/index.tsx'
   },
   output: {
     filename: '[name].js',
@@ -182,7 +182,7 @@ const webExtensionConfig = {
     }),
     new ForkTsCheckerWebpackPlugin({
       typescript: {
-        configFile: path.join(path.dirname('./src/webview/main.tsx'), 'tsconfig.json'),
+        configFile: path.join(path.dirname('./src/webview/index.tsx'), 'tsconfig.json'),
       },
     }),
   ],
