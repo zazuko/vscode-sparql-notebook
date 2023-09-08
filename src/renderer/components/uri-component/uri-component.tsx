@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react';
 import { Term } from '../../model/sparql-result-json.model';
 import { prefix } from '../../prefix.class';
 
+import './uri-component.css';
+
 interface UriComponentProps {
     term: Term;
 }
@@ -10,6 +12,7 @@ interface UriComponentProps {
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export const UriComponent: React.FC<UriComponentProps> = ({ term }) => {
     const [uri, setUri] = useState<Uri | null>(null);
+    const [isLinkClicked, setIsLinkClicked] = useState(false);
 
     useEffect(() => {
         if (term && term.value) {
@@ -35,10 +38,28 @@ export const UriComponent: React.FC<UriComponentProps> = ({ term }) => {
         setUri(null);
     }, [term]);
 
+    function handleLinkIconClick() {
+        if (uri) {
+            navigator.clipboard.writeText(uri.href);
+            setIsLinkClicked(true);
+            setTimeout(() => {
+                setIsLinkClicked(false);
+            }, 800);
+        }
+
+    };
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'row' }}>
+        <div className="uri-component" style={{ display: 'flex', flexDirection: 'row' }}>
             <a href={uri?.href}>{(uri?.isPrefixed ? '' : '<') + uri?.value + (uri?.isPrefixed ? '' : '>')}</a>
+            {isLinkClicked ? (
+                <span title="copied" className="link-icon disappear">
+                    📋
+                </span>) : (
+                <span title="click to copy iri" className="link-icon" onClick={handleLinkIconClick}>
+                    🔗
+                </span>
+            )}
         </div>
     );
 };
