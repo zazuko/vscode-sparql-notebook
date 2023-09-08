@@ -2,6 +2,8 @@
 
 All notable changes to the "vscode-sparql-notebook" extension will be documented in this file.
 
+## 0.0.24
+Fix: Set proper accept header depending on the query type.
 ## 0.0.23
 
 Fix: Add a component for blank node rendering for `application/sparql-results+json`.
