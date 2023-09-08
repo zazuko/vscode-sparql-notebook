@@ -61,7 +61,11 @@ export class SparqlNotebookController {
       let errorMessage = error.message ?? "error";
 
       if (error.hasOwnProperty("response") && error.response.hasOwnProperty("data")) {
-        errorMessage += "\n" + error.response.data;
+        if (error.response.data.message) {
+          errorMessage += "\n" + error.response.data.message;
+        } else {
+          errorMessage += "\n" + error.response.data;
+        }
       }
 
       execution.replaceOutput([
