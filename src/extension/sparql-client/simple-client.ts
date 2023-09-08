@@ -1,14 +1,12 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
+import { getSPARQLQueryKind, getAcceptHeader } from './sparql-utils';
 
 export class SparqlClient {
   private endpoint: AxiosInstance;
-  // "https://int.lindas.admin.ch/query"
 
   constructor(endpointUrl: string, user: string, password: string) {
     this.endpoint = axios.create({
       baseURL: endpointUrl,
-      //  timeout: 1000,
-      //  headers: { "X-Custom-Header": "foobar" },
       auth: {
         username: user,
         password: password,
@@ -20,6 +18,7 @@ export class SparqlClient {
     const params = new URLSearchParams();
     params.append("query", sparqlQuery);
 
+    const queryKind = getSPARQLQueryKind(sparqlQuery);
     const abortController = new AbortController();
 
     const options: AxiosRequestConfig = {
@@ -27,14 +26,14 @@ export class SparqlClient {
         // eslint-disable-next-line @typescript-eslint/naming-convention
         'Content-Type': 'application/x-www-form-urlencoded',
         // eslint-disable-next-line @typescript-eslint/naming-convention
-        Accept: 'application/sparql-results+json,text/turtle',
+        Accept: getAcceptHeader(queryKind),
       },
       signal: abortController.signal
     };
     if (execution) {
       execution.token.onCancellationRequested((_: any) => {
         console.warn('Request cancelled');
-        const k = abortController.abort();
+        abortController.abort();
         console.log('kill', abortController);
 
       });
