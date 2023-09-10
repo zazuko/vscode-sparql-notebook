@@ -52,6 +52,10 @@
         {
           "command": "sparql-notebook.exportToMarkdown",
           "when": "false"
+        },
+        {
+          "command": "sparql-notebook.createStoreFromFile",
+          "when": "false"
         }
       ],
       "view/item/context": [
@@ -80,6 +84,11 @@
         {
           "when": "resourceExtname == .sparqlbook",
           "command": "sparql-notebook.exportToMarkdown",
+          "group": "sparql-notebook"
+        },
+        {
+          "when": "resourceExtname == .ttl",
+          "command": "sparql-notebook.createStoreFromFile",
           "group": "sparql-notebook"
         }
       ],
@@ -123,6 +132,10 @@
       {
         "title": "Export to Markdown",
         "command": "sparql-notebook.exportToMarkdown"
+      },
+      {
+        "title": "Create Store From File",
+        "command": "sparql-notebook.createStoreFromFile"
       }
     ],
     "viewsContainers": {

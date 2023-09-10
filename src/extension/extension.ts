@@ -14,6 +14,7 @@ import { addQueryFromFile } from "./commands/code-cell/add-query-from-file";
 
 import { EndpointConnection } from "./model/endpoint-connection";
 import { activateFormProvider } from "./connection-view/connection-view";
+import { createStoreFromFile } from "./commands/store-from-file/store-from-file";
 
 export const extensionId = "sparql-notebook";
 export const storageKey = `${extensionId}-connections`;
@@ -42,7 +43,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   activateFormProvider(context);
   // register the commands
-  //   connection related commands
+  // connection related commands
   vscode.commands.registerCommand(
     `${extensionId}.deleteConnectionConfiguration`,
     deleteConnection(context, connectionsSidepanel)
@@ -55,6 +56,11 @@ export function activate(context: vscode.ExtensionContext) {
   vscode.commands.registerCommand(
     `${extensionId}.connect`,
     connectToDatabase(context, connectionsSidepanel)
+  );
+
+  vscode.commands.registerCommand(
+    `${extensionId}.createStoreFromFile`,
+    createStoreFromFile
   );
 
   //  export related commands

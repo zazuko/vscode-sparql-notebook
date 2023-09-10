@@ -1,6 +1,6 @@
-import * as vscode from "vscode";
+import { NotebookCell, NotebookCellOutput, NotebookCellOutputItem, NotebookController, NotebookDocument, notebooks, window, workspace } from 'vscode';
 import { extensionId, globalConnection } from "./extension";
-import { SparqlClient } from "./sparql-client";
+import { Endpoint, HttpEndpoint } from "./endpoint";
 import { PrefixMap } from './model/prefix-map';
 export class SparqlNotebookController {
   readonly controllerId = `${extensionId}-controller-id`;
@@ -8,47 +8,54 @@ export class SparqlNotebookController {
   readonly label = "Sparql Notebook";
   readonly supportedLanguages = ["sparql"];
 
-  private readonly _controller: vscode.NotebookController;
+  private readonly _controller: NotebookController;
   private _executionOrder = 0;
 
   constructor() {
-    this._controller = vscode.notebooks.createNotebookController(
+    // Create a new notebook controller
+    this._controller = notebooks.createNotebookController(
       this.controllerId,
       this.notebookType,
       this.label
     );
 
+    // controller setup
     this._controller.supportedLanguages = this.supportedLanguages;
     this._controller.supportsExecutionOrder = true;
+
+    // this is executing the cells
     this._controller.executeHandler = this._execute.bind(this);
   }
 
-  private _execute(
-    cells: vscode.NotebookCell[],
-    _notebook: vscode.NotebookDocument,
-    _controller: vscode.NotebookController
-  ): void {
+  /**
+   * Executes the given cells by calling the _doExecution method for each cell.
+   * @param cells - The cells to execute.
+   * @param _notebook - The notebook document containing the cells.
+   * @param _controller - The notebook controller for the notebook document.
+   */
+  private _execute(cells: NotebookCell[], _notebook: NotebookDocument, _controller: NotebookController): void {
 
     for (let cell of cells) {
       this._doExecution(cell);
     }
   }
 
-  private async _doExecution(cell: vscode.NotebookCell): Promise<void> {
+  private async _doExecution(cell: NotebookCell): Promise<void> {
     const execution = this._controller.createNotebookCellExecution(cell);
     execution.executionOrder = ++this._executionOrder;
 
     // Keep track of elapsed time to execute cell.
     execution.start(Date.now());
 
-    const sparqlQueryText = cell.document.getText();
+    const sparqlQuery = cell.document.getText();
 
     // you can configure the endpoint within the query like this # [endpoint='xxxx']
-    const client = this._getDocumentOrConnectionClient(sparqlQueryText);
+    // todo: rename function
+    const sparqlEndpoint = this._getDocumentOrConnectionClient(sparqlQuery);
 
-    if (!client) {
+    if (!sparqlEndpoint) {
       const errorMessage = "Not connected to a SPARQL Endpoint";
-      vscode.window.showErrorMessage(errorMessage);
+      window.showErrorMessage(errorMessage);
       execution.replaceOutput([
         this._writeError(errorMessage)
       ]);
@@ -57,7 +64,7 @@ export class SparqlNotebookController {
     }
 
     // execute the query
-    const queryResult = await client.query(sparqlQueryText, execution).catch((error) => {
+    const queryResult = await sparqlEndpoint.query(sparqlQuery, execution).catch((error) => {
       let errorMessage = error.message ?? "error";
       if (error.hasOwnProperty("response") && error.response.hasOwnProperty("data")) {
         if (error.response.data.message) {
@@ -95,7 +102,7 @@ export class SparqlNotebookController {
         return;
       }
       // sparql select
-      const prefixMap = this._extractNamespacesFromQuery(sparqlQueryText);
+      const prefixMap = this._extractNamespacesFromQuery(sparqlQuery);
       execution.replaceOutput([this._writeSparqlJsonResult(data, prefixMap)]);
       execution.end(isSuccess, Date.now());
       return;
@@ -124,20 +131,21 @@ export class SparqlNotebookController {
     return;
   }
 
-  private _writeTurtleResult(resultTTL: string): vscode.NotebookCellOutput {
-    return new vscode.NotebookCellOutput([
-      vscode.NotebookCellOutputItem.text(resultTTL, "text/plain"),
-      vscode.NotebookCellOutputItem.text(
+  private _writeTurtleResult(resultTTL: string): NotebookCellOutput {
+    // this is writing markdown to the cell containing a turtle code block
+    return new NotebookCellOutput([
+      NotebookCellOutputItem.text(resultTTL, "text/plain"),
+      NotebookCellOutputItem.text(
         `\`\`\`turtle\n${resultTTL}\n\`\`\``,
         "text/markdown"
       ),
     ]);
   }
 
-  private _writeSparqlJsonResult(resultJson: any, prefixMap: PrefixMap = {}): vscode.NotebookCellOutput {
-    const outputItem = new vscode.NotebookCellOutput([
+  private _writeSparqlJsonResult(resultJson: any, prefixMap: PrefixMap = {}): NotebookCellOutput {
+    const outputItem = new NotebookCellOutput([
       this._writeJson(JSON.stringify(resultJson, null, "   ")),
-      vscode.NotebookCellOutputItem.json(
+      NotebookCellOutputItem.json(
         resultJson,
         "application/sparql-results+json"
       ),
@@ -146,13 +154,13 @@ export class SparqlNotebookController {
     return outputItem;
   }
 
-  private _writeJson(jsonResult: any): vscode.NotebookCellOutputItem {
-    return vscode.NotebookCellOutputItem.text(jsonResult, "text/x-json");
+  private _writeJson(jsonResult: any): NotebookCellOutputItem {
+    return NotebookCellOutputItem.text(jsonResult, "text/x-json");
   }
 
-  private _writeError(message: any): vscode.NotebookCellOutput {
-    return new vscode.NotebookCellOutput([
-      vscode.NotebookCellOutputItem.error({
+  private _writeError(message: any): NotebookCellOutput {
+    return new NotebookCellOutput([
+      NotebookCellOutputItem.error({
         name: "SPARQL error",
         message: message,
       }),
@@ -178,7 +186,7 @@ export class SparqlNotebookController {
   }
 
   private _extractNamespacesFromQuery(query: string): PrefixMap {
-    const configuration = vscode.workspace.getConfiguration("sparqlbook");
+    const configuration = workspace.getConfiguration("sparqlbook");
     const useNamespaces = configuration.get("useNamespaces");
     if (!useNamespaces) {
       return {};
@@ -198,26 +206,23 @@ export class SparqlNotebookController {
 
   dispose() { }
 
+
   /**
-   * You can configure the endpoint within the query like this # [endpoint='url'] 
-   * or use the sparql notebook connection settings. This function will return the
-   * a SPARQL Client according your configuration. The endpoint in the SPARQL query 
-   * has precedence. 
-    
-   * @param sparqlQuery 
-   * @returns a SPARQL Client according to your configuration. 
+   * Returns an Endpoint instance for the given SPARQL query, either from the document or the global connection.
+   * @param sparqlQuery - The SPARQL query to get the endpoint for.
+   * @returns An Endpoint instance for the given SPARQL query, or null if no endpoint could be found.
    */
-  private _getDocumentOrConnectionClient(sparqlQuery: string): SparqlClient | null {
+  private _getDocumentOrConnectionClient(sparqlQuery: string): Endpoint | null {
     const documentEndpoint = this._getEndpointFromQuery(sparqlQuery);
     if (documentEndpoint) {
-      return new SparqlClient(documentEndpoint, "", "");
+      return new HttpEndpoint(documentEndpoint, "", "");
     }
 
     if (globalConnection.connection === null) {
       return null;
     }
 
-    return new SparqlClient(
+    return new HttpEndpoint(
       globalConnection.connection.data.endpointURL,
       globalConnection.connection.data.user,
       globalConnection.connection.data.passwordKey

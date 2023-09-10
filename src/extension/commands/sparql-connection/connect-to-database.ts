@@ -5,7 +5,7 @@ import {
     EndpointConnections,
 } from "../../sparql-connection-menu";
 
-import { SparqlClient } from "../../sparql-client";
+import { HttpEndpoint } from "../../endpoint";
 
 import { storageKey, globalConnection } from "../../extension";
 
@@ -63,9 +63,10 @@ export const connectToDatabase =
             };
             try {
                 const c = globalConnection.connection.data;
-                const client = new SparqlClient(c.endpointURL, c.user, c.passwordKey);
+                const client = new HttpEndpoint(c.endpointURL, c.user, c.passwordKey);
 
-                const _result = await client.query("SELECT * WHERE {?s ?p ?o.} LIMIT 1");
+                // test the connection
+                await client.query("SELECT * WHERE {?s ?p ?o.} LIMIT 1");
                 connectionsSidepanel.setActive(match.name);
                 vscode.window.showInformationMessage(
                     `Successfully connected to "${match.name}"`
