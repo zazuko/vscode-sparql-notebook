@@ -1,7 +1,9 @@
 import { NotebookCell, NotebookCellOutput, NotebookCellOutputItem, NotebookController, NotebookDocument, notebooks, window, workspace } from 'vscode';
-import { extensionId, globalConnection } from "./extension";
+import { extensionId } from "./extension";
 import { Endpoint, HttpEndpoint } from "./endpoint";
 import { PrefixMap } from './model/prefix-map';
+import { notebookEndpoint } from './endpoint/endpoint';
+
 export class SparqlNotebookController {
   readonly controllerId = `${extensionId}-controller-id`;
   readonly notebookType = "sparql-notebook";
@@ -217,17 +219,7 @@ export class SparqlNotebookController {
     if (documentEndpoint) {
       return new HttpEndpoint(documentEndpoint, "", "");
     }
-
-    if (globalConnection.connection === null) {
-      return null;
-    }
-
-    return new HttpEndpoint(
-      globalConnection.connection.data.endpointURL,
-      globalConnection.connection.data.user,
-      globalConnection.connection.data.passwordKey
-    );
-
+    return notebookEndpoint.getEndpoint();
   }
 }
 

@@ -12,17 +12,11 @@ import { connectToDatabase } from "./commands/sparql-connection/connect-to-datab
 import { exportToMarkdown } from "./commands/export/export-to-markdown";
 import { addQueryFromFile } from "./commands/code-cell/add-query-from-file";
 
-import { EndpointConnection } from "./model/endpoint-connection";
 import { activateFormProvider } from "./connection-view/connection-view";
 import { createStoreFromFile } from "./commands/store-from-file/store-from-file";
 
 export const extensionId = "sparql-notebook";
 export const storageKey = `${extensionId}-connections`;
-
-// holds the current connection
-export const globalConnection: { connection: EndpointConnection | null } = {
-  connection: null,
-};
 
 // this method is called when your extension is activated
 export function activate(context: vscode.ExtensionContext) {
