@@ -28,6 +28,7 @@ export class SparqlStore {
         if (queryKind === SPARQLQueryKind.ask) {
             const res = await this._ask(query);
             const fakeHttpResult = {
+                // eslint-disable-next-line @typescript-eslint/naming-convention
                 headers: { "content-type": "application/sparql-results+json" },
                 data: res
             };
@@ -35,6 +36,7 @@ export class SparqlStore {
         } else if (queryKind === SPARQLQueryKind.select) {
             const res = await this._select(query);
             const fakeHttpResult = {
+                // eslint-disable-next-line @typescript-eslint/naming-convention
                 headers: { "content-type": "application/sparql-results+json" },
                 data: res
             };
@@ -48,6 +50,7 @@ export class SparqlStore {
     private async _construct(query: string): Promise<any> {
         const ttl = (new Store(this.store.query(query))).dump(RdfMimeType.turtle, defaultGraph());
         const fakeHttpResult = {
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             headers: { "content-type": RdfMimeType.turtle },
             data: ttl
         };
@@ -128,7 +131,6 @@ export class SparqlStore {
 
 
         }
-        console.log(JSON.stringify(sparqlResultJson, null, 4));
         return sparqlResultJson;
     }
 
@@ -151,14 +153,3 @@ export class SparqlStore {
     }
 
 }
-
-/*
-
-export interface Term {
-  type: string;
-  value: string;
-  datatype?: string;
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  "xml:lang"?: string;
-};
- */
