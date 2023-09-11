@@ -130,11 +130,11 @@
         "title": "Delete Connection Configuration"
       },
       {
-        "title": "Export to Markdown",
+        "title": "SPARQL Notebook: Export to Markdown",
         "command": "sparql-notebook.exportToMarkdown"
       },
       {
-        "title": "Create Store From File",
+        "title": "SPARQL Notebook: Use Files as Store",
         "command": "sparql-notebook.createStoreFromFile"
       }
     ],
