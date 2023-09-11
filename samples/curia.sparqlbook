@@ -20,7 +20,7 @@
   {
     "kind": 2,
     "language": "sparql",
-    "value": "PREFIX schema: <http://schema.org/>\n\nASK WHERE {\n    BIND(<https://politics.ld.admin.ch/person/1257> as ?person) \n    ?person schema:namedd ?name .\n} ",
+    "value": "PREFIX schema: <http://schema.org/>\n\nASK WHERE {\n    BIND(<https://politics.ld.admin.ch/person/1257> as ?person) \n    ?person schema:name ?name .\n} ",
     "metadata": {}
   },
   {
