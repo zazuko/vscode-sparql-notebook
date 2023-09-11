@@ -62,3 +62,15 @@ The query files will be updated on notebook save.
 
 This extension uses the [
 Notebook API ](https://code.visualstudio.com/api/extension-guides/notebook). Contributions & bug fixes are always welcome!
+
+# Development
+
+The notebook extension is located in `src/extension`.
+
+## Notebook Output Cells
+### SELECT / ASK Results
+A "renderer" refers to a component or extension that is responsible for displaying specific types of content or output within a notebook cell.
+
+This project provides a renderer for `application/sparql-results+json` MIME-Type. This is the MIME-Type that is used to represent SPARQL SELECT and SPARQL ASK results.
+
+You find the renderer in `src/renderer`. It is a simple React component that renders a table.

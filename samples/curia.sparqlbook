@@ -1,0 +1,38 @@
+[
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "\nPREFIX schema: <http://schema.org/>\n\nSELECT ?person ?name ?givenName WHERE {\n   {\n      BIND(<https://politics.ld.admin.ch/person/1257> as ?person) \n      ?person schema:name ?name .\n   }\n   UNION\n   {\n      BIND(<https://politics.ld.admin.ch/person/1257> as ?person) \n      ?person schema:givenName ?givenName .\n   }\n} \n",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "# [endpoint=https://lindas.admin.ch/query]\n\nPREFIX schema: <http://schema.org/>\n\nSELECT ?person ?name ?givenName WHERE {\n   {\n      BIND(<https://politics.ld.admin.ch/person/1257> as ?person) \n      ?person schema:name ?name .\n   }\n   UNION\n   {\n      BIND(<https://politics.ld.admin.ch/person/1257> as ?person) \n      ?person schema:givenName ?givenName .\n   }\n}",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "PREFIX schema: <http://schema.org/>\n\nSELECT ?propertyShape ?p ?o  WHERE {\n   BIND (<https://politics.ld.admin.ch/vocabulary/party> as ?set)\n   ?set <http://www.w3.org/ns/shacl#property> ?propertyShape . \n   ?propertyShape ?p ?o .\n} ",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "PREFIX schema: <http://schema.org/>\n\nASK WHERE {\n    BIND(<https://politics.ld.admin.ch/person/1257> as ?person) \n    ?person schema:name ?name .\n} ",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "CONSTRUCT {\n    ?s ?p ?o .\n} WHERE {\n    BIND(<https://politics.ld.admin.ch/person/1257> as ?s)\n    ?s ?p ?o .\n} ",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "DESCRIBE <https://politics.ld.admin.ch/person/1257>",
+    "metadata": {}
+  }
+]

@@ -8,7 +8,7 @@
   {
     "kind": 2,
     "language": "sparql",
-    "value": "#\n# Test [endpoint=https://query.wikidata.org/bigdata/namespace/wdq/sparql] Test \n# \nPREFIX schema: <http://schema.org/>\nPREFIX wd: <http://www.wikidata.org/entity/>\nPREFIX wdt: <http://www.wikidata.org/prop/direct/>\nPREFIX wikibase: <http://wikiba.se/ontology#>\nPREFIX bd: <http://www.bigdata.com/rdf#>\n\n\nSELECT DISTINCT ?ms ?msLabel ?hos ?hosLabel \n \nWHERE {\n  ?ms wdt:P463 wd:Q458;\n      wdt:P35 ?hos .\n      SERVICE wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\". }\n}",
+    "value": "#\n# Test [endpoint=https://query.wikidata.org/bigdata/namespace/wdq/sparql] Test \n# \nPREFIX schema: <http://schema.org/>\nPREFIX wdt: <http://www.wikidata.org/prop/direct/>\nPREFIX wikibase: <http://wikiba.se/ontology#>\nPREFIX bd: <http://www.bigdata.com/rdf#>\nPREFIX wd: <http://www.wikidata.org/entity/>\n\n\nSELECT DISTINCT ?ms ?msLabel ?hos ?hosLabel \n \nWHERE {\n  ?ms wdt:P463 wd:Q458;\n      wdt:P35 ?hos .\n      SERVICE wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\". }\n}",
     "metadata": {}
   },
   {

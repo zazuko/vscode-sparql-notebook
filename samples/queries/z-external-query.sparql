@@ -1,10 +1,5 @@
-# Error reading file samples/queries/z-external-query.sparql error
-# EntryNotFound (FileSystemError): Error: ENOENT: no such file or directory, open '/Users/benjaminhofstetter/code/zazuko/github/vscode-sparql-notebook/samples/queries/z-external-query.sparql'
-#
-# from file samples/queries/z-external-query.sparql
-#
-#
-# fooo bar bar fooo
+# [endpoint=https://lindas.admin.ch/query]
+
 PREFIX gont: <https://gont.ch/>
 PREFIX schema: <http://schema.org/>
 SELECT ?name ?abbr ?date WHERE {

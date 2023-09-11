@@ -9,7 +9,7 @@
   "repository": {
     "url": "https://github.com/zazuko/vscode-sparql-notebook.git"
   },
-  "version": "0.0.25",
+  "version": "0.0.26",
   "engines": {
     "vscode": "^1.77.0"
   },
@@ -52,6 +52,10 @@
         {
           "command": "sparql-notebook.exportToMarkdown",
           "when": "false"
+        },
+        {
+          "command": "sparql-notebook.createStoreFromFile",
+          "when": "false"
         }
       ],
       "view/item/context": [
@@ -80,6 +84,11 @@
         {
           "when": "resourceExtname == .sparqlbook",
           "command": "sparql-notebook.exportToMarkdown",
+          "group": "sparql-notebook"
+        },
+        {
+          "when": "resourceExtname == .ttl || resourceExtname == .nt || resourceExtname == .rdf",
+          "command": "sparql-notebook.createStoreFromFile",
           "group": "sparql-notebook"
         }
       ],
@@ -121,8 +130,12 @@
         "title": "Delete Connection Configuration"
       },
       {
-        "title": "Export to Markdown",
+        "title": "SPARQL Notebook: Export to Markdown",
         "command": "sparql-notebook.exportToMarkdown"
+      },
+      {
+        "title": "SPARQL Notebook: Use Files as Store",
+        "command": "sparql-notebook.createStoreFromFile"
       }
     ],
     "viewsContainers": {
@@ -176,6 +189,7 @@
     "@types/react-dom": "^18.2.7",
     "@types/vscode": "^1.77.0",
     "@types/vscode-notebook-renderer": "^1.72.0",
+    "@types/vscode-webview": "^1.57.2",
     "@types/webpack-env": "^1.18.1",
     "@typescript-eslint/eslint-plugin": "^5.60.1",
     "@typescript-eslint/parser": "^5.60.1",
@@ -199,6 +213,7 @@
     "@vscode/webview-ui-toolkit": "^1.2.2",
     "@zazuko/prefixes": "^2.0.0",
     "axios": "^1.5.0",
+    "oxigraph": "^0.3.19",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   }

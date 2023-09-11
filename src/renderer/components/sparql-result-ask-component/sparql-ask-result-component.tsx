@@ -1,8 +1,8 @@
-import { SparqlAskResult } from '../../model/sparql-result-json.model';
+import { SparqlResultJson } from '../../model/sparql-result-json.model';
 
 
 interface SparqlAskResultComponentProps {
-    sparqlAsResult: SparqlAskResult;
+    sparqlAsResult: SparqlResultJson;
 }
 
 // eslint-disable-next-line @typescript-eslint/naming-convention

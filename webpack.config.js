@@ -1,6 +1,8 @@
 //@ts-check
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const { DefinePlugin } = require('webpack');
+const webpack = require('webpack');
+
 'use strict';
 
 const path = require('path');
@@ -21,8 +23,9 @@ const extensionConfig = {
     libraryTarget: 'commonjs2'
   },
   externals: {
-    vscode: 'commonjs vscode' // the vscode-module is created on-the-fly and must be excluded. Add other modules that cannot be webpack'ed, 📖 -> https://webpack.js.org/configuration/externals/
+    vscode: 'commonjs vscode', // the vscode-module is created on-the-fly and must be excluded. Add other modules that cannot be webpack'ed, 📖 -> https://webpack.js.org/configuration/externals/
     // modules added here also need to be added in the .vscodeignore file
+    'oxigraph': 'commonjs oxigraph',
   },
   resolve: {
     // support reading TypeScript and JavaScript files, 📖 -> https://github.com/TypeStrong/ts-loader
@@ -121,4 +124,78 @@ const rendererConfig = {
     }),
   ],
 };
-module.exports = [extensionConfig, rendererConfig];
+
+const webExtensionConfig = {
+  mode: 'none', // this leaves the source code as close as possible to the original (when packaging we set this to 'production')
+  target: 'webworker', // extensions run in a webworker context
+  entry: {
+    'extension': './src/webview/index.tsx'
+  },
+  output: {
+    filename: '[name].js',
+    path: path.join(__dirname, './out/web'),
+    libraryTarget: 'commonjs',
+    devtoolModuleFilenameTemplate: '../../[resource-path]'
+  },
+  resolve: {
+    extensions: ['.ts', '.tsx', '.js', '.jsx', '.css'],
+    mainFields: ['browser', 'module', 'main'], // look for `browser` entry point in imported node modules
+    alias: {
+      // provides alternate implementation for node module and source files
+    },
+    fallback: {
+      // Webpack 5 no longer polyfills Node.js core modules automatically.
+      // see https://webpack.js.org/configuration/resolve/#resolvefallback
+      // for the list of Node.js core module polyfills.
+      'assert': require.resolve('assert')
+    }
+  },
+  module: {
+    rules: [{
+      test: /\.ts|\.tsx$/,
+      exclude: /node_modules/,
+      use: [{
+        loader: 'ts-loader'
+      }]
+    },
+    // Allow importing CSS modules:
+    {
+      test: /\.css$/,
+      use: [
+        'style-loader',
+        {
+          loader: 'css-loader',
+          options: {
+            importLoaders: 1,
+            modules: false,
+          },
+        },
+      ],
+    }
+    ]
+  },
+  plugins: [
+    new webpack.optimize.LimitChunkCountPlugin({
+      maxChunks: 1 // disable chunks by default since web extensions must be a single bundle
+    }),
+    new webpack.ProvidePlugin({
+      process: 'process/browser', // provide a shim for the global `process` variable
+    }),
+    new ForkTsCheckerWebpackPlugin({
+      typescript: {
+        configFile: path.join(path.dirname('./src/webview/index.tsx'), 'tsconfig.json'),
+      },
+    }),
+  ],
+  externals: {
+    'vscode': 'commonjs vscode', // ignored because it doesn't exist
+  },
+  performance: {
+    hints: false
+  },
+  devtool: 'nosources-source-map', // create a source map that points to the original source file
+  infrastructureLogging: {
+    level: "log", // enables logging required for problem matchers
+  },
+};
+module.exports = [extensionConfig, rendererConfig, webExtensionConfig];

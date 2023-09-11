@@ -12,19 +12,17 @@ import { connectToDatabase } from "./commands/sparql-connection/connect-to-datab
 import { exportToMarkdown } from "./commands/export/export-to-markdown";
 import { addQueryFromFile } from "./commands/code-cell/add-query-from-file";
 
-import { EndpointConnection } from "./model/endpoint-connection";
-export const storageKey = "sparql-notebook-connections";
+import { activateFormProvider } from "./connection-view/connection-view";
+import { createStoreFromFile } from "./commands/store-from-file/store-from-file";
 
-// holds the current connection
-export const globalConnection: { connection: EndpointConnection | null } = {
-  connection: null,
-};
+export const extensionId = "sparql-notebook";
+export const storageKey = `${extensionId}-connections`;
 
 // this method is called when your extension is activated
 export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.workspace.registerNotebookSerializer(
-      "sparql-notebook",
+      extensionId,
       new SparqlNotebookSerializer()
     )
   );
@@ -37,33 +35,48 @@ export function activate(context: vscode.ExtensionContext) {
   const connectionsSidepanel = new EndpointConnections(context);
   vscode.window.registerTreeDataProvider(storageKey, connectionsSidepanel);
 
+  // activateFormProvider(context);
+  /*
+   {
+            "type": "webview",
+            "id": "sparql-notebook.connectionForm",
+            "name": "New SPARQL Connection",
+            "contextualTitle": "New Connection",
+            "visibility": "visible"
+          }
+  */
   // register the commands
-  //   connection related commands
+  // connection related commands
   vscode.commands.registerCommand(
-    "sparql-notebook.deleteConnectionConfiguration",
+    `${extensionId}.deleteConnectionConfiguration`,
     deleteConnection(context, connectionsSidepanel)
   );
 
   vscode.commands.registerCommand(
-    "sparql-notebook.addNewConnectionConfiguration",
+    `${extensionId}.addNewConnectionConfiguration`,
     addConnection(context, connectionsSidepanel)
   );
   vscode.commands.registerCommand(
-    "sparql-notebook.connect",
+    `${extensionId}.connect`,
     connectToDatabase(context, connectionsSidepanel)
+  );
+
+  vscode.commands.registerCommand(
+    `${extensionId}.createStoreFromFile`,
+    createStoreFromFile
   );
 
   //  export related commands
   context.subscriptions.push(
     vscode.commands.registerCommand(
-      "sparql-notebook.exportToMarkdown",
+      `${extensionId}.exportToMarkdown`,
       exportToMarkdown
     )
   );
 
   // code cell related commands
   vscode.commands.registerCommand(
-    "sparql-notebook.addQueryFromFile",
+    `${extensionId}.addQueryFromFile`,
     addQueryFromFile
   );
 }
