@@ -9,7 +9,7 @@
   "repository": {
     "url": "https://github.com/zazuko/vscode-sparql-notebook.git"
   },
-  "version": "0.0.26",
+  "version": "0.0.27",
   "engines": {
     "vscode": "^1.77.0"
   },
@@ -134,7 +134,7 @@
         "command": "sparql-notebook.exportToMarkdown"
       },
       {
-        "title": "SPARQL Notebook: Use Files as Store",
+        "title": "SPARQL Notebook: Use File as Store",
         "command": "sparql-notebook.createStoreFromFile"
       }
     ],

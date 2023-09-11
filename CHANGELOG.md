@@ -2,6 +2,9 @@
 
 All notable changes to the "vscode-sparql-notebook" extension will be documented in this file.
 
+## 0.0.27
+
+Fix: Rename command 
 ## 0.0.26
 
 Fix: Sparql Result JSON rendering with optional
