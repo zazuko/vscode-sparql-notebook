@@ -1,15 +1,13 @@
-export interface SparqlAskResult {
-  boolean: boolean;
-}
 export interface SparqlResultJson {
   head: {
     vars: string[];
   };
-  results: {
+  results?: {
     bindings: {
       [key: string]: Term;
     }[];
-  };
+  },
+  boolean?: boolean;
 }
 
 export type PrefixMap = {
