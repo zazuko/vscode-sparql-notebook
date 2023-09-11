@@ -134,8 +134,6 @@ export class SparqlStore {
         return sparqlResultJson;
     }
 
-
-
     public async update(query: string): Promise<any> {
         return await this.store.update(query);
     }
