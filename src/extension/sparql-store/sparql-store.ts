@@ -23,7 +23,6 @@ export class SparqlStore {
         // For ASK queries the return type is a boolean.
 
         const queryKind = getSPARQLQueryKind(query);
-        console.log('queryKind', queryKind);
 
         if (queryKind === SPARQLQueryKind.ask) {
             const res = await this._ask(query);
@@ -70,7 +69,6 @@ export class SparqlStore {
 
     private async _select(query: string): Promise<SparqlResultJson> {
         const resultMaps = await this.store.query(query) as Map<string, any>[];
-        console.log(resultMaps);
         const sparqlResultJson: SparqlResultJson = {
             head: {
                 vars: []

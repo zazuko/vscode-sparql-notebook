@@ -35,7 +35,16 @@ export function activate(context: vscode.ExtensionContext) {
   const connectionsSidepanel = new EndpointConnections(context);
   vscode.window.registerTreeDataProvider(storageKey, connectionsSidepanel);
 
-  activateFormProvider(context);
+  // activateFormProvider(context);
+  /*
+   {
+            "type": "webview",
+            "id": "sparql-notebook.connectionForm",
+            "name": "New SPARQL Connection",
+            "contextualTitle": "New Connection",
+            "visibility": "visible"
+          }
+  */
   // register the commands
   // connection related commands
   vscode.commands.registerCommand(

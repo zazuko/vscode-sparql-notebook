@@ -46,8 +46,11 @@ export class FileEndpoint extends Endpoint {
             return;
         }
         const fileContent = await fs.promises.readFile(rdfFile.fsPath, 'utf-8');
-        this._store.load(fileContent, mimeType);
-        this.files.add(rdfFile);
+        try {
+            this._store.load(fileContent, mimeType);
+        } catch (e) {
+            throw e;
+        }
     }
 
     /**

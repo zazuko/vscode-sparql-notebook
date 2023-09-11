@@ -87,7 +87,7 @@
           "group": "sparql-notebook"
         },
         {
-          "when": "resourceExtname == .ttl",
+          "when": "resourceExtname == .ttl || resourceExtname == .nt || resourceExtname == .rdf",
           "command": "sparql-notebook.createStoreFromFile",
           "group": "sparql-notebook"
         }
@@ -155,13 +155,6 @@
           "visibility": "visible",
           "icon": "assets/logo.svg",
           "contextualTitle": "Connections"
-        },
-        {
-          "type": "webview",
-          "id": "sparql-notebook.connectionForm",
-          "name": "New SPARQL Connection",
-          "contextualTitle": "New Connection",
-          "visibility": "visible"
         }
       ]
     },
