@@ -9,7 +9,7 @@
   "repository": {
     "url": "https://github.com/zazuko/vscode-sparql-notebook.git"
   },
-  "version": "0.0.27",
+  "version": "0.0.28",
   "engines": {
     "vscode": "^1.77.0"
   },
@@ -216,5 +216,9 @@
     "oxigraph": "^0.3.19",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
-  }
+  },
+  "extensionDependencies": [
+    "stardog-union.stardog-rdf-grammars",
+    "stardog-union.vscode-langserver-sparql"
+  ]
 }
