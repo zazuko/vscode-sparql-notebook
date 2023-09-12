@@ -67,7 +67,7 @@ Notebook API ](https://code.visualstudio.com/api/extension-guides/notebook). Con
 
 The notebook extension is located in `src/extension`.
 
-## Notebook Output Cells
+## Notebook Output Cells
 ### SELECT / ASK Results
 A "renderer" refers to a component or extension that is responsible for displaying specific types of content or output within a notebook cell.
 
