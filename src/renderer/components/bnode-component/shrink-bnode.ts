@@ -9,5 +9,4 @@ export function shrinkBnode(bNodeId: string): string {
     const newBNodeId = `_:b${bNodeIdIndex++}`;
     bNodeMap.set(bNodeId, newBNodeId);
     return newBNodeId;
-
 }
