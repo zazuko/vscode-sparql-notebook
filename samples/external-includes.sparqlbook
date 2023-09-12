@@ -2,23 +2,29 @@
   {
     "kind": 1,
     "language": "markdown",
-    "value": "# External SPARQL Query from File\n\n",
+    "value": "# External SPARQL Query from File\n\nThis is a SPARQL query from a file. The cell is using the file `queries/z-external-query.sparql`.\n\n## Include and .sparql file\n\nThe file `queries/z-external-query.sparql` contains the following SPARQL query:\n",
     "metadata": {}
   },
   {
     "kind": 2,
     "language": "sparql",
-    "value": "# from file samples/queries/z-external-query.sparql\n# [endpoint=https://lindas.admin.ch/query]\n\nPREFIX gont: <https://gont.ch/>\nPREFIX schema: <http://schema.org/>\nSELECT ?name ?abbr ?date WHERE {\n    { \n        ?canton a gont:Canton;\n            gont:cantonAbbreviation ?abbr ;\n            gont:date ?date ;\n            gont:longName ?name . \n    } UNION {\n        gont:Canton ?p ?o .\n    }\n    \n    \n} ",
+    "value": "# from file /Users/benjaminhofstetter/code/patch/vscode-sparql-notebook/samples/queries/z-external-query.sparql\n# [endpoint=https://lindas.admin.ch/query]\nPREFIX gont: <https://gont.ch/>\nPREFIX schema: <http://schema.org/>\nSELECT ?name ?abbr ?date WHERE {\n    { \n        ?canton a gont:Canton;\n            gont:cantonAbbreviation ?abbr ;\n            gont:date ?date ;\n            gont:longName ?name . \n    } UNION {\n        gont:Canton ?p ?o .\n    }\n    \n    \n} ",
     "metadata": {
-      "file": "/Users/benjaminhofstetter/code/zazuko/github/vscode-sparql-notebook/samples/queries/z-external-query.sparql"
+      "file": "/Users/benjaminhofstetter/code/patch/vscode-sparql-notebook/samples/queries/z-external-query.sparql"
     }
+  },
+  {
+    "kind": 1,
+    "language": "markdown",
+    "value": "# Include an external .rq file \n\nThe file `queries/z-external-query.rq` contains the following SPARQL query:\n",
+    "metadata": {}
   },
   {
     "kind": 2,
     "language": "sparql",
-    "value": "# from file samples/queries/z-external-query.rq\n#\n# [endpoint=https://lindas.admin.ch/query]\n#\n#    \n#\nPREFIX gont: <https://gont.ch/>\nPREFIX schema: <http://schema.org/>\nSELECT ?name ?abbr ?date WHERE {\n    { \n        ?canton a gont:Canton;\n            gont:cantonAbbreviation ?abbr ;\n            gont:date ?date ;\n            gont:longName ?name . \n    } UNION {\n        gont:Canton ?p ?o .\n    }\n} ",
+    "value": "# from file /Users/benjaminhofstetter/code/patch/vscode-sparql-notebook/samples/queries/z-external-query.rq\n#\n# [endpoint=https://lindas.admin.ch/query]\n#\nPREFIX gont: <https://gont.ch/>\nPREFIX schema: <http://schema.org/>\nSELECT ?name ?abbr ?date WHERE {\n    { \n        ?canton a gont:Canton;\n            gont:cantonAbbreviation ?abbr ;\n            gont:date ?date ;\n            gont:longName ?name . \n    } UNION {\n        gont:Canton ?p ?o .\n    }\n} \n",
     "metadata": {
-      "file": "/Users/benjaminhofstetter/code/zazuko/github/vscode-sparql-notebook/samples/queries/z-external-query.rq"
+      "file": "/Users/benjaminhofstetter/code/patch/vscode-sparql-notebook/samples/queries/z-external-query.rq"
     }
   }
 ]

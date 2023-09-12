@@ -5,6 +5,7 @@ All notable changes to the "vscode-sparql-notebook" extension will be documented
 ## 0.0.28
 
 Minor: Shorten Blank Node IDs
+Minor: Add extension dependencies
 ## 0.0.27
 
 Fix: Rename command 

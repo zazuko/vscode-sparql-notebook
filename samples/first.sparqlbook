@@ -2,19 +2,25 @@
   {
     "kind": 1,
     "language": "markdown",
-    "value": "# Test Notebook\n\nThis is a sample notebook. You can add Code and Mardown cells.",
-    "metadata": {}
-  },
-  {
-    "kind": 2,
-    "language": "sparql",
-    "value": "#\n# Test [endpoint=https://query.wikidata.org/bigdata/namespace/wdq/sparql] Test \n# \nPREFIX schema: <http://schema.org/>\nPREFIX wdt: <http://www.wikidata.org/prop/direct/>\nPREFIX wikibase: <http://wikiba.se/ontology#>\nPREFIX bd: <http://www.bigdata.com/rdf#>\nPREFIX wd: <http://www.wikidata.org/entity/>\n\n\nSELECT DISTINCT ?ms ?msLabel ?hos ?hosLabel \n \nWHERE {\n  ?ms wdt:P463 wd:Q458;\n      wdt:P35 ?hos .\n      SERVICE wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\". }\n}",
+    "value": "# Test Notebook\n",
     "metadata": {}
   },
   {
     "kind": 1,
     "language": "markdown",
-    "value": "get canton berne",
+    "value": "## Wikidata Query\n\nThe query is retrieving the distinct European Union member countries (`?euMemberCountry`) and their associated head of state (`?headOfState`) from Wikidata where the European Union member country is associated with the head of state via the property `P35` and the European Union member country via the property `P463`. The query also retrieves the labels for the European Union member countries and head of states in multiple languages using the `SERVICE wikibase:label` clause.",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "#\n# Test [endpoint=https://query.wikidata.org/bigdata/namespace/wdq/sparql] Test \n# \nPREFIX schema: <http://schema.org/>\nPREFIX wd: <http://www.wikidata.org/entity/>\nPREFIX wdt: <http://www.wikidata.org/prop/direct/>\nPREFIX wikibase: <http://wikiba.se/ontology#>\nPREFIX bd: <http://www.bigdata.com/rdf#>\n\nSELECT DISTINCT ?euMemberCountry ?euMemberCountryLabel ?headOfState ?headOfStateLabel\n \nWHERE {\n  ?euMemberCountry wdt:P463 wd:Q458;\n      wdt:P35 ?headOfState .\n  SERVICE wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\". }\n}",
+    "metadata": {}
+  },
+  {
+    "kind": 1,
+    "language": "markdown",
+    "value": "## Get the cantons of Switzerland\n\nLINDAS (Linked Data Service) allows public administrations to publish their data in the form of Knowledge Graphs and make them accessible via https://lindas.admin.ch.\nThis query is testing the endpoint configuration in the comment. `[endpoint=https://lindas.admin.ch/query]`",
     "metadata": {}
   },
   {
@@ -24,15 +30,33 @@
     "metadata": {}
   },
   {
-    "kind": 2,
-    "language": "sparql",
-    "value": "#\n# [endpoint=https://lindas.admin.ch/query]\n#\nPREFIX gont: <https://gont.ch/>\nPREFIX schema: <http://schema.org/>\nSELECT ?name WHERE {\n    { \n        ?canton a gont:Canton;\n            gont:cantonAbbreviation ?abbr ;\n            gont:date ?date ;\n            gont:longName ?name . \n    } UNION {\n        gont:Canton ?p ?o .\n    }\n} ",
+    "kind": 1,
+    "language": "markdown",
+    "value": "## Describe\n\nThis is testing the `DESCRIBE` query and the `TURTLE` output format.",
     "metadata": {}
   },
   {
     "kind": 2,
     "language": "sparql",
     "value": "# [endpoint=https://lindas.admin.ch/query]\n#\nPREFIX canton: <http://classifications.data.admin.ch/canton/>\nPREFIX gont: <https://gont.ch/>\nPREFIX purl: <http://purl.org/dc/terms/> \nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n\nDESCRIBE canton:BL\n",
+    "metadata": {}
+  },
+  {
+    "kind": 1,
+    "language": "markdown",
+    "value": "## Construct Query\n\nThis is testing the `CONSTRUCT` query and the `TURTLE` output format.",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "# [endpoint=https://lindas.admin.ch/query]\n#\nPREFIX canton: <http://classifications.data.admin.ch/canton/>\nPREFIX gont: <https://gont.ch/>\nPREFIX purl: <http://purl.org/dc/terms/> \nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n\nCONSTRUCT {\n    ?canton ?p ?o .\n} WHERE {\n    BIND (canton:BL as ?canton)\n    ?canton ?p ?o .\n}\n",
+    "metadata": {}
+  },
+  {
+    "kind": 1,
+    "language": "markdown",
+    "value": "## ASK query\n\nTest ASK query output format. One query is true the other false. ",
     "metadata": {}
   },
   {
@@ -50,31 +74,13 @@
   {
     "kind": 1,
     "language": "markdown",
-    "value": "wohooh\n\n```{sparql}\n",
+    "value": "## Blank Node test\n\nShorten Blank Nodes.",
     "metadata": {}
   },
   {
     "kind": 2,
     "language": "sparql",
-    "value": "# Q.6.2\nPREFIX foaf: <http://xmlns.com/foaf/0.1/>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX dbo: <http://dbpedia.org/ontology/>\n\nSELECT DISTINCT ?artist ?eventStart ?eventMedia ?eventMediaThumbnail ?eventLabel ?eventMediaLink\nWHERE {\n  ?work a dbo:Artwork ;\n          dbo:author ?artist .\n  ?artist dbo:birthDate ?eventStart;\n          dbo:thumbnail ?eventMedia, ?eventMediaThumbnail ;\n          rdfs:label ?eventLabel ;\n          foaf:isPrimaryTopicOf ?eventMediaLink .\n  BIND (YEAR(?eventStart) as ?birthYear)\n  FILTER (LANG(?eventLabel) = \"en\")\n  FILTER (?birthYear > 1401 && ?birthYear < 1600)\n}\n",
-    "metadata": {}
-  },
-  {
-    "kind": 2,
-    "language": "sparql",
-    "value": "PREFIX ld: <https://ld.example.com/>\nPREFIX data: <https://ld.example.com/data/>\n\nselect  * where { \n\t?s a <https://ld.example.com/vocab/Application> .\n    ?s ?p ?o \n} \nlimit 10",
-    "metadata": {}
-  },
-  {
-    "kind": 1,
-    "language": "markdown",
-    "value": "Bnode",
-    "metadata": {}
-  },
-  {
-    "kind": 2,
-    "language": "sparql",
-    "value": "# [endpoint=http://test.lindas.admin.ch/query]\nPREFIX schema: <http://schema.org/>\n\nSELECT ?propertyShape ?p ?o  WHERE {\n   {\n   SELECT ?propertyShape WHERE {\n      ?set <http://www.w3.org/ns/shacl#property> ?propertyShape . \n      FILTER(isBlank(?propertyShape))\n   } LIMIT 30\n   }\n   ?propertyShape ?p ?o .\n} ",
+    "value": "# [endpoint=http://test.lindas.admin.ch/query]\nPREFIX schema: <http://schema.org/>\n\nSELECT ?propertyShape ?p ?o  WHERE {\n   BIND (<https://politics.ld.admin.ch/vocabulary/party> as ?set)\n   ?set <http://www.w3.org/ns/shacl#property> ?propertyShape . \n   ?propertyShape ?p ?o .\n} ",
     "metadata": {}
   }
 ]

@@ -1,5 +1,11 @@
 [
   {
+    "kind": 1,
+    "language": "markdown",
+    "value": "# Use a local RDF file to query\n\n## Right click a ttl, nt, or rdf (rdf/xml) file\n\nAnd select `Sparql Notebook: Use File as Store` and run the queries. ",
+    "metadata": {}
+  },
+  {
     "kind": 2,
     "language": "sparql",
     "value": "\nPREFIX schema: <http://schema.org/>\n\nSELECT ?person ?name ?givenName WHERE {\n   {\n      BIND(<https://politics.ld.admin.ch/person/1257> as ?person) \n      ?person schema:name ?name .\n   }\n   UNION\n   {\n      BIND(<https://politics.ld.admin.ch/person/1257> as ?person) \n      ?person schema:givenName ?givenName .\n   }\n} \n",

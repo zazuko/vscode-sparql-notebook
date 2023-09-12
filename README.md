@@ -14,7 +14,7 @@ This notebook can render SPARQL SELECT results and RDF graphs via SPARQL CONSTRU
 
 ![sparql-notebook](https://user-images.githubusercontent.com/8033981/157274845-e722bace-16aa-4055-8a07-0b8fc5a8b112.gif)
 
-We recommend using it in conjunction with the [Stardog RDF Grammars](https://marketplace.visualstudio.com/items?itemName=stardog-union.stardog-rdf-grammars) and [SPARQL Language Server](https://marketplace.visualstudio.com/items?itemName=stardog-union.vscode-langserver-sparql) for SPARQL syntax highlighting and auto-completion.
+The extension automatically installs the [Stardog RDF Grammars](https://marketplace.visualstudio.com/items?itemName=stardog-union.stardog-rdf-grammars) and [SPARQL Language Server](https://marketplace.visualstudio.com/items?itemName=stardog-union.vscode-langserver-sparql) extensions for SPARQL syntax highlighting and auto-completion.
 
 This extension is still pretty raw but it works for us [tm]. Bug reports & contributions are very welcome!
 

@@ -1,5 +1,4 @@
 # [endpoint=https://lindas.admin.ch/query]
-
 PREFIX gont: <https://gont.ch/>
 PREFIX schema: <http://schema.org/>
 SELECT ?name ?abbr ?date WHERE {
