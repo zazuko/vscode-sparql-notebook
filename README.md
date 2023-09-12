@@ -7,6 +7,8 @@ Use a SPARQL notebook to:
 - Provide hands-on SPARQL training
 - Document data available via SPARQL
 - Validate data via SPARQL
+- Run queries against a SPARQL endpoint
+- Run queries against a local RDF file
 
 This notebook can render SPARQL SELECT results and RDF graphs via SPARQL CONSTRUCT queries.
 
