@@ -60,6 +60,12 @@ The query files will be updated on notebook save.
 ![ext-query](https://github.com/zazuko/vscode-sparql-notebook/assets/8033981/68da289e-1d1f-4b6d-9986-bcfc455aa15a)
 
 
+### Use a local RDF file
+
+You can query a local rdf file. The file can be a `.ttl`, `.nt` or `.rdf` file.
+
+![local-file-store](https://github.com/zazuko/vscode-sparql-notebook/assets/8033981/c02dc4bd-1cd1-4c01-8032-cc2d74fceb5c)
+
 ## Contribute
 
 This extension uses the [
