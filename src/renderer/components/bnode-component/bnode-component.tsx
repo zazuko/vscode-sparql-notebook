@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import { Term } from '../../model/sparql-result-json.model';
+import { shrinkBnode } from './shrink-bnode';
 
 interface BNodeComponentProps {
     term: Term;
@@ -16,7 +17,7 @@ export const BNodeComponent: React.FC<BNodeComponentProps> = ({ term }) => {
                 throw new Error('Term is not a blank node');
             }
 
-            const value = term.value;
+            const value = shrinkBnode(term.value);
 
 
             const bNode: BlankNode = {
@@ -32,7 +33,7 @@ export const BNodeComponent: React.FC<BNodeComponentProps> = ({ term }) => {
 
     return (
         <div style={{ display: 'flex', flexDirection: 'row' }}>
-            <span>[{blankNode?.value}]</span>
+            <span title="Blank Node">{blankNode?.value}</span>
         </div>
     );
 };

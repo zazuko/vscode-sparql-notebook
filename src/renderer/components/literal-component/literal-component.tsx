@@ -38,7 +38,7 @@ export const LiteralComponent: React.FC<LiteralComponentProps> = ({ term }) => {
 
     return (
         <div className="row">
-            <span className="value">{literal?.value}</span>
+            <span title="Literal" className="value">{literal?.value}</span>
             <span className="meta">
                 {' '}
                 {literal?.languageTag ? '@' + literal.languageTag : ''}
