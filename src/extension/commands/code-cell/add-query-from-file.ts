@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-
+import * as path from 'path';
 
 export async function addQueryFromFile(cell: vscode.NotebookCell) {
     const activeNotebook = cell.notebook;
@@ -19,14 +19,24 @@ export async function addQueryFromFile(cell: vscode.NotebookCell) {
 
         const fileUri = await vscode.window.showOpenDialog(options);
         if (fileUri && fileUri.length > 0) {
-            const filePath = fileUri[0].fsPath;
-            const relativeFilePath = vscode.workspace.asRelativePath(filePath);
-
+            const sparqlFilePath = fileUri[0].fsPath;
+            const activeNotebook = vscode.window.activeNotebookEditor?.notebook;
+            if (!activeNotebook) {
+                console.warn('No active notebook');
+                return;
+            }
             try {
-                const fileContent = vscode.workspace.fs.readFile(fileUri[0]);
-                const newCell = new vscode.NotebookCellData(vscode.NotebookCellKind.Code, `# from file ${relativeFilePath}\n${(await fileContent).toString()}`, 'sparql');
+                const relativeSparqlFilePath = path.relative(path.dirname(activeNotebook.uri.fsPath), sparqlFilePath);
+                const notebookFilePath = activeNotebook.uri.fsPath;
+                const notebookFilename = path.basename(activeNotebook.uri.fsPath);
+                const notebookPathWithoutFilename = notebookFilePath.replace(new RegExp(`${notebookFilename}$`), '');
+                const fileContent = await vscode.workspace.fs.readFile(vscode.Uri.file(notebookPathWithoutFilename + relativeSparqlFilePath));
+
+                const newCell = new vscode.NotebookCellData(vscode.NotebookCellKind.Code, `# from file ${relativeSparqlFilePath}\n${(await fileContent).toString()}`, 'sparql');
+
+                console.log('store file path in metadata:', relativeSparqlFilePath);
                 newCell.metadata = {
-                    file: filePath
+                    file: relativeSparqlFilePath
                 };
                 // Logic to add the notebook cell using the fileContent
                 const notebookEdit = vscode.NotebookEdit.replaceCells(new vscode.NotebookRange(cell.index, cell.index + 1), [newCell]);
@@ -35,7 +45,7 @@ export async function addQueryFromFile(cell: vscode.NotebookCell) {
                 vscode.workspace.applyEdit(edit);
             } catch (error) {
                 // Handle file read error
-                vscode.window.showErrorMessage(`Error reading file ${relativeFilePath}: ${error}`);
+                vscode.window.showErrorMessage(`Error reading file ${sparqlFilePath}: ${error}`);
                 console.error('Error reading file:', error);
             }
 
