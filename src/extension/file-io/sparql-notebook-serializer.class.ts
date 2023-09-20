@@ -3,6 +3,7 @@ import { TextDecoder, TextEncoder } from "util";
 
 import { RawNotebookCell } from "./raw-notebook-cell.model";
 import { SparqlNotebookCell } from "./sparql-notebook-cell.class";
+import path = require("path");
 
 
 /**
@@ -34,24 +35,6 @@ export class SparqlNotebookSerializer implements vscode.NotebookSerializer {
 
         const cells = raw.map(async (item) => {
             const cellData = new SparqlNotebookCell(item.kind, item.value, item.language, item.metadata);
-            if (cellData.metadata?.file) {
-                const filePath = vscode.Uri.file(cellData.metadata.file);
-                const relativeFilePath = vscode.workspace.asRelativePath(filePath);
-                if (filePath) {
-                    try {
-                        const fileContent = vscode.workspace.fs.readFile(filePath);
-                        cellData.value = `# from file ${relativeFilePath}\n${(await fileContent).toString()}`;
-                        // note the cell will  be reloaded  with the file content in the onDidOpenNotebookDocument
-                        return cellData;
-                    } catch (error) {
-                        // Handle file read error
-                        cellData.value = `# Error reading file ${relativeFilePath} error\n# ${error}\n#\n${cellData.value}`;
-                        vscode.window.showErrorMessage(`Error reading file ${relativeFilePath} error: ${error}`);
-                        console.error('Error reading file:', error);
-                        return cellData;
-                    }
-                }
-            }
             return cellData;
         }
         );
@@ -77,19 +60,6 @@ export class SparqlNotebookSerializer implements vscode.NotebookSerializer {
         let contents: RawNotebookCell[] = [];
 
         for (const cell of data.cells) {
-            if (cell.metadata?.file) {
-                const filePath = cell.metadata.file;
-                try {
-                    const sparqlQuery = cell.value.replace(/^# from file.*\n/, '');
-                    const content = Buffer.from(sparqlQuery, 'utf-8');
-                    await vscode.workspace.fs.writeFile(vscode.Uri.file(filePath), content);
-                } catch (error) {
-                    vscode.window.showErrorMessage(`Error writing cell value to file:\n${error}`);
-                    console.error('Error writing cell value to file:', error);
-                }
-
-
-            }
             contents.push({
                 kind: cell.kind,
                 language: cell.languageId,

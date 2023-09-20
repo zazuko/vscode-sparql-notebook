@@ -129,6 +129,40 @@ export function activate(context: vscode.ExtensionContext) {
     });
   }));
 
+  context.subscriptions.push(vscode.workspace.onDidSaveNotebookDocument(notebookDocument => {
+    // Check if the notebook is a SPARQL Notebook
+    if (notebookDocument.notebookType !== extensionId) {
+      return;
+    }
+    // write query files here 
+    const notebookPath = notebookDocument.uri.fsPath;
+    const notebookDirectory = notebookPath.substring(0, notebookPath.lastIndexOf("/")) + '/';
+
+    // cells with a file metadata
+    notebookDocument.getCells().filter(cell => cell.kind === vscode.NotebookCellKind.Code && cell.metadata.file).forEach(async cell => {
+      const activeNotebook = cell.notebook;
+      if (activeNotebook) {
+        const sparqlFilePath = cell.metadata.file;
+
+        try {
+          let relativeSparqlFilePath = sparqlFilePath;
+          if (path.isAbsolute(sparqlFilePath)) {
+            relativeSparqlFilePath = path.relative(notebookDirectory, sparqlFilePath);
+          }
+
+          const sparqlQuery = cell.document.getText().replace(/^# from file.*\n/, '');
+          const content = Buffer.from(sparqlQuery, 'utf-8');
+          await vscode.workspace.fs.writeFile(vscode.Uri.file(notebookDirectory + relativeSparqlFilePath), content);
+
+
+        } catch (error) {
+          vscode.window.showErrorMessage(`Error writing file: ${sparqlFilePath}: ${error}`);
+          console.error('Error writing file:', error);
+        }
+
+      }
+    });
+  }));
 };
 
 // this method is called when your extension is deactivated
