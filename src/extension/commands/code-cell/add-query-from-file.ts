@@ -34,7 +34,6 @@ export async function addQueryFromFile(cell: vscode.NotebookCell) {
 
                 const newCell = new vscode.NotebookCellData(vscode.NotebookCellKind.Code, `# from file ${relativeSparqlFilePath}\n${(await fileContent).toString()}`, 'sparql');
 
-                console.log('store file path in metadata:', relativeSparqlFilePath);
                 newCell.metadata = {
                     file: relativeSparqlFilePath
                 };
