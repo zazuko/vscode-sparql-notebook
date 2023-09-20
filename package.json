@@ -9,7 +9,7 @@
   "repository": {
     "url": "https://github.com/zazuko/vscode-sparql-notebook.git"
   },
-  "version": "0.0.28",
+  "version": "0.0.29",
   "engines": {
     "vscode": "^1.77.0"
   },

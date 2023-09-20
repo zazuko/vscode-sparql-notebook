@@ -41,6 +41,7 @@ export class SparqlNotebookSerializer implements vscode.NotebookSerializer {
                     try {
                         const fileContent = vscode.workspace.fs.readFile(filePath);
                         cellData.value = `# from file ${relativeFilePath}\n${(await fileContent).toString()}`;
+                        // note the cell will  be reloaded  with the file content in the onDidOpenNotebookDocument
                         return cellData;
                     } catch (error) {
                         // Handle file read error
@@ -96,8 +97,6 @@ export class SparqlNotebookSerializer implements vscode.NotebookSerializer {
                 metadata: cell.metadata
             });
         }
-
-
 
         return new TextEncoder()
             .encode(

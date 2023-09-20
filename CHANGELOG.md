@@ -2,6 +2,9 @@
 
 All notable changes to the "vscode-sparql-notebook" extension will be documented in this file.
 
+## 0.0.29
+Fix: Store external query files relative to the notebook file. This is needed to make the notebook file portable.
+
 ## 0.0.28
 
 Minor: Shorten Blank Node IDs

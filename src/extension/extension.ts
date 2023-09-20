@@ -14,6 +14,7 @@ import { addQueryFromFile } from "./commands/code-cell/add-query-from-file";
 
 import { activateFormProvider } from "./connection-view/connection-view";
 import { createStoreFromFile } from "./commands/store-from-file/store-from-file";
+import path = require("path");
 
 export const extensionId = "sparql-notebook";
 export const storageKey = `${extensionId}-connections`;
@@ -79,7 +80,56 @@ export function activate(context: vscode.ExtensionContext) {
     `${extensionId}.addQueryFromFile`,
     addQueryFromFile
   );
-}
+
+
+  // load external notebook files
+  // Execute code after a notebook is loaded
+  // Register the onDidChangeNotebookDocument event
+  context.subscriptions.push(vscode.workspace.onDidOpenNotebookDocument(notebookDocument => {
+    // Check if the notebook is a SPARQL Notebook
+    if (notebookDocument.notebookType !== extensionId) {
+      return;
+    }
+    // reload the cells with external query file content
+    // this have to be done here because we work with relative query file path
+    // and the notebook path is not available in the deserializer
+    const notebookPath = notebookDocument.uri.fsPath;
+    const notebookDirectory = notebookPath.substring(0, notebookPath.lastIndexOf("/")) + '/';
+
+    // cells with a file metadata
+    notebookDocument.getCells().filter(cell => cell.kind === vscode.NotebookCellKind.Code && cell.metadata.file).forEach(async cell => {
+      const activeNotebook = cell.notebook;
+
+      if (activeNotebook) {
+        const sparqlFilePath = cell.metadata.file;
+
+        try {
+          let relativeSparqlFilePath = sparqlFilePath;
+          if (path.isAbsolute(sparqlFilePath)) {
+            relativeSparqlFilePath = path.relative(notebookDirectory, sparqlFilePath);
+          }
+
+          const fileContent = await vscode.workspace.fs.readFile(vscode.Uri.file(notebookDirectory + relativeSparqlFilePath));
+          const newCell = new vscode.NotebookCellData(vscode.NotebookCellKind.Code, `# from file ${relativeSparqlFilePath}\n${(await fileContent).toString()}`, 'sparql');
+
+          newCell.metadata = {
+            file: relativeSparqlFilePath
+          };
+          // Logic to add the notebook cell using the fileContent
+          const notebookEdit = vscode.NotebookEdit.replaceCells(new vscode.NotebookRange(cell.index, cell.index + 1), [newCell]);
+          const edit = new vscode.WorkspaceEdit();
+          edit.set(notebookDocument.uri, [notebookEdit]);
+          vscode.workspace.applyEdit(edit);
+        } catch (error) {
+          // Handle file read error
+          vscode.window.showErrorMessage(`Error reading file ${sparqlFilePath}: ${error}\n$Reset the file path for the cell. ${cell.index}`);
+          console.error('Error reading file:', error);
+        }
+      }
+    });
+  }));
+
+};
 
 // this method is called when your extension is deactivated
 export function deactivate() { }
