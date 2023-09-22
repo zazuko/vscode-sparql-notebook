@@ -103,3 +103,10 @@ Right click a `.sparqlbook`file and select `Export to Markdown`.
 
 This extension uses the [
 Notebook API ](https://code.visualstudio.com/api/extension-guides/notebook). Contributions & bug fixes are always welcome!
+h
+## Credits
+
+Stardog VSCode Extensions, https://github.com/stardog-union/stardog-vsc
+Oxigraph, https://github.com/oxigraph
+
+And all contributors ❤️
