@@ -9,11 +9,13 @@ import { HttpEndpoint } from "../../endpoint";
 
 import { storageKey } from "../../extension";
 import { notebookEndpoint } from '../../endpoint/endpoint';
+import { SparqlNotebookCellStatusBarItemProvider } from '../../notebook/SparqlNotebookCellStatusBarItemProvider';
 
 
 export function connectToDatabase(
     context: ExtensionContext,
-    connectionsSidepanel: EndpointConnections
+    connectionsSidepanel: EndpointConnections,
+    sparqlNotebookCellStatusBarItemProvider: SparqlNotebookCellStatusBarItemProvider
 ) {
     return async (item?: EndpointConnectionListItem) => {
         let selectedName = item?.config.name;
@@ -77,5 +79,6 @@ export function connectToDatabase(
             notebookEndpoint.setEndpoint(null);
             connectionsSidepanel.setActive(null);
         }
+        sparqlNotebookCellStatusBarItemProvider.updateCellStatusBarItems();
     };
 }

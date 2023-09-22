@@ -2,6 +2,10 @@
 
 All notable changes to the "vscode-sparql-notebook" extension will be documented in this file.
 
+## 0.0.31
+Feature: Add Code Cell Statusbar Item to show connection endpoint url or file path.
+Feature: Add Code Cell Statusbar Item to show the source of the cell content (cell or file)
+Feature: Accept file paths as endpoint url. 
 ## 0.0.30
 Fix: Store external query files in onDidSaveNotebookDocument callback. This is needed to make the notebook file portable.
 ## 0.0.29

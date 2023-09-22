@@ -80,7 +80,7 @@
   {
     "kind": 2,
     "language": "sparql",
-    "value": "# [endpoint=http://test.lindas.admin.ch/query]\nPREFIX schema: <http://schema.org/>\n\nSELECT ?propertyShape ?p ?o  WHERE {\n   BIND (<https://politics.ld.admin.ch/vocabulary/party> as ?set)\n   ?set <http://www.w3.org/ns/shacl#property> ?propertyShape . \n   ?propertyShape ?p ?o .\n} ",
+    "value": "PREFIX schema: <http://schema.org/>\n\nSELECT ?propertyShape ?p ?o  WHERE {\n   BIND (<https://politics.ld.admin.ch/vocabulary/party> as ?set)\n   ?set <http://www.w3.org/ns/shacl#property> ?propertyShape . \n   ?propertyShape ?p ?o .\n} ",
     "metadata": {}
   }
 ]

@@ -9,6 +9,7 @@ import { RdfMimeType, SparqlStore } from '../../sparql-store/sparql-store';
  * Represents an HTTP SPARQL endpoint.
  */
 export class FileEndpoint extends Endpoint {
+    private _url: string = '';
     private files: Set<Uri> = new Set<Uri>();
     private _store: SparqlStore;
     /**
@@ -22,7 +23,12 @@ export class FileEndpoint extends Endpoint {
         this._store = new SparqlStore();
     }
 
+    get url(): string {
+        return this._url;
+    }
+
     public async addFile(rdfFile: Uri) {
+        this._url = rdfFile.path;
         if (!rdfFile) {
             // show window error message
             window.showErrorMessage('No file selected');
@@ -45,11 +51,14 @@ export class FileEndpoint extends Endpoint {
             window.showErrorMessage('File format not supported');
             return;
         }
-        const fileContent = await fs.promises.readFile(rdfFile.fsPath, 'utf-8');
+
         try {
+            const fileContent = await fs.promises.readFile(rdfFile.fsPath, 'utf-8');
             this._store.load(fileContent, mimeType);
-        } catch (e) {
-            throw e;
+        } catch (e: any) {
+            const message = e.message ?? e;
+            window.showErrorMessage(`File error: ${message}`);
+            console.error(e);
         }
     }
 

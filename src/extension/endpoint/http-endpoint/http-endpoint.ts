@@ -8,6 +8,7 @@ import { Endpoint } from '../endpoint';
  */
 export class HttpEndpoint extends Endpoint {
   private http: AxiosInstance;
+  private _url: string;
 
   /**
    * Creates a new instance of the HttpEndpoint class.
@@ -17,6 +18,7 @@ export class HttpEndpoint extends Endpoint {
    */
   constructor(endpointUrl: string, user: string, password: string) {
     super();
+    this._url = endpointUrl;
     this.http = axios.create({
       baseURL: endpointUrl,
       auth: {
@@ -24,6 +26,10 @@ export class HttpEndpoint extends Endpoint {
         password: password,
       },
     });
+  }
+
+  get url(): string {
+    return this._url;
   }
 
   /**

@@ -1,0 +1,1 @@
+export { SparqlNotebookSerializer } from './sparql-notebook-serializer.class';
