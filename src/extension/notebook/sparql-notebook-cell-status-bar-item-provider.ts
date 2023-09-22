@@ -20,7 +20,7 @@ export enum ConnectionSource {
 }
 
 export class ConnectionSourceStatusBarItem extends NotebookCellStatusBarItem {
-    private readonly icon = ' $(database)';
+    private readonly icon = ' $(link)';
     private itemText = 'Notebook Connection';
     constructor(cell: SparqlNotebookCell, alignment: NotebookCellStatusBarAlignment) {
         super('', alignment);
@@ -28,7 +28,8 @@ export class ConnectionSourceStatusBarItem extends NotebookCellStatusBarItem {
         if (commentEndpoint) {
             this.itemText = `Query Comment`;
         }
-        this.text = `${this.icon} ${this.itemText} ${commentEndpoint ?? notebookEndpoint.getEndpoint()?.url ? '$(check)' : '$(circle-slash)'}`;
+
+        this.text = `${this.icon} ${this.itemText} ${commentEndpoint ?? notebookEndpoint.getEndpoint()?.url ? ((commentEndpoint ?? notebookEndpoint.getEndpoint()?.url)?.startsWith('http') ? `$(database)` : '$(file)') : '$(circle-slash)'}`;
         this.tooltip = `Endpoint: ${commentEndpoint ?? notebookEndpoint.getEndpoint()?.url ?? "None"}`;
     }
 }

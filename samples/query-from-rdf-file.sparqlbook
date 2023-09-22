@@ -40,5 +40,11 @@
     "language": "sparql",
     "value": "DESCRIBE <https://politics.ld.admin.ch/person/1257>",
     "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "# [endpoint=./rdf/curia.nt]\n\nDESCRIBE <https://politics.ld.admin.ch/person/1257>",
+    "metadata": {}
   }
 ]

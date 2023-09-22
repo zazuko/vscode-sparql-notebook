@@ -1,6 +1,6 @@
-import { NotebookCell, NotebookCellOutput, NotebookCellOutputItem, NotebookController, NotebookDocument, notebooks, window, workspace } from 'vscode';
+import { NotebookCell, NotebookCellOutput, NotebookCellOutputItem, NotebookController, NotebookDocument, Uri, notebooks, window, workspace } from 'vscode';
 import { extensionId } from "../extension";
-import { Endpoint, HttpEndpoint } from "../endpoint";
+import { Endpoint, FileEndpoint, HttpEndpoint, } from "../endpoint";
 import { PrefixMap } from '../model/prefix-map';
 import { notebookEndpoint } from '../endpoint/endpoint';
 import { SparqlNotebookCellStatusBarItemProvider } from './SparqlNotebookCellStatusBarItemProvider';
@@ -56,7 +56,7 @@ export class SparqlNotebookController {
 
     // you can configure the endpoint within the query like this # [endpoint='xxxx']
     // todo: rename function
-    const sparqlEndpoint = this._getDocumentOrConnectionClient(cell);
+    const sparqlEndpoint = await this._getDocumentOrConnectionClient(cell);
 
     if (!sparqlEndpoint) {
       const errorMessage = "Not connected to a SPARQL Endpoint";
@@ -182,10 +182,26 @@ export class SparqlNotebookController {
    * @param sparqlQuery - The SPARQL query to get the endpoint for.
    * @returns An Endpoint instance for the given SPARQL query, or null if no endpoint could be found.
    */
-  private _getDocumentOrConnectionClient(cell: SparqlNotebookCell): Endpoint | null {
+  private async _getDocumentOrConnectionClient(cell: SparqlNotebookCell): Promise<Endpoint | null> {
     const documentEndpoint = cell.extractDocumentEndpoint();
     if (documentEndpoint) {
-      return new HttpEndpoint(documentEndpoint, "", "");
+      if (documentEndpoint.startsWith("http")) {
+        return new HttpEndpoint(documentEndpoint, "", "");
+      }
+      const filePath = documentEndpoint;
+      let fileUri: Uri;
+      if (filePath.startsWith('/')) {
+        // Absolute path
+        fileUri = Uri.file(filePath);
+      } else {
+        // Relative path
+        const activeFileDir = Uri.parse(cell.document.uri.toString(true)).with({ path: cell.document.uri.path.replace(/\/[^\/]*$/, '') });
+        fileUri = activeFileDir.with({ path: `${activeFileDir.path}/${filePath}` });
+      }
+      console.log('fileUri', fileUri.fsPath);
+      const fileEndpoint = new FileEndpoint();
+      await fileEndpoint.addFile(fileUri);
+      return fileEndpoint;
     }
     return notebookEndpoint.getEndpoint();
   }

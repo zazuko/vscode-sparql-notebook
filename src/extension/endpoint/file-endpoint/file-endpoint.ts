@@ -51,11 +51,14 @@ export class FileEndpoint extends Endpoint {
             window.showErrorMessage('File format not supported');
             return;
         }
-        const fileContent = await fs.promises.readFile(rdfFile.fsPath, 'utf-8');
+
         try {
+            const fileContent = await fs.promises.readFile(rdfFile.fsPath, 'utf-8');
             this._store.load(fileContent, mimeType);
-        } catch (e) {
-            throw e;
+        } catch (e: any) {
+            const message = e.message ?? e;
+            window.showErrorMessage(`File error: ${message}`);
+            console.error(e);
         }
     }
 

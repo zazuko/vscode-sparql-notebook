@@ -23,6 +23,9 @@ This extension is still pretty raw but it works for us [tm]. Bug reports & contr
 - Open any `.sparqlbook` file as a Notebook.
 - Execute query blocks in the Notebook UI and view output.
 - Configure endpoint connections in the SPARQL Notebook side panel.
+- Export a `.sparqlbook` file to Markdown.
+- Attach `.sparql` or `.rq` files to cells.
+- Use a local RDF file as a data source.
 
 ## Installation
 
@@ -31,6 +34,49 @@ You can install it directly from the Visual Studio Code Extension tab. It is ava
 ## Usage
 
 Open any `.sparqlbook` file with the `Open With` menu option. Then, select the `SPARQL Notebook` format. Connect to a SPARQL Endpoint and execute query blocks and view output interactively.
+
+## Endpoints
+
+Endpoints are the destinations for sending SPARQL queries, and there are two types:
+
+### Remote Servers (HTTP / HTTPS)
+You can connect to a remote server by clicking the `+` button in the `SPARQL Connections` panel. Fill in the server URL and optional credentials. If you omit credentials, the extension will attempt a connection without them. This connection is used throughout the entire notebook, except when a cell defines its own endpoint.
+
+### Local Endpoints
+Configure a local endpoint by right-clicking on a TTL, NT, or RDF file and selecting `SPARQL Notebook: Use File as Store`. This creates a new local endpoint populated with the chosen file's content. The entire notebook uses this endpoint, except when a cell specifies its own.
+
+![local-file-store](https://github.com/zazuko/vscode-sparql-notebook/assets/8033981/c02dc4bd-1cd1-4c01-8032-cc2d74fceb5c)
+
+### Cell-Specific Endpoints
+You can assign an endpoint to a specific cell by adding a comment with the endpoint URL or file path in a code cell:
+
+```sparql
+# [endpoint=https://lindas.admin.ch/query]
+```
+
+or 
+```sparql
+# [endpoint=./relative/path/file.ttl]
+```
+
+```sparql
+# [endpoint=/absolute/path/file.ttl]
+```
+Working with relative paths makes the notebook portable.
+
+### Cell Status Bar
+The cell status bar displays information about the endpoint in use and its source.
+
+## Code Cell (SPARQL Cell)
+A code cell contains a SPARQL query, which can be a SELECT, ASK, CONSTRUCT, or DESCRIBE query. Execute a code cell by clicking the Run Cell button in the cell toolbar or pressing Ctrl+Enter (or Option+Enter on Mac).
+
+### Query from a file
+You can attach a query file to a cell. The query file will load and execute when you run the cell. Supported file extensions include `.sparql` and `.rq`. Saving the notebook also saves the query file.
+
+![ext-query](https://github.com/zazuko/vscode-sparql-notebook/assets/8033981/68da289e-1d1f-4b6d-9986-bcfc455aa15a)
+
+### Cell Status Bar
+The cell status bar indicates whether the cell uses a query file.
 
 ## FAQ
 
@@ -51,34 +97,9 @@ Technically that means set the default renderer for MIME-Type `application/sparq
 
 Right click a `.sparqlbook`file and select `Export to Markdown`.
 
-### Use query files
 
-You can attach a query file to a cell. The query file will be loaded and executed when the cell is executed. The query file can be a `.sparql` or `.rq` file.
-
-The query files will be updated on notebook save.
-
-![ext-query](https://github.com/zazuko/vscode-sparql-notebook/assets/8033981/68da289e-1d1f-4b6d-9986-bcfc455aa15a)
-
-
-### Use a local RDF file
-
-You can query a local rdf file. The file can be a `.ttl`, `.nt` or `.rdf` file.
-
-![local-file-store](https://github.com/zazuko/vscode-sparql-notebook/assets/8033981/c02dc4bd-1cd1-4c01-8032-cc2d74fceb5c)
 
 ## Contribute
 
 This extension uses the [
 Notebook API ](https://code.visualstudio.com/api/extension-guides/notebook). Contributions & bug fixes are always welcome!
-
-# Development
-
-The notebook extension is located in `src/extension`.
-
-## Notebook Output Cells
-### SELECT / ASK Results
-A "renderer" refers to a component or extension that is responsible for displaying specific types of content or output within a notebook cell.
-
-This project provides a renderer for `application/sparql-results+json` MIME-Type. This is the MIME-Type that is used to represent SPARQL SELECT and SPARQL ASK results.
-
-You find the renderer in `src/renderer`. It is a simple React component that renders a table.
