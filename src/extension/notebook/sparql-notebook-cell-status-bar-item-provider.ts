@@ -28,7 +28,7 @@ export class ConnectionSourceStatusBarItem extends NotebookCellStatusBarItem {
         if (commentEndpoint) {
             this.itemText = `Query Comment`;
         }
-        this.text = `${this.icon} ${this.itemText}`;
+        this.text = `${this.icon} ${this.itemText} ${commentEndpoint ?? notebookEndpoint.getEndpoint()?.url ? '$(check)' : '$(circle-slash)'}`;
         this.tooltip = `Endpoint: ${commentEndpoint ?? notebookEndpoint.getEndpoint()?.url ?? "None"}`;
     }
 }

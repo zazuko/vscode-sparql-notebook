@@ -10,6 +10,10 @@ export class SparqlNotebookCell implements NotebookCell {
         this.notebookCell = notebookCell;
     }
 
+    get asNotebookCell(): NotebookCell {
+        return this.notebookCell;
+    }
+
     /**
      * This extracts the endpoint from the cell content. It's looking for a comment like this:
      * `# [endpoint=http://test.lindas.admin.ch/query]`and extracts the endpoint from it.

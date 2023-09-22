@@ -2,7 +2,7 @@
   {
     "kind": 1,
     "language": "markdown",
-    "value": "# Use a local RDF file to query\n\n## Right click a ttl, nt, or rdf (rdf/xml) file\n\nAnd select `Sparql Notebook: Use File as Store` and run the queries. ",
+    "value": "# Use a local RDF file to query\n\n## Right click a ttl, nt, or rdf (rdf/xml) file\n\nAnd select `Sparql Notebook: Use File as Store` and run the queries. ",
     "metadata": {}
   },
   {

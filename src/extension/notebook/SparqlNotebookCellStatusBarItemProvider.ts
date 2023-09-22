@@ -24,4 +24,8 @@ export class SparqlNotebookCellStatusBarItemProvider implements NotebookCellStat
         statusBarItems.push(new CellContentStatusBarItem(sparqlCell, NotebookCellStatusBarAlignment.Right));
         return statusBarItems;
     }
+
+    updateCellStatusBarItems(): void {
+        this._onDidChangeCellStatusBarItems.fire();
+    }
 }

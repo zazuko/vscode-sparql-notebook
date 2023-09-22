@@ -3,10 +3,12 @@ import { extensionId } from "../extension";
 import { Endpoint, HttpEndpoint } from "../endpoint";
 import { PrefixMap } from '../model/prefix-map';
 import { notebookEndpoint } from '../endpoint/endpoint';
+import { SparqlNotebookCellStatusBarItemProvider } from './SparqlNotebookCellStatusBarItemProvider';
+import { SparqlNotebookCell } from './sparql-notebook-cell';
 
 export class SparqlNotebookController {
   readonly controllerId = `${extensionId}-controller-id`;
-  readonly notebookType = "sparql-notebook";
+  readonly notebookType = extensionId;
   readonly label = "Sparql Notebook";
   readonly supportedLanguages = ["sparql"];
 
@@ -42,8 +44,9 @@ export class SparqlNotebookController {
     }
   }
 
-  private async _doExecution(cell: NotebookCell): Promise<void> {
-    const execution = this._controller.createNotebookCellExecution(cell);
+  private async _doExecution(nbCell: NotebookCell): Promise<void> {
+    const cell = new SparqlNotebookCell(nbCell);
+    const execution = this._controller.createNotebookCellExecution(cell.asNotebookCell);
     execution.executionOrder = ++this._executionOrder;
 
     // Keep track of elapsed time to execute cell.
@@ -53,7 +56,7 @@ export class SparqlNotebookController {
 
     // you can configure the endpoint within the query like this # [endpoint='xxxx']
     // todo: rename function
-    const sparqlEndpoint = this._getDocumentOrConnectionClient(sparqlQuery);
+    const sparqlEndpoint = this._getDocumentOrConnectionClient(cell);
 
     if (!sparqlEndpoint) {
       const errorMessage = "Not connected to a SPARQL Endpoint";
@@ -104,7 +107,7 @@ export class SparqlNotebookController {
         return;
       }
       // sparql select
-      const prefixMap = this._extractNamespacesFromQuery(sparqlQuery);
+      const prefixMap = cell.getPrefixMap();
       execution.replaceOutput([this._writeSparqlJsonResult(data, prefixMap)]);
       execution.end(isSuccess, Date.now());
       return;
@@ -169,44 +172,9 @@ export class SparqlNotebookController {
     ]);
   }
 
-  private _getEndpointFromQuery(sparqlQuery: string): string | undefined {
-    const commentLines = sparqlQuery
-      .split("\n")
-      .map((l) => l.trim())
-      .filter((l) => l.startsWith("#"));
-    const endpointExp = /\[endpoint=(.*)\]/gm;
-    const endpoints: string[] = [];
-    commentLines.every((comment: string) => {
-      const match = endpointExp.exec(comment);
-      if (match) {
-        endpoints.push(match[1]);
-        return false;
-      }
-      return true;
-    });
-    return endpoints.shift();
+  dispose() {
+    this._controller.dispose();
   }
-
-  private _extractNamespacesFromQuery(query: string): PrefixMap {
-    const configuration = workspace.getConfiguration("sparqlbook");
-    const useNamespaces = configuration.get("useNamespaces");
-    if (!useNamespaces) {
-      return {};
-    }
-
-    // get namespaces from prefixes in query
-    let namespaces: PrefixMap = {};
-    let prefixRegex = /[Pp][Rr][Ee][Ff][Ii][Xx] ([^:]*):[ ]*<([^>]*)>/g;
-
-    // get namespaces from prefixes in query
-    let match;
-    while ((match = prefixRegex.exec(query)) !== null) {
-      namespaces[match[1]] = match[2];
-    }
-    return namespaces;
-  }
-
-  dispose() { }
 
 
   /**
@@ -214,13 +182,14 @@ export class SparqlNotebookController {
    * @param sparqlQuery - The SPARQL query to get the endpoint for.
    * @returns An Endpoint instance for the given SPARQL query, or null if no endpoint could be found.
    */
-  private _getDocumentOrConnectionClient(sparqlQuery: string): Endpoint | null {
-    const documentEndpoint = this._getEndpointFromQuery(sparqlQuery);
+  private _getDocumentOrConnectionClient(cell: SparqlNotebookCell): Endpoint | null {
+    const documentEndpoint = cell.extractDocumentEndpoint();
     if (documentEndpoint) {
       return new HttpEndpoint(documentEndpoint, "", "");
     }
     return notebookEndpoint.getEndpoint();
   }
-}
 
+
+}
 

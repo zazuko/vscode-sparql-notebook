@@ -33,6 +33,10 @@ export function activate(context: vscode.ExtensionContext) {
   const sparqlNotebookController = new SparqlNotebookController();
   context.subscriptions.push(sparqlNotebookController);
 
+
+  const sparqlNotebookCellStatusBarItemProvider = new SparqlNotebookCellStatusBarItemProvider();
+  context.subscriptions.push(vscode.notebooks.registerNotebookCellStatusBarItemProvider(extensionId, sparqlNotebookCellStatusBarItemProvider));
+
   // register the connections sidepanel
   const connectionsSidepanel = new EndpointConnections(context);
   vscode.window.registerTreeDataProvider(storageKey, connectionsSidepanel);
@@ -60,12 +64,12 @@ export function activate(context: vscode.ExtensionContext) {
   );
   vscode.commands.registerCommand(
     `${extensionId}.connect`,
-    connectToDatabase(context, connectionsSidepanel)
+    connectToDatabase(context, connectionsSidepanel, sparqlNotebookCellStatusBarItemProvider)
   );
 
   vscode.commands.registerCommand(
     `${extensionId}.createStoreFromFile`,
-    createStoreFromFile
+    createStoreFromFile(sparqlNotebookCellStatusBarItemProvider)
   );
 
   //  export related commands
@@ -164,8 +168,6 @@ export function activate(context: vscode.ExtensionContext) {
       }
     });
   }));
-
-  context.subscriptions.push(vscode.notebooks.registerNotebookCellStatusBarItemProvider(extensionId, new SparqlNotebookCellStatusBarItemProvider()));
 
 };
 
