@@ -9,6 +9,7 @@ import { RdfMimeType, SparqlStore } from '../../sparql-store/sparql-store';
  * Represents an HTTP SPARQL endpoint.
  */
 export class FileEndpoint extends Endpoint {
+    private _url: string = '';
     private files: Set<Uri> = new Set<Uri>();
     private _store: SparqlStore;
     /**
@@ -22,7 +23,12 @@ export class FileEndpoint extends Endpoint {
         this._store = new SparqlStore();
     }
 
+    get url(): string {
+        return this._url;
+    }
+
     public async addFile(rdfFile: Uri) {
+        this._url = rdfFile.path;
         if (!rdfFile) {
             // show window error message
             window.showErrorMessage('No file selected');

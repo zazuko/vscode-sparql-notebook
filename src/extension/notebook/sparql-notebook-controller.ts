@@ -1,8 +1,8 @@
 import { NotebookCell, NotebookCellOutput, NotebookCellOutputItem, NotebookController, NotebookDocument, notebooks, window, workspace } from 'vscode';
-import { extensionId } from "./extension";
-import { Endpoint, HttpEndpoint } from "./endpoint";
-import { PrefixMap } from './model/prefix-map';
-import { notebookEndpoint } from './endpoint/endpoint';
+import { extensionId } from "../extension";
+import { Endpoint, HttpEndpoint } from "../endpoint";
+import { PrefixMap } from '../model/prefix-map';
+import { notebookEndpoint } from '../endpoint/endpoint';
 
 export class SparqlNotebookController {
   readonly controllerId = `${extensionId}-controller-id`;

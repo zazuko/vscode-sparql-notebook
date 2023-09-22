@@ -1,9 +1,9 @@
 import * as vscode from "vscode";
 
-import { SparqlNotebookController } from "./sparql-notebook-controller";
+import { SparqlNotebookController } from "./notebook/sparql-notebook-controller";
 import { EndpointConnections } from "./sparql-connection-menu";
 
-import { SparqlNotebookSerializer } from "./file-io";
+import { SparqlNotebookSerializer } from "./notebook/file-io";
 
 import { deleteConnection } from "./commands/sparql-connection/delete-connection";
 import { addConnection } from "./commands/sparql-connection/add-connection";
@@ -15,6 +15,7 @@ import { addQueryFromFile } from "./commands/code-cell/add-query-from-file";
 import { activateFormProvider } from "./connection-view/connection-view";
 import { createStoreFromFile } from "./commands/store-from-file/store-from-file";
 import path = require("path");
+import { SparqlNotebookCellStatusBarItemProvider } from './notebook/SparqlNotebookCellStatusBarItemProvider';
 
 export const extensionId = "sparql-notebook";
 export const storageKey = `${extensionId}-connections`;
@@ -163,8 +164,10 @@ export function activate(context: vscode.ExtensionContext) {
       }
     });
   }));
+
+  context.subscriptions.push(vscode.notebooks.registerNotebookCellStatusBarItemProvider(extensionId, new SparqlNotebookCellStatusBarItemProvider()));
+
 };
 
 // this method is called when your extension is deactivated
 export function deactivate() { }
-
