@@ -106,7 +106,7 @@ Notebook API ](https://code.visualstudio.com/api/extension-guides/notebook). Con
 h
 ## Credits
 
-Stardog VSCode Extensions, https://github.com/stardog-union/stardog-vsc
-Oxigraph, https://github.com/oxigraph
+- Stardog VSCode Extensions, https://github.com/stardog-union/stardog-vsc
+- Oxigraph, https://github.com/oxigraph
 
 And all contributors ❤️
