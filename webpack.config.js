@@ -1,5 +1,7 @@
 //@ts-check
+// eslint-disable-next-line @typescript-eslint/naming-convention
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
+// eslint-disable-next-line @typescript-eslint/naming-convention
 const { DefinePlugin } = require('webpack');
 const webpack = require('webpack');
 
@@ -117,6 +119,7 @@ const rendererConfig = {
     }),
     new DefinePlugin({
       // Path from the output filename to the output directory
+      // eslint-disable-next-line @typescript-eslint/naming-convention
       __webpack_relative_entrypoint_to_root__: JSON.stringify(
         path.posix.relative(path.posix.dirname(`/index.js`), '/'),
       ),
