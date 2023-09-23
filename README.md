@@ -70,7 +70,7 @@ The cell status bar displays information about the endpoint in use and its sourc
 ## Code Cell (SPARQL Cell)
 A code cell contains a SPARQL query, which can be a SELECT, ASK, CONSTRUCT, or DESCRIBE query. Execute a code cell by clicking the Run Cell button in the cell toolbar or pressing Ctrl+Enter (or Option+Enter on Mac).
 
-### Query from a file
+### Query from a file
 You can attach a query file to a cell. The query file will load and execute when you run the cell. Supported file extensions include `.sparql` and `.rq`. Saving the notebook also saves the query file.
 
 ![ext-query](https://github.com/zazuko/vscode-sparql-notebook/assets/8033981/68da289e-1d1f-4b6d-9986-bcfc455aa15a)
