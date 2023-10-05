@@ -82,5 +82,11 @@
     "language": "sparql",
     "value": "PREFIX schema: <http://schema.org/>\n\nSELECT ?propertyShape ?p ?o  WHERE {\n   BIND (<https://politics.ld.admin.ch/vocabulary/party> as ?set)\n   ?set <http://www.w3.org/ns/shacl#property> ?propertyShape . \n   ?propertyShape ?p ?o .\n} ",
     "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "SELECT (COUNT (?work_of_Agatha_Christie) AS ?Number_of_AC_works)\n\n{?work_of_Agatha_Christie dbo:author dbr:Agatha_Christie } \n\n",
+    "metadata": {}
   }
 ]

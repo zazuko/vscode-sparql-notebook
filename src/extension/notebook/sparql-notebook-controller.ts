@@ -6,6 +6,14 @@ import { notebookEndpoint } from '../endpoint/endpoint';
 import { SparqlNotebookCellStatusBarItemProvider } from './SparqlNotebookCellStatusBarItemProvider';
 import { SparqlNotebookCell } from './sparql-notebook-cell';
 
+/****** */
+import getStream from 'get-stream';
+import formats from '@rdfjs-elements/formats-pretty';
+import { Readable } from 'stream';
+
+import prefixes from '@zazuko/prefixes';
+
+
 export class SparqlNotebookController {
   readonly controllerId = `${extensionId}-controller-id`;
   readonly notebookType = extensionId;
@@ -115,7 +123,7 @@ export class SparqlNotebookController {
 
     if (contentType === "text/turtle") {
       // sparql construct
-      execution.replaceOutput([this._writeTurtleResult(data)]);
+      execution.replaceOutput([await this._writeTurtleResult(data, cell.getPrefixMap())]);
       execution.end(isSuccess, Date.now());
       return;
     }
@@ -136,12 +144,36 @@ export class SparqlNotebookController {
     return;
   }
 
-  private _writeTurtleResult(resultTTL: string): NotebookCellOutput {
+  private async _writeTurtleResult(resultTTL: string, prefix: PrefixMap): Promise<NotebookCellOutput> {
+
+    // Create a new readable stream
+    const ttlStream = new Readable({
+      read() {
+        // Push the string to the stream
+        this.push(resultTTL);
+        // Signal the end of the stream
+        this.push(null);
+      },
+    });
+
+    const ttlStream2 = new Readable({
+      read() {
+        // Push the string to the stream
+        this.push(resultTTL);
+        // Signal the end of the stream
+        this.push(null);
+      },
+    });
+
+    const quads = formats.parsers.import('text/turtle', ttlStream);
+    const prettyTurtle = await getStream(formats.serializers.import('text/turtle', quads!, { prefixes: prefix }));
+
     // this is writing markdown to the cell containing a turtle code block
     return new NotebookCellOutput([
-      NotebookCellOutputItem.text(resultTTL, "text/plain"),
+
+      NotebookCellOutputItem.text(prettyTurtle, "text/plain"),
       NotebookCellOutputItem.text(
-        `\`\`\`turtle\n${resultTTL}\n\`\`\``,
+        `\`\`\`turtle\n${prettyTurtle}\n\`\`\``,
         "text/markdown"
       ),
     ]);
@@ -208,4 +240,3 @@ export class SparqlNotebookController {
 
 
 }
-

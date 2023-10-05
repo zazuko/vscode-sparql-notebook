@@ -210,9 +210,11 @@
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
+    "@rdfjs-elements/formats-pretty": "^0.6.3",
     "@vscode/webview-ui-toolkit": "^1.2.2",
     "@zazuko/prefixes": "^2.0.0",
     "axios": "^1.5.0",
+    "get-stream": "^8.0.1",
     "oxigraph": "^0.3.19",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
