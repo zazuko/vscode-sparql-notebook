@@ -5,6 +5,7 @@ import { PrefixMap } from '../model/prefix-map';
 import { notebookEndpoint } from '../endpoint/endpoint';
 import { SparqlNotebookCellStatusBarItemProvider } from './SparqlNotebookCellStatusBarItemProvider';
 import { SparqlNotebookCell } from './sparql-notebook-cell';
+import { shrink } from '@zazuko/prefixes';
 
 export class SparqlNotebookController {
   readonly controllerId = `${extensionId}-controller-id`;
@@ -154,6 +155,7 @@ export class SparqlNotebookController {
         resultJson,
         "application/sparql-results+json"
       ),
+      this._writeDataTableRendererCompatibleJson(resultJson, prefixMap),
     ]);
     outputItem.metadata = { prefixMap: prefixMap };
     return outputItem;
@@ -170,6 +172,30 @@ export class SparqlNotebookController {
         message: message,
       }),
     ]);
+  }
+
+  private _writeDataTableRendererCompatibleJson(resultJson: any, prefixMap: PrefixMap = {}) {
+    const dtJonBindings: {[k: string]: any}[] = resultJson.results.bindings;
+
+    const dtJson = dtJonBindings.map(item => {
+      const dtMap = Object.keys(item).reduce((prev, key) => {
+          const fieldTypeValue = item[key];
+          let fieldValue = fieldTypeValue.value;
+
+          if (fieldTypeValue.type === "uri") {
+            const prefixedValue = shrink(fieldValue, prefixMap);
+            fieldValue = prefixedValue.length > 0 ? prefixedValue : fieldValue;
+          }
+
+          prev.set(key, fieldValue);
+        return prev;
+      }, new Map());
+
+      return Object.fromEntries(dtMap.entries());
+    });
+
+    const jsonStringified = JSON.stringify(dtJson, null, "   ");
+    return NotebookCellOutputItem.text(jsonStringified, "application/json");
   }
 
   dispose() {
