@@ -3,6 +3,9 @@
   "compilerOptions": {
     "rootDir": ".",
     "outDir": "../../out/extension",
+    "types": [
+      "node"
+    ],
   },
   "references": []
 }
