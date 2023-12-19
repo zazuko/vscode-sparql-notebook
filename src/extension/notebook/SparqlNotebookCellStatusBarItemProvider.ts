@@ -4,7 +4,8 @@ import {
     NotebookCell,
     CancellationToken,
     NotebookCellStatusBarItem,
-    NotebookCellStatusBarAlignment
+    NotebookCellStatusBarAlignment,
+    NotebookCellKind
 } from 'vscode';
 import { CellContentStatusBarItem, ConnectionSourceStatusBarItem } from './sparql-notebook-cell-status-bar-item-provider';
 import { SparqlNotebookCell } from './sparql-notebook-cell';
@@ -15,6 +16,9 @@ export class SparqlNotebookCellStatusBarItemProvider implements NotebookCellStat
     readonly onDidChangeCellStatusBarItems = this._onDidChangeCellStatusBarItems.event;
 
     provideCellStatusBarItems(cell: NotebookCell, token: CancellationToken): NotebookCellStatusBarItem[] {
+        if (cell.kind === NotebookCellKind.Markup) {
+            return [];
+        }
         const sparqlCell = new SparqlNotebookCell(cell);
 
 

@@ -29,7 +29,7 @@ export const SparqlResultJsonComponent: React.FC<SparqlResultJsonComponentProps>
 
                                 {result[heading] === undefined ? (
                                     <div></div>
-                                ) : result[heading]?.type === 'literal' ? (
+                                ) : result[heading]?.type === 'literal' || result[heading]?.type === 'typed-literal' ? (
                                     <LiteralComponent term={result[heading]} />
                                 ) : result[heading]?.type === 'uri' ? (
                                     <UriComponent term={result[heading]} />

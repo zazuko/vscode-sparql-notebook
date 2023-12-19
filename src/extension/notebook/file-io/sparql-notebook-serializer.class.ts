@@ -3,7 +3,6 @@ import { TextDecoder, TextEncoder } from "util";
 
 import { RawNotebookCell } from "./raw-notebook-cell.model";
 import { SparqlNotebookCell } from "./sparql-notebook-cell.class";
-import path = require("path");
 
 
 /**

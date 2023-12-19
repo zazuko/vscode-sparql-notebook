@@ -16,7 +16,7 @@ export const LiteralComponent: React.FC<LiteralComponentProps> = ({ term }) => {
 
     useEffect(() => {
         if (term && term.value) {
-            if (term.type !== 'literal') {
+            if (term.type !== 'literal' && term.type !== 'typed-literal') {
                 throw new Error('Term is not a literal');
             }
             let datatype = '';

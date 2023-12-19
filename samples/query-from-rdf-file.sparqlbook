@@ -44,7 +44,7 @@
   {
     "kind": 2,
     "language": "sparql",
-    "value": "# [endpoint=./rdf/curia.nt]\n\nDESCRIBE <https://politics.ld.admin.ch/person/1257>",
+    "value": "# [endpoint=./rdf/curia.nt]\nPREFIX schema: <http://schema.org/>\nPREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX xsd:<http://www.w3.org/2001/XMLSchema#>\n\nDESCRIBE <https://politics.ld.admin.ch/person/1257>",
     "metadata": {}
   }
 ]
