@@ -146,6 +146,7 @@ export class SparqlNotebookController {
 
   private async _writeTurtleResult(resultTTL: string, prefix: PrefixMap): Promise<NotebookCellOutput> {
 
+    console.log('write turtle result', prefix);
     // Create a new readable stream
     const ttlStream = new Readable({
       read() {
@@ -168,6 +169,7 @@ export class SparqlNotebookController {
     const quads = formats.parsers.import('text/turtle', ttlStream);
     const prettyTurtle = await getStream(formats.serializers.import('text/turtle', quads!, { prefixes: prefix }));
 
+    console.log('prettyTurtle', prettyTurtle);
     // this is writing markdown to the cell containing a turtle code block
     return new NotebookCellOutput([
 
