@@ -147,7 +147,6 @@ export class SparqlNotebookController {
 
   private async _writeTurtleResult(resultTTL: string, prefix: PrefixMap): Promise<NotebookCellOutput> {
 
-    console.log('write turtle result', prefix);
     // Create a new readable stream
     const ttlStream = new Readable({
       read() {
@@ -170,7 +169,6 @@ export class SparqlNotebookController {
     const quads = formats.parsers.import('text/turtle', ttlStream);
     const prettyTurtle = await getStream(formats.serializers.import('text/turtle', quads!, { prefixes: prefix }));
 
-    console.log('prettyTurtle', prettyTurtle);
     // this is writing markdown to the cell containing a turtle code block
     return new NotebookCellOutput([
 
@@ -190,6 +188,7 @@ export class SparqlNotebookController {
         "application/sparql-results+json"
       ),
       this._writeDataTableRendererCompatibleJson(resultJson, prefixMap),
+      this._writeDataTableRendererCompatibleXJson(resultJson, prefixMap),
     ]);
     outputItem.metadata = { prefixMap: prefixMap };
     return outputItem;
@@ -209,19 +208,19 @@ export class SparqlNotebookController {
   }
 
   private _writeDataTableRendererCompatibleJson(resultJson: any, prefixMap: PrefixMap = {}) {
-    const dtJonBindings: {[k: string]: any}[] = resultJson.results.bindings;
+    const dtJonBindings: { [k: string]: any }[] = resultJson.results.bindings;
 
     const dtJson = dtJonBindings.map(item => {
       const dtMap = Object.keys(item).reduce((prev, key) => {
-          const fieldTypeValue = item[key];
-          let fieldValue = fieldTypeValue.value;
+        const fieldTypeValue = item[key];
+        let fieldValue = fieldTypeValue.value;
 
-          if (fieldTypeValue.type === "uri") {
-            const prefixedValue = shrink(fieldValue, prefixMap);
-            fieldValue = prefixedValue.length > 0 ? prefixedValue : fieldValue;
-          }
+        if (fieldTypeValue.type === "uri") {
+          const prefixedValue = shrink(fieldValue, prefixMap);
+          fieldValue = prefixedValue.length > 0 ? prefixedValue : fieldValue;
+        }
 
-          prev.set(key, fieldValue);
+        prev.set(key, fieldValue);
         return prev;
       }, new Map());
 
@@ -232,6 +231,29 @@ export class SparqlNotebookController {
     return NotebookCellOutputItem.text(jsonStringified, "application/json");
   }
 
+  private _writeDataTableRendererCompatibleXJson(resultJson: any, prefixMap: PrefixMap = {}) {
+    const dtJonBindings: { [k: string]: any }[] = resultJson.results.bindings;
+
+    const dtJson = dtJonBindings.map(item => {
+      const dtMap = Object.keys(item).reduce((prev, key) => {
+        const fieldTypeValue = item[key];
+        let fieldValue = fieldTypeValue.value;
+
+        if (fieldTypeValue.type === "uri") {
+          const prefixedValue = shrink(fieldValue, prefixMap);
+          fieldValue = prefixedValue.length > 0 ? prefixedValue : fieldValue;
+        }
+
+        prev.set(key, fieldValue);
+        return prev;
+      }, new Map());
+
+      return Object.fromEntries(dtMap.entries());
+    });
+
+    const jsonStringified = JSON.stringify(dtJson, null, "   ");
+    return NotebookCellOutputItem.text(jsonStringified, "text/x-json");
+  }
   dispose() {
     this._controller.dispose();
   }

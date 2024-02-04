@@ -1,0 +1,206 @@
+[
+  {
+    "kind": 1,
+    "language": "markdown",
+    "value": "# ElCom Strompreise SPARQL Notebook\n\nThis notebook contains a selection of queries that can be used to validate the data & debug data issues.\n\nThere are two Jupyter notebooks available for this dataset:\n\n*  [How do electricity tariffs in Switzerland vary?](https://jupyter.zazuko.com/tariffs_increase)\n*  [How much more will you have to spend on electricity in 2023?](https://jupyter.zazuko.com/electricity_prices.html)\n\n## Check if all cubes exist\n\nWe expect `true` (or yes) here.",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "# from file docs/queries/tariff-ask.rq\nPREFIX schema: <http://schema.org/>\nPREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX cube: <https://cube.link/>\nPREFIX strom: <https://energy.ld.admin.ch/elcom/electricityprice/dimension/>\n\nASK\nFROM <https://lindas.admin.ch/elcom/electricityprice>\nWHERE {\n  <https://energy.ld.admin.ch/elcom/electricityprice> a cube:Cube ;\n    cube:observationSet/cube:observation ?obs .\n  \n  ?obs strom:period \"2024\"^^xsd:gYear ;\n    strom:municipality ?municipality;\n    strom:category ?category ;\n    strom:product ?product ;\n    strom:total ?total ;\n    strom:energy ?energy ;\n    strom:charge ?charge ;\n    strom:gridusage ?gridusage ;\n    strom:aidfee ?aidfee .\n}\n",
+    "metadata": {
+      "file": "/Users/ktk/workspace/ld-pipelines/elcom-electricityprice/docs/queries/tariff-ask.rq"
+    }
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "# from file docs/queries/median-canton-ask.rq\nPREFIX schema: <http://schema.org/>\nPREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX cube: <https://cube.link/>\nPREFIX strom: <https://energy.ld.admin.ch/elcom/electricityprice/dimension/>\n\nASK\nFROM <https://lindas.admin.ch/elcom/electricityprice>\nWHERE {\n  <https://energy.ld.admin.ch/elcom/electricityprice-canton> a cube:Cube ;\n    cube:observationSet/cube:observation ?obs .\n  \n  ?obs strom:period \"2024\"^^xsd:gYear ;\n    strom:category ?category ;\n    strom:product ?product ;\n    strom:canton ?canton ;\n    strom:total ?total ;\n    strom:energy ?energy ;\n    strom:charge ?charge ;\n    strom:gridusage ?gridusage ;\n    strom:aidfee ?aidfee .\n  }\n\n\n",
+    "metadata": {
+      "file": "/Users/ktk/workspace/ld-pipelines/elcom-electricityprice/docs/queries/median-canton-ask.rq"
+    }
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "# from file docs/queries/median-swiss-ask.rq\nPREFIX schema: <http://schema.org/>\nPREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX cube: <https://cube.link/>\nPREFIX strom: <https://energy.ld.admin.ch/elcom/electricityprice/dimension/>\n\nASK\nFROM <https://lindas.admin.ch/elcom/electricityprice>\nWHERE {\n  <https://energy.ld.admin.ch/elcom/electricityprice-swiss> a cube:Cube ;\n    cube:observationSet/cube:observation ?obs .\n  \n  ?obs strom:period \"2024\"^^xsd:gYear ;\n    strom:category ?category ;\n    strom:product ?product ;\n    strom:total ?total ;\n    strom:energy ?energy ;\n    strom:charge ?charge ;\n    strom:gridusage ?gridusage ;\n    strom:aidfee ?aidfee .\n}",
+    "metadata": {
+      "file": "/Users/ktk/workspace/ld-pipelines/elcom-electricityprice/docs/queries/median-swiss-ask.rq"
+    }
+  },
+  {
+    "kind": 1,
+    "language": "markdown",
+    "value": "## Electricity Price Queries\n\n### Main Cube with all Tariffs\n\n",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "# from file docs/queries/tariff.rq\nPREFIX schema: <http://schema.org/>\nPREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX cube: <https://cube.link/>\nPREFIX strom: <https://energy.ld.admin.ch/elcom/electricityprice/dimension/>\n\nSELECT *\nFROM <https://lindas.admin.ch/elcom/electricityprice>\nWHERE {\n  <https://energy.ld.admin.ch/elcom/electricityprice> a cube:Cube ;\n    cube:observationSet/cube:observation ?obs .\n  \n  ?obs strom:period \"2024\"^^xsd:gYear ;\n    strom:municipality ?municipality;\n    strom:category ?category ;\n    strom:product ?product ;\n    strom:total ?total ;\n    strom:energy ?energy ;\n    strom:charge ?charge ;\n    strom:gridusage ?gridusage ;\n    strom:aidfee ?aidfee .\n}\nLIMIT 10\n",
+    "metadata": {
+      "file": "/Users/ktk/workspace/ld-pipelines/elcom-electricityprice/docs/queries/tariff.rq"
+    }
+  },
+  {
+    "kind": 1,
+    "language": "markdown",
+    "value": "## Cantonal Median",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "# from file docs/queries/median-canton.rq\nPREFIX schema: <http://schema.org/>\nPREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX cube: <https://cube.link/>\nPREFIX strom: <https://energy.ld.admin.ch/elcom/electricityprice/dimension/>\n\nSELECT *\nWHERE {\n  <https://energy.ld.admin.ch/elcom/electricityprice-canton> a cube:Cube ;\n    cube:observationSet/cube:observation ?obs .\n  \n  ?obs strom:period \"2024\"^^xsd:gYear ;\n    strom:category ?category ;\n    strom:product ?product ;\n    strom:canton ?canton ;\n    strom:total ?total ;\n    strom:energy ?energy ;\n    strom:charge ?charge ;\n    strom:gridusage ?gridusage ;\n    strom:aidfee ?aidfee .\n\n  BIND(STRAFTER(STR(?category), 'https://energy.ld.admin.ch/elcom/electricityprice/category/') AS ?categoryName)\n  BIND(STRAFTER(STR(?product), 'https://energy.ld.admin.ch/elcom/electricityprice/product/') AS ?productName)\n\n}\nORDER BY ?period ?categoryName ?productName\nLIMIT 10",
+    "metadata": {
+      "file": "/Users/ktk/workspace/ld-pipelines/elcom-electricityprice/docs/queries/median-canton.rq"
+    }
+  },
+  {
+    "kind": 1,
+    "language": "markdown",
+    "value": "### Swiss Median",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "# from file docs/queries/median-swiss.rq\nPREFIX schema: <http://schema.org/>\nPREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX cube: <https://cube.link/>\nPREFIX strom: <https://energy.ld.admin.ch/elcom/electricityprice/dimension/>\n\nSELECT *\nWHERE {\n  <https://energy.ld.admin.ch/elcom/electricityprice-swiss> a cube:Cube ;\n    cube:observationSet/cube:observation ?obs .\n  \n  ?obs strom:period \"2024\"^^xsd:gYear ;\n    strom:category ?category ;\n    strom:product ?product ;\n    strom:total ?total ;\n    strom:energy ?energy ;\n    strom:charge ?charge ;\n    strom:gridusage ?gridusage ;\n    strom:aidfee ?aidfee .\n\n  BIND(STRAFTER(STR(?category), 'https://energy.ld.admin.ch/elcom/electricityprice/category/') AS ?categoryName)\n  BIND(STRAFTER(STR(?product), 'https://energy.ld.admin.ch/elcom/electricityprice/product/') AS ?productName)\n   \n}\nORDER BY ?period ?categoryName ?productName\nLIMIT 10",
+    "metadata": {
+      "file": "/Users/ktk/workspace/ld-pipelines/elcom-electricityprice/docs/queries/median-swiss.rq"
+    }
+  },
+  {
+    "kind": 1,
+    "language": "markdown",
+    "value": "### Swiss municipalities, responsible electricity grid operators and tariffs 2023",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "# from file docs/queries/municipalities-operators-tariffs.rq\nPREFIX schema: <http://schema.org/>\nPREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX cube: <https://cube.link/>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nPREFIX strom: <https://energy.ld.admin.ch/elcom/electricityprice/dimension/>\n\nSELECT ?netzbetreiber ?gemeindeNummer ?gemeindeName ?kanton ?kategorieName ?total ?energie ?abgaben ?netznutzung ?netzzuschlag \n\nFROM <https://lindas.admin.ch/elcom/electricityprice>\nFROM <https://lindas.admin.ch/territorial>\nFROM <https://lindas.admin.ch/fso/register>\n\n# This query is limited to 1000 results at the end, remove the LIMIT on the last line if you want all > 30'000 results\n\nWHERE\n{\n  {  \n    SELECT ?operator ?netzbetreiber ?netzbetreiberPlz ?netzbetreiberOrt { \n      ?operator a schema:Organization ;\n      schema:name ?netzbetreiber ;\n    }\n  }\n  \n  <https://energy.ld.admin.ch/elcom/electricityprice> a cube:Cube ;\n    cube:observationSet/cube:observation ?obs .\n  \n  ?obs strom:period \"2024\"^^xsd:gYear ; # Adjust here if you need another year\n    strom:municipality ?municipality;\n    strom:category ?category ;\n    strom:product <https://energy.ld.admin.ch/elcom/electricityprice/product/standard> ;\n    strom:total ?total ;\n    strom:energy ?energie ;\n    strom:charge ?abgaben ;\n    strom:gridusage ?netznutzung ;\n    strom:aidfee ?netzzuschlag ;\n    strom:operator ?operator .\n\n  ?municipality schema:name ?gemeindeName ;\n    schema:identifier ?gemeindeNummer ;\n    schema:containedInPlace ?canton .\n  \n  ?canton a <https://schema.ld.admin.ch/Canton> ;\n    schema:alternateName ?kanton .\n  \n  ?category schema:name ?kategorieName .\n  \n  # Uncomment this filter if you are looking for a specific municipality\n  #FILTER( ?gemeindeNummer = 261 )\n  \n}\nORDER BY ?gemeindeNummer ?kategorieName\nLIMIT 1000\n",
+    "metadata": {
+      "file": "/Users/ktk/workspace/ld-pipelines/elcom-electricityprice/docs/queries/municipalities-operators-tariffs.rq"
+    }
+  },
+  {
+    "kind": 1,
+    "language": "markdown",
+    "value": "### Raw data tariffs 2023, standard product",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "# from file docs/queries/raw-data-tariffs-standard.rq\nPREFIX schema: <http://schema.org/>\nPREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX cube: <https://cube.link/>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nPREFIX strom: <https://energy.ld.admin.ch/elcom/electricityprice/dimension/>\n\nSELECT ?uid ?netzbetreiber ?kategorieName ?total ?energie ?abgaben ?netznutzung ?netzzuschlag \n\nFROM <https://lindas.admin.ch/elcom/electricityprice>\nFROM <https://lindas.admin.ch/territorial>\nFROM <https://lindas.admin.ch/fso/register>\n\nWHERE {\n  {  \n    SELECT ?uid ?operator ?netzbetreiber { \n      ?operator a schema:Organization ;\n      schema:name ?netzbetreiber ;\n      schema:identifier ?uid . # UID from https://www.uid.admin.ch/\n \n      # Uncomment if you want to filter for a specific provider\n      #FILTER( CONTAINS( lcase(?netzbetreiber), \"biel\" ))\n    }\n  }\n  \n  <https://energy.ld.admin.ch/elcom/electricityprice> a cube:Cube ;\n    cube:observationSet/cube:observation ?obs .\n  \n  ?obs strom:period \"2024\"^^xsd:gYear ; # Adjust here if you need another year\n    strom:municipality ?municipality;\n    strom:category ?category ;\n    strom:product <https://energy.ld.admin.ch/elcom/electricityprice/product/standard> ;\n    strom:total ?total ;\n    strom:energy ?energie ;\n    strom:charge ?abgaben ;     \n    strom:gridusage ?netznutzung ;\n    strom:aidfee ?netzzuschlag ;\n    strom:operator ?operator .\n  \n  ?category schema:name ?kategorieName .\n  \n  # Uncomment this filter if you are looking for a specific municipality\n  #FILTER( ?gemeindeNummer = 261 )\n  \n}\nORDER BY ?netzbetreiber ?kategorieName\nLIMIT 100\n",
+    "metadata": {
+      "file": "/Users/ktk/workspace/ld-pipelines/elcom-electricityprice/docs/queries/raw-data-tariffs-standard.rq"
+    }
+  },
+  {
+    "kind": 1,
+    "language": "markdown",
+    "value": "### Raw data tariffs 2023, cheapest product",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "# from file docs/queries/raw-data-tariffs-cheapest.rq\nPREFIX schema: <http://schema.org/>\nPREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX cube: <https://cube.link/>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nPREFIX strom: <https://energy.ld.admin.ch/elcom/electricityprice/dimension/>\n\nSELECT ?uid ?netzbetreiber ?kategorieName ?total ?energie ?abgaben ?netznutzung ?netzzuschlag \n\nFROM <https://lindas.admin.ch/elcom/electricityprice>\nFROM <https://lindas.admin.ch/territorial>\nFROM <https://lindas.admin.ch/fso/register>\n\nWHERE {\n  {  \n    SELECT ?uid ?operator ?netzbetreiber { \n      ?operator a schema:Organization ;\n      schema:name ?netzbetreiber ;\n      schema:identifier ?uid . # UID from https://www.uid.admin.ch/\n \n      # Uncomment if you want to filter for a specific provider\n      #FILTER( CONTAINS( lcase(?netzbetreiber), \"biel\" ))\n    }\n  }\n  \n  <https://energy.ld.admin.ch/elcom/electricityprice> a cube:Cube ;\n    cube:observationSet/cube:observation ?obs .\n  \n  ?obs strom:period \"2024\"^^xsd:gYear ; # Adjust here if you need another year\n    strom:municipality ?municipality;\n    strom:category ?category ;\n    strom:product <https://energy.ld.admin.ch/elcom/electricityprice/product/cheapest> ;\n    strom:total ?total ;\n    strom:energy ?energie ;\n    strom:charge ?abgaben ;     \n    strom:gridusage ?netznutzung ;\n    strom:aidfee ?netzzuschlag ;\n    strom:operator ?operator .\n  \n  ?category schema:name ?kategorieName .\n  \n  # Uncomment this filter if you are looking for a specific municipality\n  #FILTER( ?gemeindeNummer = 261 )\n  \n}\nORDER BY ?netzbetreiber ?kategorieName\nLIMIT 100\n",
+    "metadata": {
+      "file": "/Users/ktk/workspace/ld-pipelines/elcom-electricityprice/docs/queries/raw-data-tariffs-cheapest.rq"
+    }
+  },
+  {
+    "kind": 1,
+    "language": "markdown",
+    "value": "### Tariffs Increase",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "# from file docs/queries/tariff-increase.rq\nPREFIX schema: <http://schema.org/>\nPREFIX cube: <https://cube.link/>\nPREFIX elcom: <https://energy.ld.admin.ch/elcom/electricityprice/dimension/>\nPREFIX admin: <https://schema.ld.admin.ch/>\n\nSELECT ?elcom_details ?municipality ?operator_name ?costs_old ?costs_new ?increase_in_percent\nFROM <https://lindas.admin.ch/elcom/electricityprice>\nFROM <https://lindas.admin.ch/territorial>\nFROM <https://lindas.admin.ch/fso/register>\nWHERE {\n\n  <https://energy.ld.admin.ch/elcom/electricityprice/observation/> cube:observation ?observation_old.\n  <https://energy.ld.admin.ch/elcom/electricityprice/observation/> cube:observation ?observation_new.\n  \n  VALUES ?category {<https://energy.ld.admin.ch/elcom/electricityprice/category/H2>}\n  VALUES ?yearOld { \"2023\"^^<http://www.w3.org/2001/XMLSchema#gYear> }\n  VALUES ?yearNew { \"2024\"^^<http://www.w3.org/2001/XMLSchema#gYear> }\n  \n  ?observation_new\n    elcom:category ?category;\n    elcom:municipality ?municipality_id;\n    elcom:operator ?operator ;\n    elcom:period ?yearNew ;\n    elcom:product <https://energy.ld.admin.ch/elcom/electricityprice/product/standard>;\n    elcom:total ?costs_new.\n\n  ?observation_old\n    elcom:municipality ?municipality_id;\n    elcom:operator ?operator ;\n    elcom:category ?category;\n    elcom:period ?yearOld ;\n    elcom:product <https://energy.ld.admin.ch/elcom/electricityprice/product/standard>;\n    elcom:total ?costs_old.\n  \n  ?municipality_id schema:name ?municipality ;\n                   schema:identifier ?mun_num .\n\n  #FILTER( ?mun_num = 905 ) # Uncomment if you want to find a specific municipality\n\n  ?operator schema:name ?operator_name .\n\n  BIND(IRI(CONCAT(\"https://www.strompreis.elcom.admin.ch/municipality/\", STR(?mun_num))) AS ?elcom_details )\n  BIND((?costs_new/?costs_old - 1)*100 AS ?increase_in_percent)\n\n  #FILTER( ?increase_in_percent < 0 ) # Uncomment if you want to know which municipalities have a decrease in price\n\n}\nORDER BY DESC(?increase_in_percent)\nLIMIT 100\n",
+    "metadata": {
+      "file": "/Users/ktk/workspace/ld-pipelines/elcom-electricityprice/docs/queries/tariff-increase.rq"
+    }
+  },
+  {
+    "kind": 1,
+    "language": "markdown",
+    "value": "## More Validation\n\nThis can be useful in a new year to validate some basic patterns.",
+    "metadata": {}
+  },
+  {
+    "kind": 1,
+    "language": "markdown",
+    "value": "### Same operator label multiple times",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "# from file docs/queries/validate-duplicate-operators.rq\nPREFIX schema: <http://schema.org/>\n\n# Check what operator labels are used for multiple operators\n# This would be most likely wrong\n\nSELECT ?operatorLabel (COUNT(?operator) AS ?n) (GROUP_CONCAT(?operator; separator=\", \") AS ?dups)\nWHERE {\n  GRAPH <https://lindas.admin.ch/elcom/electricityprice> {\n    ?operator a schema:Organization .\n    ?operator schema:name ?operatorLabel.    \n  }\n}\nGROUP BY ?operatorLabel\nHAVING (COUNT(?operator) > 1)\n",
+    "metadata": {
+      "file": "/Users/ktk/workspace/ld-pipelines/elcom-electricityprice/docs/queries/validate-duplicate-operators.rq"
+    }
+  },
+  {
+    "kind": 1,
+    "language": "markdown",
+    "value": "### Reference abandoned municipalities",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "# from file docs/queries/validate-abandoned-municipalities.rq\nPREFIX schema: <http://schema.org/>\nPREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX cube: <https://cube.link/>\nPREFIX strom: <https://energy.ld.admin.ch/elcom/electricityprice/dimension/>\nPREFIX vl: <https://version.link/>\n\n# This query checks which municipalities are not in the current version of the municipalities register.\n# This should not happen and will lead to display errors in the website.\n# In other words, any result here needs to be fixed in the data delivery.\n\nSELECT DISTINCT ?operatorName ?operatorId ?oldName ?oldId ?successorName ?successorId\nFROM <https://lindas.admin.ch/elcom/electricityprice>\nFROM <https://lindas.admin.ch/fso/register>\nWHERE {\n  <https://energy.ld.admin.ch/elcom/electricityprice> a cube:Cube ;\n    cube:observationSet/cube:observation ?obs .\n  \n  ?obs strom:period \"2024\"^^xsd:gYear ;\n    strom:operator ?operator ;\n    strom:municipality ?municipality .\n\n  ?municipality a <https://schema.ld.admin.ch/PoliticalMunicipality>, vl:Deprecated ;\n    schema:name ?oldName ;\n    vl:version ?version .\n\n  ?version vl:successor ?successor ;\n    vl:identityIdentifier ?oldId .\n\n  ?successor vl:identityIdentifier ?successorId ;\n    schema:name ?successorName .\n\n  ?operator schema:name ?operatorName ;\n    schema:identifier ?operatorId .\n}\n#LIMIT 10",
+    "metadata": {
+      "file": "/Users/ktk/workspace/ld-pipelines/elcom-electricityprice/docs/queries/validate-abandoned-municipalities.rq"
+    }
+  },
+  {
+    "kind": 1,
+    "language": "markdown",
+    "value": "### Municipalities that do not exist",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "# from file docs/queries/validate-notexists-municipalities.rq\nPREFIX schema: <http://schema.org/>\nPREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX cube: <https://cube.link/>\nPREFIX strom: <https://energy.ld.admin.ch/elcom/electricityprice/dimension/>\nPREFIX vl: <https://version.link/>\n\n# Only return results where the ?municipality does not exist as a subject in the store.\n# `false` is good.\n\nASK\n#SELECT ?municipality\nFROM <https://lindas.admin.ch/elcom/electricityprice>\nFROM <https://lindas.admin.ch/fso/register>\nWHERE {\n  {\n    SELECT DISTINCT ?municipality\n    WHERE {\n    <https://energy.ld.admin.ch/elcom/electricityprice> a cube:Cube ;\n      cube:observationSet/cube:observation ?obs .\n\n    ?obs strom:period \"2024\"^^xsd:gYear ;\n      strom:operator ?operator ;\n      strom:municipality ?municipality .\n\n    }\n  }\n  FILTER NOT EXISTS { ?municipality ?p ?o }\n}\n",
+    "metadata": {
+      "file": "/Users/ktk/workspace/ld-pipelines/elcom-electricityprice/docs/queries/validate-notexists-municipalities.rq"
+    }
+  },
+  {
+    "kind": 1,
+    "language": "markdown",
+    "value": "### Check if there is data missing for some municipalities\n\nThis query probably only makes sense on the latest year as we use the identity graph of ech-0071.",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "# from file docs/queries/validate-missing-municipality-data.rq\nPREFIX schema: <http://schema.org/>\nPREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX cube: <https://cube.link/>\nPREFIX strom: <https://energy.ld.admin.ch/elcom/electricityprice/dimension/>\nPREFIX vl: <https://version.link/>\n\n# This query checks which municipalities in the current version of the municipalities register\n# are not in the data delivery. This only makes sense to test for the most recent year.\n\nSELECT\n?name ?id ?cantonShortname ?municipality \n#(COUNT(?municipality) AS ?n)\nFROM <https://lindas.admin.ch/elcom/electricityprice>\nFROM <https://lindas.admin.ch/fso/register>\nWHERE {\n  {\n    ?municipality a <https://schema.ld.admin.ch/PoliticalMunicipality> .\n\n    MINUS {\n      ?municipality a vl:Deprecated .\n    }\n  } \n  MINUS {\n    SELECT DISTINCT ?municipality\n    WHERE {\n    <https://energy.ld.admin.ch/elcom/electricityprice> a cube:Cube ;\n      cube:observationSet/cube:observation ?obs .\n\n    ?obs strom:period \"2024\"^^xsd:gYear ;\n      strom:operator ?operator ;\n      strom:municipality ?municipality .\n\n    }\n  }\n  ?municipality schema:name ?name ;\n    schema:identifier ?id ;\n    schema:containedInPlace ?canton .\n\n  ?canton a <https://schema.ld.admin.ch/Canton> ;\n    schema:alternateName ?cantonShortname .\n} ORDER BY ?name\n",
+    "metadata": {
+      "file": "/Users/ktk/workspace/ld-pipelines/elcom-electricityprice/docs/queries/validate-missing-municipality-data.rq"
+    }
+  },
+  {
+    "kind": 1,
+    "language": "markdown",
+    "value": "### Check which municipalities have data but just few\n\nThe definition of \"few\" or \"complete\" is to be defined. Adjust how many observations you want per year.\nWe have H1-H8 and C1-C7 so YMMV.",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "# from file docs/queries/validate-data-but-few.rq\nPREFIX schema: <http://schema.org/>\nPREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX cube: <https://cube.link/>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nPREFIX strom: <https://energy.ld.admin.ch/elcom/electricityprice/dimension/>\n\nSELECT ?netzbetreiber ?uid ?id ?observationCount\nFROM <https://lindas.admin.ch/elcom/electricityprice>\nFROM <https://lindas.admin.ch/fso/register>\nWHERE {\n  {\n    SELECT ?municipality ?operator (COUNT(?obs) AS ?observationCount)\n    WHERE {\n      <https://energy.ld.admin.ch/elcom/electricityprice> a cube:Cube ;\n        cube:observationSet/cube:observation ?obs .\n  \n      ?obs strom:period \"2024\"^^xsd:gYear ;\n           strom:municipality ?municipality;\n           strom:operator ?operator .\n    }\n    GROUP BY ?municipality ?operator\n    HAVING (COUNT(?obs) < 12) # Adjust this number to what you want.\n  }\n  \n    ?operator  schema:name ?netzbetreiber ;\n      schema:identifier ?uid . \n \n  ?municipality schema:name ?name ;\n    schema:identifier ?id ;\n\n} ORDER BY ?netzbetreiber",
+    "metadata": {
+      "file": "/Users/ktk/workspace/ld-pipelines/elcom-electricityprice/docs/queries/validate-data-but-few.rq"
+    }
+  }
+]
