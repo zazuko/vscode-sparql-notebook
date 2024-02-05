@@ -221,6 +221,7 @@
   },
   "extensionDependencies": [
     "stardog-union.stardog-rdf-grammars",
-    "stardog-union.vscode-langserver-sparql"
+    "stardog-union.vscode-langserver-sparql",
+    "randomfractalsinc.vscode-data-table"
   ]
 }
