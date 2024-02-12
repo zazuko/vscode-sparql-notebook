@@ -188,7 +188,7 @@
     "@types/react": "^18.2.21",
     "@types/react-dom": "^18.2.7",
     "@types/vscode": "^1.77.0",
-    "@types/vscode-notebook-renderer": "^1.72.0",
+    "@types/vscode-notebook-renderer": "^1.72.3",
     "@types/vscode-webview": "^1.57.2",
     "@types/webpack-env": "^1.18.1",
     "@typescript-eslint/eslint-plugin": "^5.60.1",
@@ -210,18 +210,15 @@
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
-    "@rdfjs-elements/formats-pretty": "^0.6.3",
     "@vscode/webview-ui-toolkit": "^1.2.2",
-    "@zazuko/prefixes": "^2.0.0",
+    "@zazuko/prefixes": "^2.2.0",
     "axios": "^1.6.7",
-    "get-stream": "^8.0.1",
     "oxigraph": "^0.3.22",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
   "extensionDependencies": [
     "stardog-union.stardog-rdf-grammars",
-    "stardog-union.vscode-langserver-sparql",
-    "randomfractalsinc.vscode-data-table"
+    "stardog-union.vscode-langserver-sparql"
   ]
 }

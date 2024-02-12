@@ -3,14 +3,8 @@ import { extensionId } from "../extension";
 import { Endpoint, FileEndpoint, HttpEndpoint, } from "../endpoint";
 import { PrefixMap } from '../model/prefix-map';
 import { notebookEndpoint } from '../endpoint/endpoint';
-import { SparqlNotebookCellStatusBarItemProvider } from './SparqlNotebookCellStatusBarItemProvider';
 import { SparqlNotebookCell } from './sparql-notebook-cell';
 import { shrink } from '@zazuko/prefixes';
-
-/****** */
-import getStream from 'get-stream';
-import formats from '@rdfjs-elements/formats-pretty';
-import { Readable } from 'stream';
 
 import prefixes from '@zazuko/prefixes';
 
@@ -111,7 +105,7 @@ export class SparqlNotebookController {
     if (contentType === "application/sparql-results+json") {
       if (data.hasOwnProperty("boolean")) {
         // sparql ask
-        execution.replaceOutput([this._writeSparqlJsonResult(data)]);
+        execution.replaceOutput([this._writeAskResult(data)]);
         execution.end(isSuccess, Date.now());
         return;
       }
@@ -147,37 +141,26 @@ export class SparqlNotebookController {
 
   private async _writeTurtleResult(resultTTL: string, prefix: PrefixMap): Promise<NotebookCellOutput> {
 
-    // Create a new readable stream
-    const ttlStream = new Readable({
-      read() {
-        // Push the string to the stream
-        this.push(resultTTL);
-        // Signal the end of the stream
-        this.push(null);
-      },
-    });
-
-    const ttlStream2 = new Readable({
-      read() {
-        // Push the string to the stream
-        this.push(resultTTL);
-        // Signal the end of the stream
-        this.push(null);
-      },
-    });
-
-    const quads = formats.parsers.import('text/turtle', ttlStream);
-    const prettyTurtle = await getStream(formats.serializers.import('text/turtle', quads!, { prefixes: prefix }));
-
     // this is writing markdown to the cell containing a turtle code block
     return new NotebookCellOutput([
 
-      NotebookCellOutputItem.text(prettyTurtle, "text/plain"),
+      NotebookCellOutputItem.text(resultTTL, "text/plain"),
       NotebookCellOutputItem.text(
-        `\`\`\`turtle\n${prettyTurtle}\n\`\`\``,
+        `\`\`\`turtle\n${resultTTL}\n\`\`\``,
         "text/markdown"
       ),
     ]);
+  }
+
+  private _writeAskResult(resultJson: any): NotebookCellOutput {
+    const outputItem = new NotebookCellOutput([
+      this._writeJson(JSON.stringify(resultJson, null, "   ")),
+      NotebookCellOutputItem.json(
+        resultJson,
+        "application/sparql-results+json"
+      ),
+    ]);
+    return outputItem;
   }
 
   private _writeSparqlJsonResult(resultJson: any, prefixMap: PrefixMap = {}): NotebookCellOutput {
@@ -187,8 +170,7 @@ export class SparqlNotebookController {
         resultJson,
         "application/sparql-results+json"
       ),
-      this._writeDataTableRendererCompatibleJson(resultJson, prefixMap),
-      this._writeDataTableRendererCompatibleXJson(resultJson, prefixMap),
+      this._writeDataTableRendererCompatibleJson(resultJson, prefixMap)
     ]);
     outputItem.metadata = { prefixMap: prefixMap };
     return outputItem;
@@ -231,29 +213,6 @@ export class SparqlNotebookController {
     return NotebookCellOutputItem.text(jsonStringified, "application/json");
   }
 
-  private _writeDataTableRendererCompatibleXJson(resultJson: any, prefixMap: PrefixMap = {}) {
-    const dtJonBindings: { [k: string]: any }[] = resultJson.results.bindings;
-
-    const dtJson = dtJonBindings.map(item => {
-      const dtMap = Object.keys(item).reduce((prev, key) => {
-        const fieldTypeValue = item[key];
-        let fieldValue = fieldTypeValue.value;
-
-        if (fieldTypeValue.type === "uri") {
-          const prefixedValue = shrink(fieldValue, prefixMap);
-          fieldValue = prefixedValue.length > 0 ? prefixedValue : fieldValue;
-        }
-
-        prev.set(key, fieldValue);
-        return prev;
-      }, new Map());
-
-      return Object.fromEntries(dtMap.entries());
-    });
-
-    const jsonStringified = JSON.stringify(dtJson, null, "   ");
-    return NotebookCellOutputItem.text(jsonStringified, "text/x-json");
-  }
   dispose() {
     this._controller.dispose();
   }

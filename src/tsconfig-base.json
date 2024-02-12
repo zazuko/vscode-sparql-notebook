@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "module": "es2020",
+    "module": "commonjs",
     "target": "ES2019",
     "lib": [
       "ES2019"
@@ -8,12 +8,8 @@
     "types": [
       "node"
     ],
-    "moduleResolution": "Bundler",
+    "moduleResolution": "node",
     "sourceMap": true,
-    "strict": true,
-    "typeRoots": [
-      "./node_modules/@types",
-      "./node_modules/get-stream"
-    ]
+    "strict": true
   }
 }

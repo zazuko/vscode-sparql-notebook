@@ -15,7 +15,8 @@ import { addQueryFromFile } from "./commands/code-cell/add-query-from-file";
 import { activateFormProvider } from "./connection-view/connection-view";
 import { createStoreFromFile } from "./commands/store-from-file/store-from-file";
 import { SparqlNotebookCellStatusBarItemProvider } from './notebook/SparqlNotebookCellStatusBarItemProvider';
-import path from "path";
+
+import * as path from "path";
 
 export const extensionId = "sparql-notebook";
 export const storageKey = `${extensionId}-connections`;

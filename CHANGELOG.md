@@ -3,9 +3,9 @@
 All notable changes to the "vscode-sparql-notebook" extension will be documented in this33 file.
 
 ## 0.0.33
-Feature: Better Turtle output rendering
 Feature: Data Table Renderer Compatible Output
 Special Thanks: @vhorvath (Viktor Horvath)
+Update: Oxigraph
 
 ## 0.0.31
 Feature: Add Code Cell Statusbar Item to show connection endpoint url or file path.
