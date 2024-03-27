@@ -17,7 +17,20 @@ export function getSPARQLQueryKind(query: string): SPARQLQueryKind {
     const linesWithoutPrefix = linesWithoutCommentsAndEmpty.filter(line => {
         return !line.startsWith('prefix');
     });
-    const firstLine = linesWithoutPrefix[0];
+    const lineWithQueryKind = linesWithoutPrefix.filter(line => {
+        return line.startsWith(SPARQLQueryKind.select) ||
+            line.startsWith(SPARQLQueryKind.construct) ||
+            line.startsWith(SPARQLQueryKind.describe) ||
+            line.startsWith(SPARQLQueryKind.ask) ||
+            line.startsWith(SPARQLQueryKind.update) ||
+            line.startsWith(SPARQLQueryKind.load) ||
+            line.startsWith(SPARQLQueryKind.clear) ||
+            line.startsWith(SPARQLQueryKind.drop) ||
+            line.startsWith(SPARQLQueryKind.create) ||
+            line.startsWith(SPARQLQueryKind.json);
+    }
+    );
+    const firstLine = lineWithQueryKind[0];
     if (firstLine !== undefined) {
         if (firstLine.startsWith(SPARQLQueryKind.select)) {
             return SPARQLQueryKind.select;
