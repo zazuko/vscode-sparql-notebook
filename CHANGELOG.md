@@ -2,6 +2,9 @@
 
 All notable changes to the "vscode-sparql-notebook" extension will be documented in this33 file.
 
+## 0.0.35
+Feature: The connection error show now a connect button.
+
 ## 0.0.34
 Fix: Change query kind detection to be more accurate.
 

@@ -1,4 +1,4 @@
-import { NotebookCell, NotebookCellOutput, NotebookCellOutputItem, NotebookController, NotebookDocument, Uri, notebooks, window, workspace } from 'vscode';
+import { NotebookCell, NotebookCellOutput, NotebookCellOutputItem, NotebookController, NotebookDocument, Uri, commands, notebooks, window, workspace } from 'vscode';
 import { extensionId } from "../extension";
 import { Endpoint, FileEndpoint, HttpEndpoint, } from "../endpoint";
 import { PrefixMap } from '../model/prefix-map';
@@ -63,7 +63,15 @@ export class SparqlNotebookController {
 
     if (!sparqlEndpoint) {
       const errorMessage = "Not connected to a SPARQL Endpoint";
-      window.showErrorMessage(errorMessage);
+      const actionButton = "Connect to SPARQL Endpoint";
+
+      window.showErrorMessage(errorMessage, actionButton).then((action) => {
+        if (action === actionButton) {
+          commands.executeCommand('sparql-notebook.connect');
+
+        }
+      }
+      );
       execution.replaceOutput([
         this._writeError(errorMessage)
       ]);
