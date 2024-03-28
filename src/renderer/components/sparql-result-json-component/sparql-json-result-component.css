@@ -14,7 +14,7 @@ body.vscode-light table {
     background-color: rgb(240, 240, 240) !important;
 }
 
-table {
+table.sparql-notebook {
     border-radius: 0.25em;
     border-collapse: collapse;
     margin-top: 1em;
@@ -25,18 +25,18 @@ table {
     padding-right: 0;
 }
 
-body.vscode-dark th {
+body.vscode-dark th.sparql-notebook {
     color: #28b1de !important;
     border: 1px dashed #364043 !important;
 }
 
-body.vscode-light th {
+body.vscode-light th.sparql-notebook {
     color: #d810c4a8 !important;
     border: 1px dashed #ebebeb !important;
 
 }
 
-th {
+th.sparql-notebook {
     border: 1px dotted #364043 !important;
     font-size: 0.85em;
     font-weight: 600;
@@ -44,34 +44,34 @@ th {
     text-align: left;
 }
 
-body.vscode-light td {
+body.vscode-light td.sparql-notebook {
     color: black !important;
     border: 1px dashed #ebebeb !important;
 }
 
-body.vscode-dark td {
+body.vscode-dark td.sparql-notebook {
     color: lightgrey !important;
     border: 1px dashed #364043 !important;
 
 
 }
 
-td {
+td.sparql-notebook {
     font-weight: 400;
     padding: 0.65em 1em;
     text-align: left;
 
 }
 
-body.vscode-dark tr:hover {
+body.vscode-dark tr.sparql-notebook:hover {
     background: #014055 !important;
 }
 
-body.vscode-light tr:hover {
+body.vscode-light tr.sparql-notebook:hover {
     background: #a9b8bd !important;
 }
 
-a {
+a.sparql-notebook {
     white-space: nowrap;
     text-decoration: none;
 }
