@@ -185,7 +185,10 @@ export class SparqlNotebookController {
   }
 
   private _writeJson(jsonResult: any): NotebookCellOutputItem {
-    return NotebookCellOutputItem.text(jsonResult, "text/x-json");
+    return NotebookCellOutputItem.text(
+      `\`\`\`json\n${jsonResult}\n\`\`\``,
+      "text/markdown"
+    );
   }
 
   private _writeError(message: any): NotebookCellOutput {
