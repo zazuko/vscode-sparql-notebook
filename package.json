@@ -9,7 +9,7 @@
   "repository": {
     "url": "https://github.com/zazuko/vscode-sparql-notebook.git"
   },
-  "version": "0.0.35",
+  "version": "0.0.36",
   "engines": {
     "vscode": "^1.77.0"
   },
@@ -219,6 +219,7 @@
   },
   "extensionDependencies": [
     "stardog-union.stardog-rdf-grammars",
-    "stardog-union.vscode-langserver-sparql"
+    "stardog-union.vscode-langserver-sparql",
+    "RandomFractalsInc.vscode-data-table"
   ]
 }
