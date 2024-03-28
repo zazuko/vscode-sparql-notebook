@@ -51,7 +51,7 @@ export const UriComponent: React.FC<UriComponentProps> = ({ term }) => {
 
     return (
         <div className="uri-component" style={{ display: 'flex', flexDirection: 'row' }}>
-            <a href={uri?.href}>{(uri?.isPrefixed ? '' : '<') + uri?.value + (uri?.isPrefixed ? '' : '>')}</a>
+            <a className='sparql-notebook' href={uri?.href}>{(uri?.isPrefixed ? '' : '<') + uri?.value + (uri?.isPrefixed ? '' : '>')}</a>
             {isLinkClicked ? (
                 <span title="copied" className="link-icon disappear">
                     📋

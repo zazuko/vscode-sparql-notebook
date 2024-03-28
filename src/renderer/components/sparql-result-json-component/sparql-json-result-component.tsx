@@ -13,19 +13,19 @@ interface SparqlResultJsonComponentProps {
 export const SparqlResultJsonComponent: React.FC<SparqlResultJsonComponentProps> = ({ sparqlResult }) => {
 
     return (
-        <table>
+        <table className='sparql-notebook'>
             <thead>
-                <tr>
+                <tr className='sparql-notebook'>
                     {sparqlResult.head.vars.map((heading: string, index: number) => (
-                        <th key={index}>{heading}</th>
+                        <th className='sparql-notebook' key={index}>{heading}</th>
                     ))}
                 </tr>
             </thead>
             <tbody>
                 {sparqlResult.results!.bindings.map((result: any, index: number) => (
-                    <tr key={index}>
+                    <tr className='sparql-notebook' key={index}>
                         {sparqlResult.head.vars.map((heading: string, index: number) => (
-                            <td key={index}>
+                            <td className='sparql-notebook' key={index}>
 
                                 {result[heading] === undefined ? (
                                     <div></div>
