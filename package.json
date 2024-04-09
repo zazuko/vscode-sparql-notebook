@@ -3,7 +3,7 @@
   "displayName": "SPARQL Notebook",
   "description": "A powerful way to document SPARQL queries and make them execute as notebook code cells",
   "publisher": "Zazuko",
-  "license": "SEE LICENSE IN LICENSE.md",
+  "license": "MIT",
   "icon": "images/zazuko.png",
   "preview": true,
   "repository": {
