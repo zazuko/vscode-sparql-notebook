@@ -157,9 +157,9 @@ export function activate(context: vscode.ExtensionContext) {
             relativeSparqlFilePath = path.relative(notebookDirectory, sparqlFilePath);
           }
 
-          const sparqlQuery = cell.document.getText().replace(/^# from file.*\n/, '');
+          const sparqlQuery = cell.document.getText().replace(/^# from file.*[\r\n]/, '');
           const content = Buffer.from(sparqlQuery, 'utf-8');
-          await vscode.workspace.fs.writeFile(vscode.Uri.file(path.join(notebookDirectory, sparqlFilePath)), content);
+          await vscode.workspace.fs.writeFile(vscode.Uri.file(path.join(notebookDirectory, relativeSparqlFilePath)), content);
 
 
         } catch (error) {
