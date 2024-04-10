@@ -1,7 +1,4 @@
-
-
 # [endpoint=https://lindas.admin.ch/query]
-# not funny
 
 PREFIX gont: <https://gont.ch/>
 PREFIX schema: <http://schema.org/>
