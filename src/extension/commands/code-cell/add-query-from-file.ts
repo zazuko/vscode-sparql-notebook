@@ -32,10 +32,11 @@ export async function addQueryFromFile(cell: vscode.NotebookCell) {
                 const notebookPathWithoutFilename = notebookFilePath.replace(new RegExp(`${notebookFilename}$`), '');
                 const fileContent = await vscode.workspace.fs.readFile(vscode.Uri.file(notebookPathWithoutFilename + relativeSparqlFilePath));
 
-                const newCell = new vscode.NotebookCellData(vscode.NotebookCellKind.Code, `# from file ${relativeSparqlFilePath}\n${(await fileContent).toString()}`, 'sparql');
+                const posixPath = path.posix.normalize(relativeSparqlFilePath);
+                const newCell = new vscode.NotebookCellData(vscode.NotebookCellKind.Code, `# from file ${posixPath}\n${(await fileContent).toString()}`, 'sparql');
 
                 newCell.metadata = {
-                    file: relativeSparqlFilePath
+                    file: path.posix.normalize(relativeSparqlFilePath)
                 };
                 // Logic to add the notebook cell using the fileContent
                 const notebookEdit = vscode.NotebookEdit.replaceCells(new vscode.NotebookRange(cell.index, cell.index + 1), [newCell]);
