@@ -1,6 +1,9 @@
 # Change Log
 
-All notable changes to the "vscode-sparql-notebook" extension will be documented in this33 file.
+All notable changes to the "vscode-sparql-notebook" extension will be documented in this file.
+
+## 0.0.37
+- Fix: Windows path issue with external query files.
 
 ## 0.0.36
 - Fix: Change content types to improve compatibility with Data Table Renderer
