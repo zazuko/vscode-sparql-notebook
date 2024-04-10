@@ -100,8 +100,7 @@ export function activate(context: vscode.ExtensionContext) {
     // this have to be done here because we work with relative query file path
     // and the notebook path is not available in the deserializer
     const notebookPath = notebookDocument.uri.fsPath;
-    const notebookDirectory = notebookPath.substring(0, notebookPath.lastIndexOf("/")) + '/';
-
+    const notebookDirectory = path.dirname(notebookPath);
 
     // cells with a file metadata
     notebookDocument.getCells().filter(cell => cell.kind === vscode.NotebookCellKind.Code && cell.metadata.file).forEach(async cell => {
@@ -117,7 +116,8 @@ export function activate(context: vscode.ExtensionContext) {
             console.log('rel path', path.relative(notebookPath, sparqlFilePath));
           }
 
-          const fileContent = await vscode.workspace.fs.readFile(vscode.Uri.file(notebookDirectory + relativeSparqlFilePath));
+
+          const fileContent = await vscode.workspace.fs.readFile(vscode.Uri.file(path.join(notebookDirectory, relativeSparqlFilePath)));
           const newCell = new vscode.NotebookCellData(vscode.NotebookCellKind.Code, `# from file ${relativeSparqlFilePath}\n${(await fileContent).toString()}`, 'sparql');
 
           newCell.metadata = {
@@ -159,7 +159,7 @@ export function activate(context: vscode.ExtensionContext) {
 
           const sparqlQuery = cell.document.getText().replace(/^# from file.*\n/, '');
           const content = Buffer.from(sparqlQuery, 'utf-8');
-          await vscode.workspace.fs.writeFile(vscode.Uri.file(notebookDirectory + path.sep + relativeSparqlFilePath), content);
+          await vscode.workspace.fs.writeFile(vscode.Uri.file(path.join(notebookDirectory, sparqlFilePath)), content);
 
 
         } catch (error) {

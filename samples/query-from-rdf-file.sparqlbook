@@ -46,5 +46,13 @@
     "language": "sparql",
     "value": "# [endpoint=./rdf/curia.nt]\nPREFIX schema: <http://schema.org/>\nPREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX xsd:<http://www.w3.org/2001/XMLSchema#>\n\nDESCRIBE <https://politics.ld.admin.ch/person/1257>",
     "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "# from file queries/z-external-query.rq\n# [endpoint=https://lindas.admin.ch/query]\n#\n# change \nPREFIX gont: <https://gont.ch/>\nPREFIX schema: <http://schema.org/>\nSELECT ?name ?abbr ?date WHERE {\n    { \n        ?canton a gont:Canton;\n            gont:cantonAbbreviation ?abbr ;\n            gont:date ?date ;\n            gont:longName ?name . \n    } UNION {\n        gont:Canton ?p ?o .\n    }\n} \n",
+    "metadata": {
+      "file": "queries/z-external-query.rq"
+    }
   }
 ]

@@ -1,5 +1,6 @@
 # VSCode SPARQL Notebook
 
+
 This extension provides a _SPARQL Notebook_ mode for [Visual Studio Code](https://code.visualstudio.com). This is a powerful way to document SPARQL queries and make them execute as notebook code cells.
 
 Use a SPARQL notebook to:
@@ -17,6 +18,10 @@ This notebook can render SPARQL SELECT results and RDF graphs via SPARQL CONSTRU
 The extension automatically installs the [Stardog RDF Grammars](https://marketplace.visualstudio.com/items?itemName=stardog-union.stardog-rdf-grammars) and [SPARQL Language Server](https://marketplace.visualstudio.com/items?itemName=stardog-union.vscode-langserver-sparql) extensions for SPARQL syntax highlighting and auto-completion.
 
 This extension is still pretty raw but it works for us [tm]. Bug reports & contributions are very welcome!
+
+## Get the Extension
+- [VSCode Marketplace](https://marketplace.visualstudio.com/items?itemName=Zazuko.sparql-notebook)
+-  [Open VSX Registry](https://open-vsx.org/extension/zazuko/sparql-notebook)
 
 ## Features
 
