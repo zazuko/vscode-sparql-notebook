@@ -50,7 +50,7 @@
   {
     "kind": 2,
     "language": "sparql",
-    "value": "# from file queries/z-external-query.rq\n# from file queries/z-external-query.rq\n# from file queries\\z-external-query.rq\n# [endpoint=https://lindas.admin.ch/query]\n#\n# change \n# windows change\nPREFIX gont: <https://gont.ch/>\nPREFIX schema: <http://schema.org/>\nSELECT ?name ?abbr ?date WHERE {\n    { \n        ?canton a gont:Canton;\n            gont:cantonAbbreviation ?abbr ;\n            gont:date ?date ;\n            gont:longName ?name . \n    } UNION {\n        gont:Canton ?p ?o .\n    }\n} \n",
+    "value": "# from file queries/z-external-query.rq\r\n\r\n# [endpoint=https://lindas.admin.ch/query]\r\n#\r\n# change \r\n# windows change\r\nPREFIX gont: <https://gont.ch/>\r\nPREFIX schema: <http://schema.org/>\r\nSELECT ?name ?abbr ?date WHERE {\r\n    { \r\n        ?canton a gont:Canton;\r\n            gont:cantonAbbreviation ?abbr ;\r\n            gont:date ?date ;\r\n            gont:longName ?name . \r\n    } UNION {\r\n        gont:Canton ?p ?o .\r\n    }\r\n} \r\n",
     "metadata": {
       "file": "queries/z-external-query.rq"
     }
@@ -58,7 +58,15 @@
   {
     "kind": 2,
     "language": "sparql",
-    "value": "# from file queries/z-external-query-win.rq\n# [endpoint=https://lindas.admin.ch/query]\n#\n# change \n# this is a windows file \n# last test\nPREFIX gont: <https://gont.ch/>\nPREFIX schema: <http://schema.org/>\nSELECT ?name ?abbr ?date WHERE {\n    { \n        ?canton a gont:Canton;\n            gont:cantonAbbreviation ?abbr ;\n            gont:date ?date ;\n            gont:longName ?name . \n    } UNION {\n        gont:Canton ?p ?o .\n    }\n} \n",
+    "value": "# from file queries/z-external-query-win.rq\r\n\r\n# [endpoint=https://lindas.admin.ch/query]\r\n# not at all funny\r\n\r\nPREFIX gont: <https://gont.ch/>\r\nPREFIX schema: <http://schema.org/>\r\nSELECT ?name ?abbr ?date WHERE {\r\n    { \r\n        ?canton a gont:Canton;\r\n            gont:cantonAbbreviation ?abbr ;\r\n            gont:date ?date ;\r\n            gont:longName ?name . \r\n    } UNION {\r\n        gont:Canton ?p ?o .\r\n    }\r\n} \r\n",
+    "metadata": {
+      "file": "queries/z-external-query-win.rq"
+    }
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "# from file queries/z-external-query-win.rq\r\n\r\n# [endpoint=https://lindas.admin.ch/query]\r\n# not funny\r\n\r\nPREFIX gont: <https://gont.ch/>\r\nPREFIX schema: <http://schema.org/>\r\nSELECT ?name ?abbr ?date WHERE {\r\n    { \r\n        ?canton a gont:Canton;\r\n            gont:cantonAbbreviation ?abbr ;\r\n            gont:date ?date ;\r\n            gont:longName ?name . \r\n    } UNION {\r\n        gont:Canton ?p ?o .\r\n    }\r\n} \r\n",
     "metadata": {
       "file": "queries/z-external-query-win.rq"
     }

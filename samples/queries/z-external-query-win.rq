@@ -1,8 +1,8 @@
+
+
 # [endpoint=https://lindas.admin.ch/query]
-#
-# change 
-# this is a windows file 
-# last test
+# not funny
+
 PREFIX gont: <https://gont.ch/>
 PREFIX schema: <http://schema.org/>
 SELECT ?name ?abbr ?date WHERE {
