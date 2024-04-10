@@ -44,15 +44,23 @@
   {
     "kind": 2,
     "language": "sparql",
-    "value": "# [endpoint=./rdf/curia.nt]\nPREFIX schema: <http://schema.org/>\nPREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX xsd:<http://www.w3.org/2001/XMLSchema#>\n\nDESCRIBE <https://politics.ld.admin.ch/person/1257>",
+    "value": "# [endpoint=./rdf/curia.nt]\r\nPREFIX schema: <http://schema.org/>\r\nPREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\r\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\r\nPREFIX xsd:<http://www.w3.org/2001/XMLSchema#>\r\n\r\nDESCRIBE <https://politics.ld.admin.ch/person/1257>",
     "metadata": {}
   },
   {
     "kind": 2,
     "language": "sparql",
-    "value": "# from file queries/z-external-query.rq\n# [endpoint=https://lindas.admin.ch/query]\n#\n# change \nPREFIX gont: <https://gont.ch/>\nPREFIX schema: <http://schema.org/>\nSELECT ?name ?abbr ?date WHERE {\n    { \n        ?canton a gont:Canton;\n            gont:cantonAbbreviation ?abbr ;\n            gont:date ?date ;\n            gont:longName ?name . \n    } UNION {\n        gont:Canton ?p ?o .\n    }\n} \n",
+    "value": "# from file queries/z-external-query.rq\r\n# from file queries/z-external-query.rq\r\n# [endpoint=https://lindas.admin.ch/query]\r\n#\r\n# change \r\n# windows change\r\nPREFIX gont: <https://gont.ch/>\r\nPREFIX schema: <http://schema.org/>\r\nSELECT ?name ?abbr ?date WHERE {\r\n    { \r\n        ?canton a gont:Canton;\r\n            gont:cantonAbbreviation ?abbr ;\r\n            gont:date ?date ;\r\n            gont:longName ?name . \r\n    } UNION {\r\n        gont:Canton ?p ?o .\r\n    }\r\n} \r\n",
     "metadata": {
       "file": "queries/z-external-query.rq"
+    }
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "# from file queries\\z-external-query-win.rq\r\n# [endpoint=https://lindas.admin.ch/query]\r\n#\r\n# change \r\n# this is a windows file  foo\r\nPREFIX gont: <https://gont.ch/>\r\nPREFIX schema: <http://schema.org/>\r\nSELECT ?name ?abbr ?date WHERE {\r\n    { \r\n        ?canton a gont:Canton;\r\n            gont:cantonAbbreviation ?abbr ;\r\n            gont:date ?date ;\r\n            gont:longName ?name . \r\n    } UNION {\r\n        gont:Canton ?p ?o .\r\n    }\r\n} \r\n",
+    "metadata": {
+      "file": "queries\\z-external-query-win.rq"
     }
   }
 ]

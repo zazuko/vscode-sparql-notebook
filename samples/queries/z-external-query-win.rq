@@ -1,9 +1,8 @@
-# from file queries/z-external-query.rq
-# from file queries/z-external-query.rq
+# from file queries\z-external-query-win.rq
 # [endpoint=https://lindas.admin.ch/query]
 #
 # change 
-# windows change
+# this is a windows file  foo
 PREFIX gont: <https://gont.ch/>
 PREFIX schema: <http://schema.org/>
 SELECT ?name ?abbr ?date WHERE {
