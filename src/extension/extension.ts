@@ -107,7 +107,7 @@ export function activate(context: vscode.ExtensionContext) {
       const activeNotebook = cell.notebook;
 
       if (activeNotebook) {
-        const sparqlFilePath = cell.metadata.file;
+        const sparqlFilePath = cell.metadata.file.replace(/\\/g, '/');
 
         try {
           let relativeSparqlFilePath = sparqlFilePath;
@@ -150,7 +150,7 @@ export function activate(context: vscode.ExtensionContext) {
     notebookDocument.getCells().filter(cell => cell.kind === vscode.NotebookCellKind.Code && cell.metadata.file).forEach(async cell => {
       const activeNotebook = cell.notebook;
       if (activeNotebook) {
-        const sparqlFilePath = cell.metadata.file;
+        const sparqlFilePath = cell.metadata.file.replace(/\\/g, '/');
         try {
           let relativeSparqlFilePath = sparqlFilePath;
           if (path.isAbsolute(sparqlFilePath)) {
