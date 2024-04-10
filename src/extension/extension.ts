@@ -102,6 +102,7 @@ export function activate(context: vscode.ExtensionContext) {
     const notebookPath = notebookDocument.uri.fsPath;
     const notebookDirectory = notebookPath.substring(0, notebookPath.lastIndexOf("/")) + '/';
 
+
     // cells with a file metadata
     notebookDocument.getCells().filter(cell => cell.kind === vscode.NotebookCellKind.Code && cell.metadata.file).forEach(async cell => {
       const activeNotebook = cell.notebook;
@@ -113,6 +114,7 @@ export function activate(context: vscode.ExtensionContext) {
           let relativeSparqlFilePath = sparqlFilePath;
           if (path.isAbsolute(sparqlFilePath)) {
             relativeSparqlFilePath = path.relative(notebookDirectory, sparqlFilePath);
+            console.log('rel path', path.relative(notebookPath, sparqlFilePath));
           }
 
           const fileContent = await vscode.workspace.fs.readFile(vscode.Uri.file(notebookDirectory + relativeSparqlFilePath));
@@ -142,14 +144,13 @@ export function activate(context: vscode.ExtensionContext) {
     }
     // write query files here 
     const notebookPath = notebookDocument.uri.fsPath;
-    const notebookDirectory = notebookPath.substring(0, notebookPath.lastIndexOf("/")) + '/';
+    const notebookDirectory = path.dirname(notebookPath);
 
     // cells with a file metadata
     notebookDocument.getCells().filter(cell => cell.kind === vscode.NotebookCellKind.Code && cell.metadata.file).forEach(async cell => {
       const activeNotebook = cell.notebook;
       if (activeNotebook) {
         const sparqlFilePath = cell.metadata.file;
-
         try {
           let relativeSparqlFilePath = sparqlFilePath;
           if (path.isAbsolute(sparqlFilePath)) {
@@ -158,7 +159,7 @@ export function activate(context: vscode.ExtensionContext) {
 
           const sparqlQuery = cell.document.getText().replace(/^# from file.*\n/, '');
           const content = Buffer.from(sparqlQuery, 'utf-8');
-          await vscode.workspace.fs.writeFile(vscode.Uri.file(notebookDirectory + relativeSparqlFilePath), content);
+          await vscode.workspace.fs.writeFile(vscode.Uri.file(notebookDirectory + path.sep + relativeSparqlFilePath), content);
 
 
         } catch (error) {
