@@ -3,7 +3,8 @@ export enum SPARQLQueryKind {
     construct = 'construct',
     describe = 'describe',
     ask = 'ask',
-    update = 'update',
+    insert = 'insert',
+    delete = 'delete',
     load = 'load',
     clear = 'clear',
     drop = 'drop',
@@ -22,7 +23,8 @@ export function getSPARQLQueryKind(query: string): SPARQLQueryKind {
             line.startsWith(SPARQLQueryKind.construct) ||
             line.startsWith(SPARQLQueryKind.describe) ||
             line.startsWith(SPARQLQueryKind.ask) ||
-            line.startsWith(SPARQLQueryKind.update) ||
+            line.startsWith(SPARQLQueryKind.delete) ||
+            line.startsWith(SPARQLQueryKind.insert) ||
             line.startsWith(SPARQLQueryKind.load) ||
             line.startsWith(SPARQLQueryKind.clear) ||
             line.startsWith(SPARQLQueryKind.drop) ||
@@ -40,8 +42,8 @@ export function getSPARQLQueryKind(query: string): SPARQLQueryKind {
             return SPARQLQueryKind.describe;
         } else if (firstLine.startsWith(SPARQLQueryKind.ask)) {
             return SPARQLQueryKind.ask;
-        } else if (firstLine.startsWith(SPARQLQueryKind.update)) {
-            return SPARQLQueryKind.update;
+        } else if (firstLine.startsWith(SPARQLQueryKind.delete)) {
+            return SPARQLQueryKind.delete;
         } else if (firstLine.startsWith(SPARQLQueryKind.load)) {
             return SPARQLQueryKind.load;
         } else if (firstLine.startsWith(SPARQLQueryKind.clear)) {
@@ -52,15 +54,18 @@ export function getSPARQLQueryKind(query: string): SPARQLQueryKind {
             return SPARQLQueryKind.create;
         } else if (firstLine.startsWith(SPARQLQueryKind.json)) {
             return SPARQLQueryKind.json;
+        } else if (firstLine.startsWith(SPARQLQueryKind.insert)) {
+            return SPARQLQueryKind.insert;
         }
     }
-    throw new Error('Unknown query type');
+    throw new Error('Unknown query type' + firstLine);
 }
 
 
 
 
 export function getAcceptHeader(queryType: SPARQLQueryKind): string {
+    console.log('queryType', queryType);
     switch (queryType) {
         case SPARQLQueryKind.ask:
         case SPARQLQueryKind.select:
@@ -68,7 +73,7 @@ export function getAcceptHeader(queryType: SPARQLQueryKind): string {
         case SPARQLQueryKind.construct:
         case SPARQLQueryKind.describe:
             return 'text/turtle';
-        case SPARQLQueryKind.update:
+        case SPARQLQueryKind.insert:
         case SPARQLQueryKind.load:
         case SPARQLQueryKind.clear:
         case SPARQLQueryKind.drop:
@@ -77,6 +82,6 @@ export function getAcceptHeader(queryType: SPARQLQueryKind): string {
         case SPARQLQueryKind.json:
             return 'application/json';
         default:
-            throw new Error('Unknown query type');
+            throw new Error('Unknown query type' + queryType);
     }
 }

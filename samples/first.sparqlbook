@@ -94,5 +94,11 @@
     "language": "sparql",
     "value": "# [endpoint=https://lindas.admin.ch/query]\n\nPREFIX schema: <http://schema.org/>\nPREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX cube: <https://cube.link/>\nPREFIX blv: <https://agriculture.ld.admin.ch/fsvo/animal-disease/>\nPREFIX skos: <http://www.w3.org/2004/02/skos/core#>\n\nSELECT ?publicationDate ?canton ?municipality ?animalSpecie ?epidemic ?epidemicGroup ?animalGroup (sum(?count) as ?sum)\nWHERE {\n  {\n    SELECT ?observation where {\n    \t{\n      \t\tSELECT ?observationSet  where {\n    \t\t\tBIND (<https://agriculture.ld.admin.ch/fsvo/animal-disease> as ?cube)\n\t\t\t\t?cube <https://cube.link/observationSet> ?observationSet .\n      \t\t} LIMIT 1\n    \t}\n        ?observationSet <https://cube.link/observation> ?observation .\n\t\t?observation blv:internet-publication ?publicationDate .\n      FILTER (?publicationDate >= \"2023-12-11\"^^xsd:date && ?publicationDate <= \"2023-12-17\"^^xsd:date)\n    } ORDER BY desc(?publicationDate)\n  }\n  ?observation blv:internet-publication ?publicationDate ;\n               blv:animal-specie/schema:name ?animalSpecie ;\n               blv:animal-specie/skos:broader/schema:name ?animalGroup ;\n               blv:epidemics/schema:name ?epidemic ;\n               blv:epidemics/skos:broader/schema:name ?epidemicGroup ;\n               schema:containedInPlace/schema:name ?municipality .\n OPTIONAL {\n  ?observation schema:containedInPlace/schema:containedInPlace ?cantonIri .\n  ?cantonIri a <https://schema.ld.admin.ch/Canton> ;\n             schema:alternateName ?canton .\n }\n BIND (1 as ?count)\n\n FILTER(langMatches(lang(?animalSpecie), \"de\"))\n FILTER(langMatches(lang(?animalGroup), \"de\"))\n FILTER(langMatches(lang(?epidemic), \"de\"))\n FILTER(langMatches(lang(?epidemicGroup), \"de\"))\n} GROUP BY ?publicationDate ?canton ?municipality ?animalSpecie ?epidemic ?epidemicGroup ?animalGroup ?count ORDER BY ?publicationDate ?canton",
     "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "PREFIX dc: <http://purl.org/dc/elements/1.1/>\nINSERT { <http://example/egbook> dc:title  \"This is an example title\" } WHERE {}",
+    "metadata": {}
   }
 ]
