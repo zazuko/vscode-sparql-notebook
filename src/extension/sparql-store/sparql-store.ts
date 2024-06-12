@@ -1,4 +1,4 @@
-import { Store, defaultGraph, NamedNode, BlankNode, Literal, namedNode } from 'oxigraph';
+import { Store, defaultGraph } from 'oxigraph';
 import { SPARQLQueryKind, getSPARQLQueryKind } from '../endpoint/sparql-utils';
 import { SparqlResultJson } from '../endpoint/model/sparql-result-json';
 
@@ -58,7 +58,7 @@ export class SparqlStore {
 
     private async _ask(query: string): Promise<SparqlResultJson> {
         const result = await this.store.query(query) as boolean;
-        // turn this boolean to starqlresult+json
+        // turn this boolean to sparql-result+json
         return {
             "head": {
                 "vars": []
