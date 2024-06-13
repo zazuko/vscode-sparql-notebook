@@ -4,6 +4,7 @@ import * as fs from 'fs';
 
 import { Endpoint } from '../endpoint';
 import { RdfMimeType, SparqlStore } from '../../sparql-store/sparql-store';
+import { SparqlQuery } from '../model/sparql-query';
 
 /**
  * Represents an HTTP SPARQL endpoint.
@@ -67,8 +68,8 @@ export class FileEndpoint extends Endpoint {
      * @param sparqlQuery - The SPARQL query to execute.
      * @param execution - The execution object.
      */
-    public async query(sparqlQuery: string, execution?: any): Promise<any> {
-        const res = this._store.query(sparqlQuery);
+    public async query(sparqlQuery: SparqlQuery, execution?: any): Promise<any> {
+        const res = this._store.query(sparqlQuery.queryString);
         return res;
     }
 }

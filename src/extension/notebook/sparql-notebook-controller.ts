@@ -5,9 +5,7 @@ import { PrefixMap } from '../model/prefix-map';
 import { notebookEndpoint } from '../endpoint/endpoint';
 import { SparqlNotebookCell } from './sparql-notebook-cell';
 import { shrink } from '@zazuko/prefixes';
-
-import prefixes from '@zazuko/prefixes';
-
+import { SparqlQuery } from '../endpoint/model/sparql-query';
 
 export class SparqlNotebookController {
   readonly controllerId = `${extensionId}-controller-id`;
@@ -55,8 +53,8 @@ export class SparqlNotebookController {
     // Keep track of elapsed time to execute cell.
     execution.start(Date.now());
 
-    const sparqlQuery = cell.document.getText();
-
+    const sparqlQueryString = cell.document.getText();
+    const sparqlQuery = new SparqlQuery(sparqlQueryString);
     // you can configure the endpoint within the query like this # [endpoint='xxxx']
     // todo: rename function
     const sparqlEndpoint = await this._getDocumentOrConnectionClient(cell);
@@ -255,7 +253,7 @@ export class SparqlNotebookController {
       await fileEndpoint.addFile(fileUri);
       return fileEndpoint;
     }
-    return notebookEndpoint.getEndpoint();
+    return notebookEndpoint.endpoint;
   }
 
 

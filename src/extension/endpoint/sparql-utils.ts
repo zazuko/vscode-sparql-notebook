@@ -9,7 +9,8 @@ export enum SPARQLQueryKind {
     clear = 'clear',
     drop = 'drop',
     create = 'create',
-    json = 'json'// fuski has that
+    json = 'json', // fuski has that
+    unknown = 'unknown'
 }
 
 export function getSPARQLQueryKind(query: string): SPARQLQueryKind {
@@ -58,7 +59,7 @@ export function getSPARQLQueryKind(query: string): SPARQLQueryKind {
             return SPARQLQueryKind.insert;
         }
     }
-    throw new Error('Unknown query type' + firstLine);
+    return SPARQLQueryKind.unknown;
 }
 
 
