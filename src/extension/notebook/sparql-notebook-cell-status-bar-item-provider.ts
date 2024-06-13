@@ -24,7 +24,8 @@ export class ConnectionSourceStatusBarItem extends NotebookCellStatusBarItem {
     private itemText = 'Notebook Connection';
     constructor(cell: SparqlNotebookCell, alignment: NotebookCellStatusBarAlignment) {
         super('', alignment);
-        let commentEndpoint = cell.extractDocumentEndpoint();
+        const sparqlQuery = cell.sparqlQuery;
+        let commentEndpoint = sparqlQuery.extractEndpoint();
         if (commentEndpoint) {
             this.itemText = `Query Comment`;
         }

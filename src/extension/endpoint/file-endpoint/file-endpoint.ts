@@ -13,6 +13,7 @@ export class FileEndpoint extends Endpoint {
     private _url: string = '';
     private files: Set<Uri> = new Set<Uri>();
     private _store: SparqlStore;
+
     /**
      * Creates a new instance of the HttpEndpoint class.
      * @param endpointUrl - The URL of the SPARQL endpoint.
@@ -24,11 +25,21 @@ export class FileEndpoint extends Endpoint {
         this._store = new SparqlStore();
     }
 
+    /**
+     * Getter for the URL of the SPARQL endpoint. In this case a file path.
+     * 
+     * @returns The URL of the SPARQL endpoint.
+     */
     get url(): string {
         return this._url;
     }
 
-    public async addFile(rdfFile: Uri) {
+    /**
+     * Adds a file to the endpoint.
+     * 
+     * @param rdfFile - The file to add.
+     */
+    public async addFile(rdfFile: Uri): Promise<void> {
         this._url = rdfFile.path;
         if (!rdfFile) {
             // show window error message
@@ -69,7 +80,7 @@ export class FileEndpoint extends Endpoint {
      * @param execution - The execution object.
      */
     public async query(sparqlQuery: SparqlQuery, execution?: any): Promise<any> {
-        const res = this._store.query(sparqlQuery.queryString);
+        const res = this._store.query(sparqlQuery);
         return res;
     }
 }

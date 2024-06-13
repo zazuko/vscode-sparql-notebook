@@ -1,30 +1,31 @@
-import { getSPARQLQueryKind, SPARQLQueryKind } from "../sparql-utils";
+import { SPARQLQueryKind } from "../enum/sparql-query-kind";
+import { getSPARQLQueryKind } from "../sparql-utils";
 
 export class SparqlQuery {
-    _queryString = '';
-    _queryKind = SPARQLQueryKind.unknown;
+    readonly #queryString: string;
+    readonly #queryKind: SPARQLQueryKind;
 
     /**
      * Creates a new instance of the SparqlQuery class.
      * @param queryString - The SPARQL query string.
      */
     constructor(queryString: string) {
-        this._queryString = queryString;
-        this._queryKind = getSPARQLQueryKind(queryString);
+        this.#queryString = queryString;
+        this.#queryKind = getSPARQLQueryKind(queryString);
     }
 
     /**
      * Getter for the SPARQL query string.
      */
     get queryString(): string {
-        return this._queryString;
+        return this.#queryString;
     }
 
     /**
      * Getter for the SPARQL query kind.
      */
     get kind(): SPARQLQueryKind {
-        return this._queryKind;
+        return this.#queryKind;
     }
 
     /**
@@ -34,8 +35,21 @@ export class SparqlQuery {
      * @returns the endpoint url or undefined if not found
      */
     extractEndpoint(): string | undefined {
-        console.log('extractEndpoint: not implemented');
-        return undefined;
+        const commentLines = this.#queryString
+            .split("\n")
+            .map((l) => l.trim())
+            .filter((l) => l.startsWith("#"));
+        const endpointExp = /\[endpoint=(.*)\]/gm;
+        const endpoints: string[] = [];
+        commentLines.every((comment: string) => {
+            const match = endpointExp.exec(comment);
+            if (match) {
+                endpoints.push(match[1]);
+                return false;
+            }
+            return true;
+        });
+        return endpoints.shift() ?? undefined;
     }
 
     /**
