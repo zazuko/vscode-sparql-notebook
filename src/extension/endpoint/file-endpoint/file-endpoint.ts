@@ -10,9 +10,9 @@ import { SparqlQuery } from '../model/sparql-query';
  * Represents an HTTP SPARQL endpoint.
  */
 export class FileEndpoint extends Endpoint {
-    private _url: string = '';
-    private files: Set<Uri> = new Set<Uri>();
-    private _store: SparqlStore;
+    #url: string = '';
+    readonly #files: Set<Uri> = new Set<Uri>();
+    readonly #store: SparqlStore;
 
     /**
      * Creates a new instance of the HttpEndpoint class.
@@ -22,7 +22,7 @@ export class FileEndpoint extends Endpoint {
      */
     constructor() {
         super();
-        this._store = new SparqlStore();
+        this.#store = new SparqlStore();
     }
 
     /**
@@ -31,7 +31,7 @@ export class FileEndpoint extends Endpoint {
      * @returns The URL of the SPARQL endpoint.
      */
     get url(): string {
-        return this._url;
+        return this.#url;
     }
 
     /**
@@ -40,7 +40,7 @@ export class FileEndpoint extends Endpoint {
      * @param rdfFile - The file to add.
      */
     public async addFile(rdfFile: Uri): Promise<void> {
-        this._url = rdfFile.path;
+        this.#url = rdfFile.path;
         if (!rdfFile) {
             // show window error message
             window.showErrorMessage('No file selected');
@@ -66,7 +66,7 @@ export class FileEndpoint extends Endpoint {
 
         try {
             const fileContent = await fs.promises.readFile(rdfFile.fsPath, 'utf-8');
-            this._store.load(fileContent, mimeType);
+            this.#store.load(fileContent, mimeType);
         } catch (e: any) {
             const message = e.message ?? e;
             window.showErrorMessage(`File error: ${message}`);
@@ -80,7 +80,7 @@ export class FileEndpoint extends Endpoint {
      * @param execution - The execution object.
      */
     public async query(sparqlQuery: SparqlQuery, execution?: any): Promise<any> {
-        const res = this._store.query(sparqlQuery);
+        const res = this.#store.query(sparqlQuery);
         return res;
     }
 }
