@@ -1,0 +1,32 @@
+[
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "# [endpoint=./rdf/curia.ttl]\n\n\nSELECT ?opti  ?s ?p ?o\nWHERE {\n  ?s ?p ?o .\n  optional {\n    ?s <https://foo.ch/bar/> ?opti .\n  }\n} LIMIT 10",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "# [endpoint=./rdf/curia.ttl]\n\nASK WHERE {\n  \n    ?s <https://foo.ch/bar/> ?opti .\n  \n}",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "# [endpoint=./rdf/curia.ttl]\n\n\nCONSTRUCT {\n    ?s ?p ?o .\n}\nWHERE {\n  ?s ?p ?o .\n \n} LIMIT 10",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "# [endpoint=./rdf/curia.ttl]\n\n\nDESCRIBE <https://politics.ld.admin.ch/person/1122>",
+    "metadata": {}
+  },
+  {
+    "kind": 1,
+    "language": "markdown",
+    "value": "",
+    "metadata": {}
+  }
+]

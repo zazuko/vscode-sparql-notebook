@@ -78,23 +78,24 @@ export class SparqlNotebookController {
     }
 
     // execute the query
-    const queryResult = await sparqlEndpoint.query(sparqlQuery, execution).catch((error) => {
-      let errorMessage = error.message ?? "error";
-      if (error.hasOwnProperty("response") && error.response.hasOwnProperty("data")) {
-        if (error.response.data.message) {
-          errorMessage += "\n" + error.response.data.message;
-        } else {
-          errorMessage += "\n" + error.response.data;
+    const queryResult = await sparqlEndpoint.query(sparqlQuery, execution).catch(
+      (error) => {
+        let errorMessage = error.message ?? "error";
+        if (error.hasOwnProperty("response") && error.response.hasOwnProperty("data")) {
+          if (error.response.data.message) {
+            errorMessage += "\n" + error.response.data.message;
+          } else {
+            errorMessage += "\n" + error.response.data;
+          }
         }
-      }
 
-      execution.replaceOutput([
-        this._writeError(errorMessage)
-      ]);
-      console.error('SPARQL execution error:', errorMessage);
-      execution.end(false, Date.now());
-      return;
-    });
+        execution.replaceOutput([
+          this._writeError(errorMessage)
+        ]);
+        console.error('SPARQL execution error:', errorMessage);
+        execution.end(false, Date.now());
+        return;
+      });
 
     // content type
     if (!queryResult) {

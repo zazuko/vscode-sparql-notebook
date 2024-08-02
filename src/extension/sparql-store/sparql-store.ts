@@ -1,6 +1,4 @@
 import { Store, defaultGraph } from 'oxigraph';
-import { getSPARQLQueryKind } from '../endpoint/sparql-utils';
-import { SparqlResultJson } from '../endpoint/model/sparql-result-json';
 import { SPARQLQueryKind } from '../endpoint/enum/sparql-query-kind';
 import { SparqlQuery } from '../endpoint/model/sparql-query';
 
@@ -12,12 +10,19 @@ export enum RdfMimeType {
     nQuads = 'application/n-quads',
 }
 export class SparqlStore {
-    private store: Store;
+    // the oxigraph store
+    readonly #store: Store;
 
     constructor() {
-        this.store = new Store();
+        this.#store = new Store();
     }
 
+    /**
+     * Can be a SELECT, ASK, CONSTRUCT or DESCRIBE query
+     * 
+     * @param query SPARQL query
+     * @returns 
+     */
     public async query(query: SparqlQuery): Promise<any> {
         // Executes a SPARQL 1.1 Query. 
         // For SELECT queries the return type is an array of Map which keys are the bound variables and values are the values the result is bound to. 
@@ -25,31 +30,26 @@ export class SparqlStore {
         // For ASK queries the return type is a boolean.
 
         const queryKind = query.kind;
-
-        if (queryKind === SPARQLQueryKind.ask) {
-            const res = await this._ask(query);
-            const fakeHttpResult = {
-                // eslint-disable-next-line @typescript-eslint/naming-convention
-                headers: { "content-type": "application/sparql-results+json" },
-                data: res
-            };
-            return fakeHttpResult;
-        } else if (queryKind === SPARQLQueryKind.select) {
-            const res = await this._select(query);
-            const fakeHttpResult = {
-                // eslint-disable-next-line @typescript-eslint/naming-convention
-                headers: { "content-type": "application/sparql-results+json" },
-                data: res
-            };
-            return fakeHttpResult;
-        } else if (queryKind === SPARQLQueryKind.construct || queryKind === SPARQLQueryKind.describe) {
-            return await this._construct(query);
+        switch (queryKind) {
+            case SPARQLQueryKind.ask:
+            case SPARQLQueryKind.select:
+                const res = await this._select(query);
+                const fakeHttpResult = {
+                    headers: { "content-type": "application/sparql-results+json" },
+                    data: JSON.parse(res)
+                };
+                return fakeHttpResult;
+            case SPARQLQueryKind.construct:
+            case SPARQLQueryKind.describe:
+                return this._construct(query);
+            default:
+                return await this.#store.query(query.queryString, {});
         }
-        return await this.store.query(query.queryString);
+
     }
 
     private async _construct(query: SparqlQuery): Promise<any> {
-        const ttl = (new Store(this.store.query(query.queryString))).dump(RdfMimeType.turtle, defaultGraph());
+        const ttl = (new Store(this.#store.query(query.queryString, {}))).dump(RdfMimeType.turtle, defaultGraph());
         const fakeHttpResult = {
             // eslint-disable-next-line @typescript-eslint/naming-convention
             headers: { "content-type": RdfMimeType.turtle },
@@ -58,96 +58,53 @@ export class SparqlStore {
         return fakeHttpResult;
     }
 
-    private async _ask(query: SparqlQuery): Promise<SparqlResultJson> {
-        const result = await this.store.query(query.queryString) as boolean;
-        // turn this boolean to sparql-result+json
-        return {
-            "head": {
-                "vars": []
-            },
-            "boolean": result
-        };
-    }
+    private async _select(query: SparqlQuery): Promise<string> {
+        const result = await this.#store.query(query.queryString, {
+            results_format: "json",
+        });
+        return result;
+    };
 
-    private async _select(query: SparqlQuery): Promise<SparqlResultJson> {
-        const resultMaps = await this.store.query(query.queryString) as Map<string, any>[];
-        const sparqlResultJson: SparqlResultJson = {
-            head: {
-                vars: []
-            },
-            results: {
-                bindings: []
-            }
-        };
-
-        // Get the variable names from the first map
-        const variableNames: string[] = [];
-        const seenKeys = new Set<string>();
-        for (const resultMap of resultMaps) {
-            for (const key of resultMap.keys()) {
-                if (!seenKeys.has(key)) {
-                    seenKeys.add(key);
-                    variableNames.push(key);
-                }
-            }
-        };
-        sparqlResultJson.head.vars = variableNames;
-
-        // Convert each map to a binding object
-        for (let resultMap of resultMaps) {
-            const binding: any = {};
-            for (let variableName of variableNames) {
-                const term = resultMap.get(variableName);
-                if (!term) {
-                    continue;
-                }
-                if (term.termType === 'NamedNode') {
-                    binding[variableName] = {
-                        type: "uri",
-                        value: term.value
-                    };
-                } else if (term.termType === 'BlankNode') {
-                    binding[variableName] = {
-                        type: "bnode",
-                        value: term.value
-                    };
-                } else if (term.termType === 'Literal') {
-                    const t = {} as any;
-                    t.type = 'literal';
-                    t.value = term.value;
-                    if (term.datatype) {
-                        if (term.datatype.value !== 'http://www.w3.org/2001/XMLSchema#string' && term.datatype.value !== 'http://www.w3.org/1999/02/22-rdf-syntax-ns#langString') {
-                            t.datatype = term.datatype.value;
-                        }
-                    }
-                    if (term.language) {
-                        t['xml:lang'] = term.language;
-                    }
-                    binding[variableName] = t;
-                }
-            }
-            sparqlResultJson.results!.bindings.push(binding);
-
-
-
-        }
-        return sparqlResultJson;
-    }
 
     public async update(query: SparqlQuery): Promise<any> {
-        return await this.store.update(query.queryString);
+        return await this.#store.update(query.queryString, {});
     }
 
+    /**
+     * 
+     * @param rdfString Load RDF data into the store
+     * @param mimeType Supported MIME types are: application/n-triples, text/turtle, application/rdf+xml, application/n-quads
+     * @returns 
+     */
     public load(rdfString: string, mimeType: RdfMimeType): void {
-        return this.store.load(rdfString, mimeType, null, defaultGraph());
+        const options = {
+            format: mimeType,
+            to_graph_name: defaultGraph()
+        };
+
+        return this.#store.load(rdfString, options, null, null);
     }
 
-    public async dump(mimeType: RdfMimeType): Promise<any> {
-        return await this.store.dump(mimeType, defaultGraph());
+    /**
+     * 
+     * @param mimeType Supported MIME types are: application/n-triples, text/turtle, application/rdf+xml, application/n-quads
+     * @returns Serialized RDF data
+     */
+    public async dump(mimeType: RdfMimeType): Promise<string> {
+        const options = {
+            format: mimeType,
+            to_graph_name: defaultGraph()
+        };
+        return await this.#store.dump(options, null);
     }
 
+
+    /**
+     * Get the size of the store
+     * @returns the number of triples in the store
+     */
     public get size(): number {
-        return this.store.size;
+        return this.#store.size;
     }
 
 }
