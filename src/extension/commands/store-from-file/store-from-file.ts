@@ -10,7 +10,7 @@ export function createStoreFromFile(sparqlNotebookCellStatusBarItemProvider: Spa
         const fileEndpoint = new FileEndpoint();
         try {
             await fileEndpoint.addFile(rdfFile);
-            notebookEndpoint.setEndpoint(fileEndpoint);
+            notebookEndpoint.endpoint = fileEndpoint;
             sparqlNotebookCellStatusBarItemProvider.updateCellStatusBarItems();
         } catch (e) {
             window.showErrorMessage('Error loading file: ' + e);

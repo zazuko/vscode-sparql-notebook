@@ -10,6 +10,7 @@ import { HttpEndpoint } from "../../endpoint";
 import { storageKey } from "../../extension";
 import { notebookEndpoint } from '../../endpoint/endpoint';
 import { SparqlNotebookCellStatusBarItemProvider } from '../../notebook/SparqlNotebookCellStatusBarItemProvider';
+import { SparqlQuery } from '../../endpoint/model/sparql-query';
 
 
 export function connectToDatabase(
@@ -65,8 +66,8 @@ export function connectToDatabase(
             const endpoint = new HttpEndpoint(connectionData.endpointURL, connectionData.user, connectionData.passwordKey);
 
             // test the connection
-            await endpoint.query("SELECT * WHERE {?s ?p ?o.} LIMIT 1");
-            notebookEndpoint.setEndpoint(endpoint);
+            await endpoint.query(new SparqlQuery("SELECT * WHERE {?s ?p ?o.} LIMIT 1"));
+            notebookEndpoint.endpoint = endpoint;
             connectionsSidepanel.setActive(match.name);
             window.showInformationMessage(
                 `Successfully connected to "${match.name}"`
@@ -76,7 +77,7 @@ export function connectToDatabase(
             window.showErrorMessage(
                 `Failed to connect to "${match.name}": ${err?.message}`
             );
-            notebookEndpoint.setEndpoint(null);
+            notebookEndpoint.endpoint = null;
             connectionsSidepanel.setActive(null);
         }
         sparqlNotebookCellStatusBarItemProvider.updateCellStatusBarItems();

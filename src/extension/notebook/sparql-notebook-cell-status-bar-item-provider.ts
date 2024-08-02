@@ -24,13 +24,14 @@ export class ConnectionSourceStatusBarItem extends NotebookCellStatusBarItem {
     private itemText = 'Notebook Connection';
     constructor(cell: SparqlNotebookCell, alignment: NotebookCellStatusBarAlignment) {
         super('', alignment);
-        let commentEndpoint = cell.extractDocumentEndpoint();
+        const sparqlQuery = cell.sparqlQuery;
+        let commentEndpoint = sparqlQuery.extractEndpoint();
         if (commentEndpoint) {
             this.itemText = `Query Comment`;
         }
 
-        this.text = `${this.icon} ${this.itemText} ${commentEndpoint ?? notebookEndpoint.getEndpoint()?.url ? ((commentEndpoint ?? notebookEndpoint.getEndpoint()?.url)?.startsWith('http') ? `$(database)` : '$(file)') : '$(circle-slash)'}`;
-        this.tooltip = `Endpoint: ${commentEndpoint ?? notebookEndpoint.getEndpoint()?.url ?? "None"}`;
+        this.text = `${this.icon} ${this.itemText} ${commentEndpoint ?? notebookEndpoint.endpoint?.url ? ((commentEndpoint ?? notebookEndpoint.endpoint?.url)?.startsWith('http') ? `$(database)` : '$(file)') : '$(circle-slash)'}`;
+        this.tooltip = `Endpoint: ${commentEndpoint ?? notebookEndpoint.endpoint?.url ?? "None"}`;
     }
 }
 

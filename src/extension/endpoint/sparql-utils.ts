@@ -1,16 +1,5 @@
-export enum SPARQLQueryKind {
-    select = 'select',
-    construct = 'construct',
-    describe = 'describe',
-    ask = 'ask',
-    insert = 'insert',
-    delete = 'delete',
-    load = 'load',
-    clear = 'clear',
-    drop = 'drop',
-    create = 'create',
-    json = 'json'// fuski has that
-}
+import { SPARQLQueryKind } from "./enum/sparql-query-kind";
+
 
 export function getSPARQLQueryKind(query: string): SPARQLQueryKind {
     const lines = query.split('\n').map(line => line.trim().toLowerCase());
@@ -58,7 +47,7 @@ export function getSPARQLQueryKind(query: string): SPARQLQueryKind {
             return SPARQLQueryKind.insert;
         }
     }
-    throw new Error('Unknown query type' + firstLine);
+    return SPARQLQueryKind.unknown;
 }
 
 

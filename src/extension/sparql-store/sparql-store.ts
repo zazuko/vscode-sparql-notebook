@@ -1,6 +1,8 @@
 import { Store, defaultGraph } from 'oxigraph';
-import { SPARQLQueryKind, getSPARQLQueryKind } from '../endpoint/sparql-utils';
+import { getSPARQLQueryKind } from '../endpoint/sparql-utils';
 import { SparqlResultJson } from '../endpoint/model/sparql-result-json';
+import { SPARQLQueryKind } from '../endpoint/enum/sparql-query-kind';
+import { SparqlQuery } from '../endpoint/model/sparql-query';
 
 export enum RdfMimeType {
     nTriples = 'application/n-triples',
@@ -16,13 +18,13 @@ export class SparqlStore {
         this.store = new Store();
     }
 
-    public async query(query: string): Promise<any> {
+    public async query(query: SparqlQuery): Promise<any> {
         // Executes a SPARQL 1.1 Query. 
         // For SELECT queries the return type is an array of Map which keys are the bound variables and values are the values the result is bound to. 
         // For CONSTRUCT and DESCRIBE queries the return type is an array of Quad. 
         // For ASK queries the return type is a boolean.
 
-        const queryKind = getSPARQLQueryKind(query);
+        const queryKind = query.kind;
 
         if (queryKind === SPARQLQueryKind.ask) {
             const res = await this._ask(query);
@@ -43,11 +45,11 @@ export class SparqlStore {
         } else if (queryKind === SPARQLQueryKind.construct || queryKind === SPARQLQueryKind.describe) {
             return await this._construct(query);
         }
-        return await this.store.query(query);
+        return await this.store.query(query.queryString);
     }
 
-    private async _construct(query: string): Promise<any> {
-        const ttl = (new Store(this.store.query(query))).dump(RdfMimeType.turtle, defaultGraph());
+    private async _construct(query: SparqlQuery): Promise<any> {
+        const ttl = (new Store(this.store.query(query.queryString))).dump(RdfMimeType.turtle, defaultGraph());
         const fakeHttpResult = {
             // eslint-disable-next-line @typescript-eslint/naming-convention
             headers: { "content-type": RdfMimeType.turtle },
@@ -56,8 +58,8 @@ export class SparqlStore {
         return fakeHttpResult;
     }
 
-    private async _ask(query: string): Promise<SparqlResultJson> {
-        const result = await this.store.query(query) as boolean;
+    private async _ask(query: SparqlQuery): Promise<SparqlResultJson> {
+        const result = await this.store.query(query.queryString) as boolean;
         // turn this boolean to sparql-result+json
         return {
             "head": {
@@ -67,8 +69,8 @@ export class SparqlStore {
         };
     }
 
-    private async _select(query: string): Promise<SparqlResultJson> {
-        const resultMaps = await this.store.query(query) as Map<string, any>[];
+    private async _select(query: SparqlQuery): Promise<SparqlResultJson> {
+        const resultMaps = await this.store.query(query.queryString) as Map<string, any>[];
         const sparqlResultJson: SparqlResultJson = {
             head: {
                 vars: []
@@ -132,8 +134,8 @@ export class SparqlStore {
         return sparqlResultJson;
     }
 
-    public async update(query: string): Promise<any> {
-        return await this.store.update(query);
+    public async update(query: SparqlQuery): Promise<any> {
+        return await this.store.update(query.queryString);
     }
 
     public load(rdfString: string, mimeType: RdfMimeType): void {

@@ -2,6 +2,7 @@ import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
 
 import { getSPARQLQueryKind, getAcceptHeader } from '../sparql-utils';
 import { Endpoint } from '../endpoint';
+import { SparqlQuery } from '../model/sparql-query';
 
 /**
  * Represents an HTTP SPARQL endpoint.
@@ -37,12 +38,12 @@ export class HttpEndpoint extends Endpoint {
    * @param sparqlQuery - The SPARQL query to execute.
    * @param execution - The execution object.
    */
-  public async query(sparqlQuery: string, execution?: any) {
+  public async query(sparqlQuery: SparqlQuery, execution?: any) {
     const params = new URLSearchParams();
-    params.append("query", sparqlQuery);
+    params.append("query", sparqlQuery.queryString);
 
     const abortController = new AbortController();
-    const queryKind = getSPARQLQueryKind(sparqlQuery);
+    const queryKind = sparqlQuery.kind;
 
     const options: AxiosRequestConfig = {
       headers: {
@@ -62,4 +63,5 @@ export class HttpEndpoint extends Endpoint {
     const response = await this.http.post('', params, options);
     return response;
   }
+
 }

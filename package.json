@@ -11,7 +11,7 @@
   },
   "version": "0.0.37",
   "engines": {
-    "vscode": "^1.77.0"
+    "vscode": "^1.90.0"
   },
   "categories": [
     "Notebooks",
@@ -176,37 +176,33 @@
     "compile": "webpack --mode production",
     "lint": "eslint src --ext ts",
     "watch": "webpack --mode development --watch",
-    "pretest": "webpack --mode development && npm run lint",
-    "test": "node ./out/test/runTest.js",
     "deploy": "npx vsce publish",
     "package": "npx vsce package"
   },
   "devDependencies": {
     "@types/glob": "^8.1.0",
     "@types/mocha": "^10.0.6",
-    "@types/node": "16.x",
+    "@types/node": "18.x",
     "@types/react": "^18.2.21",
     "@types/react-dom": "^18.2.7",
-    "@types/vscode": "^1.77.0",
+    "@types/vscode": "^1.90.0",
     "@types/vscode-notebook-renderer": "^1.72.3",
     "@types/vscode-webview": "^1.57.2",
     "@types/webpack-env": "^1.18.1",
-    "@typescript-eslint/eslint-plugin": "^5.60.1",
-    "@typescript-eslint/parser": "^5.60.1",
-    "@vscode/test-electron": "^2.3.3",
+    "@typescript-eslint/eslint-plugin": "^7.13.0",
+    "@typescript-eslint/parser": "^ 7.13.0",
     "css-loader": "^6.8.1",
-    "eslint": "^8.43.0",
+    "eslint": "^8.56.0",
     "fork-ts-checker-webpack-plugin": "^9.0.2",
     "glob": "^10.4.1",
-    "mocha": "^10.4.0",
     "os-browserify": "^0.3.0",
     "path-browserify": "^1.0.1",
     "style-loader": "^3.3.3",
     "ts-loader": "^9.5.1",
-    "typescript": "^5.1.3",
+    "typescript": "^5.4.5",
     "url": "^0.11.1",
     "util": "^0.12.5",
-    "webpack": "^5.88.0",
+    "webpack": "^5.89.0",
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {

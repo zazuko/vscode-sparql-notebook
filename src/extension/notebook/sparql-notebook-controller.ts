@@ -5,9 +5,7 @@ import { PrefixMap } from '../model/prefix-map';
 import { notebookEndpoint } from '../endpoint/endpoint';
 import { SparqlNotebookCell } from './sparql-notebook-cell';
 import { shrink } from '@zazuko/prefixes';
-
-import prefixes from '@zazuko/prefixes';
-
+import { SparqlQuery } from '../endpoint/model/sparql-query';
 
 export class SparqlNotebookController {
   readonly controllerId = `${extensionId}-controller-id`;
@@ -15,24 +13,26 @@ export class SparqlNotebookController {
   readonly label = "Sparql Notebook";
   readonly supportedLanguages = ["sparql"];
 
-  private readonly _controller: NotebookController;
-  private _executionOrder = 0;
+  readonly #controller: NotebookController;
+  #executionOrder = 0;
 
   constructor() {
     // Create a new notebook controller
-    this._controller = notebooks.createNotebookController(
+    this.#controller = notebooks.createNotebookController(
       this.controllerId,
       this.notebookType,
       this.label
     );
 
     // controller setup
-    this._controller.supportedLanguages = this.supportedLanguages;
-    this._controller.supportsExecutionOrder = true;
+    this.#controller.supportedLanguages = this.supportedLanguages;
+    this.#controller.supportsExecutionOrder = true;
 
     // this is executing the cells
-    this._controller.executeHandler = this._execute.bind(this);
+    this.#controller.executeHandler = this._execute.bind(this);
   }
+
+
 
   /**
    * Executes the given cells by calling the _doExecution method for each cell.
@@ -48,18 +48,16 @@ export class SparqlNotebookController {
   }
 
   private async _doExecution(nbCell: NotebookCell): Promise<void> {
-    const cell = new SparqlNotebookCell(nbCell);
-    const execution = this._controller.createNotebookCellExecution(cell.asNotebookCell);
-    execution.executionOrder = ++this._executionOrder;
+    const sparqlCell = new SparqlNotebookCell(nbCell);
+    const execution = this.#controller.createNotebookCellExecution(sparqlCell.cell);
+    execution.executionOrder = ++this.#executionOrder;
 
     // Keep track of elapsed time to execute cell.
     execution.start(Date.now());
 
-    const sparqlQuery = cell.document.getText();
-
+    const sparqlQuery = sparqlCell.sparqlQuery;
     // you can configure the endpoint within the query like this # [endpoint='xxxx']
-    // todo: rename function
-    const sparqlEndpoint = await this._getDocumentOrConnectionClient(cell);
+    const sparqlEndpoint = await this._getDocumentOrConnectionClient(sparqlCell, sparqlQuery);
 
     if (!sparqlEndpoint) {
       const errorMessage = "Not connected to a SPARQL Endpoint";
@@ -118,7 +116,7 @@ export class SparqlNotebookController {
         return;
       }
       // sparql select
-      const prefixMap = cell.getPrefixMap();
+      const prefixMap = sparqlCell.getPrefixMap();
       execution.replaceOutput([this._writeSparqlJsonResult(data, prefixMap)]);
       execution.end(isSuccess, Date.now());
       return;
@@ -126,7 +124,7 @@ export class SparqlNotebookController {
 
     if (contentType === "text/turtle") {
       // sparql construct
-      execution.replaceOutput([await this._writeTurtleResult(data, cell.getPrefixMap())]);
+      execution.replaceOutput([await this._writeTurtleResult(data, sparqlCell.getPrefixMap())]);
       execution.end(isSuccess, Date.now());
       return;
     }
@@ -225,7 +223,7 @@ export class SparqlNotebookController {
   }
 
   dispose() {
-    this._controller.dispose();
+    this.#controller.dispose();
   }
 
 
@@ -234,8 +232,8 @@ export class SparqlNotebookController {
    * @param sparqlQuery - The SPARQL query to get the endpoint for.
    * @returns An Endpoint instance for the given SPARQL query, or null if no endpoint could be found.
    */
-  private async _getDocumentOrConnectionClient(cell: SparqlNotebookCell): Promise<Endpoint | null> {
-    const documentEndpoint = cell.extractDocumentEndpoint();
+  private async _getDocumentOrConnectionClient(cell: SparqlNotebookCell, sparqlQuery: SparqlQuery): Promise<Endpoint | null> {
+    const documentEndpoint = sparqlQuery.extractEndpoint();
     if (documentEndpoint) {
       if (documentEndpoint.startsWith("http")) {
         return new HttpEndpoint(documentEndpoint, "", "");
@@ -255,7 +253,7 @@ export class SparqlNotebookController {
       await fileEndpoint.addFile(fileUri);
       return fileEndpoint;
     }
-    return notebookEndpoint.getEndpoint();
+    return notebookEndpoint.endpoint;
   }
 
 

@@ -12,7 +12,6 @@ import { connectToDatabase } from "./commands/sparql-connection/connect-to-datab
 import { exportToMarkdown } from "./commands/export/export-to-markdown";
 import { addQueryFromFile } from "./commands/code-cell/add-query-from-file";
 
-import { activateFormProvider } from "./connection-view/connection-view";
 import { createStoreFromFile } from "./commands/store-from-file/store-from-file";
 import { SparqlNotebookCellStatusBarItemProvider } from './notebook/SparqlNotebookCellStatusBarItemProvider';
 
@@ -21,8 +20,14 @@ import * as path from "path";
 export const extensionId = "sparql-notebook";
 export const storageKey = `${extensionId}-connections`;
 
-// this method is called when your extension is activated
+/**
+ * Activate the extension.
+ * 
+ * @param context activate the form provider
+ */
 export function activate(context: vscode.ExtensionContext) {
+
+  // register the sparql notebook serializer
   context.subscriptions.push(
     vscode.workspace.registerNotebookSerializer(
       extensionId,
@@ -34,7 +39,7 @@ export function activate(context: vscode.ExtensionContext) {
   const sparqlNotebookController = new SparqlNotebookController();
   context.subscriptions.push(sparqlNotebookController);
 
-
+  // register the cell status bar item provider
   const sparqlNotebookCellStatusBarItemProvider = new SparqlNotebookCellStatusBarItemProvider();
   context.subscriptions.push(vscode.notebooks.registerNotebookCellStatusBarItemProvider(extensionId, sparqlNotebookCellStatusBarItemProvider));
 
