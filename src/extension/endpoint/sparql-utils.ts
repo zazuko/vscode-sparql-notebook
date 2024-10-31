@@ -1,3 +1,4 @@
+import { MimeType } from "../enum/mime-type";
 import { SPARQLQueryKind } from "./enum/sparql-query-kind";
 
 
@@ -53,23 +54,22 @@ export function getSPARQLQueryKind(query: string): SPARQLQueryKind {
 
 
 
-export function getAcceptHeader(queryType: SPARQLQueryKind): string {
-    console.log('queryType', queryType);
+export function getAcceptHeader(queryType: SPARQLQueryKind): MimeType {
     switch (queryType) {
         case SPARQLQueryKind.ask:
         case SPARQLQueryKind.select:
-            return 'application/sparql-results+json';
+            return MimeType.sparqlResultsJson
         case SPARQLQueryKind.construct:
         case SPARQLQueryKind.describe:
-            return 'text/turtle';
+            return MimeType.turtle
         case SPARQLQueryKind.insert:
         case SPARQLQueryKind.load:
         case SPARQLQueryKind.clear:
         case SPARQLQueryKind.drop:
         case SPARQLQueryKind.create:
-            return '*/*';
+            return MimeType.any
         case SPARQLQueryKind.json:
-            return 'application/json';
+            return MimeType.json
         default:
             throw new Error('Unknown query type' + queryType);
     }

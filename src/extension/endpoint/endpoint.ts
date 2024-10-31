@@ -1,3 +1,4 @@
+import { MimeType } from "../enum/mime-type";
 import { SparqlQuery } from "./model/sparql-query";
 
 /**
@@ -8,8 +9,7 @@ import { SparqlQuery } from "./model/sparql-query";
  */
 export abstract class Endpoint {
     public abstract url: string;
-    abstract query(sparqlQuery: SparqlQuery, execution?: any): Promise<any>;
-    // abstract update(sparqlConstruct: string, execution?: any): Promise<any>;
+    abstract query(sparqlQuery: SparqlQuery, execution?: any): Promise<SimpleHttpResponse> | never;
 }
 
 /**
@@ -46,3 +46,19 @@ class EndpointController {
  * 
  */
 export const notebookEndpoint = new EndpointController();
+
+
+
+
+
+
+export interface SimpleHttpResponse {
+
+    headers: HttpContentType,
+    data: string
+
+}
+
+export interface HttpContentType {
+    "content-type": MimeType
+}

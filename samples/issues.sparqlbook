@@ -8,7 +8,7 @@
   {
     "kind": 2,
     "language": "sparql",
-    "value": "PREFIX cube: <https://cube.link/>\nPREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n\nfrom <https://lindas.admin.ch/foen/cube>\nselect *\nWHERE  \n{ \n    BIND(<https://environment.ld.admin.ch/foen/ubd000502/1> AS ?cube)\n    ?cube  rdf:type  cube:Cube\n}\n",
+    "value": "PREFIX cube: <https://cube.link/>\nPREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n\nselect *\nfrom <https://lindas.admin.ch/foen/cube>\nWHERE  \n{ \n    BIND(<https://environment.ld.admin.ch/foen/ubd000502/1> AS ?cube)\n    ?cube  rdf:type  cube:Cube\n}\n",
     "metadata": {}
   }
 ]

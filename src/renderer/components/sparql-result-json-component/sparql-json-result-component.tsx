@@ -35,7 +35,7 @@ export const SparqlResultJsonComponent: React.FC<SparqlResultJsonComponentProps>
                                     <UriComponent term={result[heading]} />
                                 ) : result[heading]?.type === 'bnode' ? (
                                     <BNodeComponent term={result[heading]} />
-                                ) : null ?? ''
+                                ) : ''
                                 }
 
                             </td>
