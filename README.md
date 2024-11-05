@@ -134,5 +134,6 @@ h
 
 - Stardog VSCode Extensions, https://github.com/stardog-union/stardog-vsc
 - Oxigraph, https://github.com/oxigraph
+- Random Fractals Inc., https://marketplace.visualstudio.com/items?itemName=RandomFractalsInc.vscode-data-table
 
 And all contributors ❤️
