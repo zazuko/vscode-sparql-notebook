@@ -1,9 +1,14 @@
+import { window } from "vscode";
+
 import { SPARQLQueryKind } from "../enum/sparql-query-kind";
 import { getSPARQLQueryKind } from "../sparql-utils";
+import * as glob from 'glob';
 
 export class SparqlQuery {
     readonly #queryString: string;
     readonly #queryKind: SPARQLQueryKind;
+
+    #extractedEndpointCollection: EndpointCollection | undefined = undefined;
 
     /**
      * Creates a new instance of the SparqlQuery class.
@@ -34,33 +39,80 @@ export class SparqlQuery {
      * 
      * @returns the endpoint url or undefined if not found
      */
-    extractEndpoint(): string | undefined {
+    extractEndpoint(): EndpointCollection {
+        if (this.#extractedEndpointCollection !== undefined) {
+            return this.#extractedEndpointCollection;
+        }
         const commentLines = this.#queryString
             .split("\n")
             .map((l) => l.trim())
             .filter((l) => l.startsWith("#"));
-        const endpointExp = /\[endpoint=(.*)\]/gm;
-        const endpoints: string[] = [];
-        commentLines.every((comment: string) => {
+        const endpointsSet = new Set<string>();
+        commentLines.forEach((comment: string) => {
+            const endpointExp = /\[endpoint=(.*)\]/gm;
             const match = endpointExp.exec(comment);
             if (match) {
-                endpoints.push(match[1]);
-                return false;
+                endpointsSet.add(match[1]);
             }
-            return true;
         });
-        return endpoints.shift() ?? undefined;
+
+        const endpoints: ExtractedEndpoint[] = [...endpointsSet].flatMap(endpoint => {
+            const kind = endpoint.startsWith("http://") || endpoint.startsWith('https://') ? EndpointKind.Http : EndpointKind.File;
+            return [{ kind, endpoint }];
+        });
+        this.#extractedEndpointCollection = new EndpointCollection(endpoints);
+        return this.#extractedEndpointCollection;
+    }
+
+}
+
+
+export enum EndpointKind {
+    File = 'file',
+    Http = 'http'
+}
+
+export interface ExtractedEndpoint {
+    kind: EndpointKind;
+    endpoint: string;
+}
+
+export class EndpointCollection {
+    readonly #endpoints: ExtractedEndpoint[];
+
+    constructor(endpoints: ExtractedEndpoint[]) {
+        this.#endpoints = endpoints;
+    }
+
+    get #hasHttpEndpoint(): boolean {
+        return this.#endpoints.some(e => e.kind === 'http');
+    }
+
+    get #hasFileEndpoint(): boolean {
+        return this.#endpoints.some(e => e.kind === 'file');
     }
 
     /**
-     * Try to extract the file path from the SPARQL query. Looks for a line like:
-     * [file: <path/to/file>]
-     * 
-     * @returns the file path or undefined if not found
+     * Get the configured endpoints from the SPARQL query. The output is an array of endpoints.
+     * If the query contains both file and http endpoints, an error message is shown and an empty array is returned.
+     * If the query contains multiple http endpoints, an error message is shown and an empty array is returned.
+     * If all is ok the array of endpoints is returned. 
+     * @returns the extracted endpoints from the SPARQL query.
      */
-    extractFilePath(): string | undefined {
-        console.log('extractFilePath: not implemented');
-        return undefined;
+    getEndpoints(): ExtractedEndpoint[] {
+        if (this.#endpoints.length === 0) {
+            return [];
+        }
+        if (this.#hasFileEndpoint && this.#hasHttpEndpoint) {
+            window.showWarningMessage('SPARQL query contains both file and http endpoints. Please remove one of them.');
+            return [];
+        }
+
+        if (this.#hasHttpEndpoint && this.#endpoints.length > 1) {
+            window.showWarningMessage('SPARQL query contains multiple http endpoints. Please remove all but one.');
+            return [];
+        }
+        return this.#endpoints;
     }
 
 }

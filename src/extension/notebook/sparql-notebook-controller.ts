@@ -1,11 +1,15 @@
-import { NotebookCell, NotebookCellOutput, NotebookCellOutputItem, NotebookController, NotebookDocument, Uri, commands, notebooks, window, workspace } from 'vscode';
+import { NotebookCell, NotebookCellOutput, RelativePattern, GlobPattern, NotebookCellOutputItem, NotebookController, NotebookDocument, Uri, commands, notebooks, window, workspace } from 'vscode';
 import { extensionId } from "../extension";
 import { Endpoint, FileEndpoint, HttpEndpoint, } from "../endpoint";
 import { PrefixMap } from '../model/prefix-map';
 import { notebookEndpoint } from '../endpoint/endpoint';
 import { SparqlNotebookCell } from './sparql-notebook-cell';
 import { shrink } from '@zazuko/prefixes';
-import { SparqlQuery } from '../endpoint/model/sparql-query';
+import { EndpointKind, SparqlQuery } from '../endpoint/model/sparql-query';
+import { MimeType } from '../enum/mime-type';
+import path = require('path');
+import { Glob } from 'glob';
+import { File } from 'buffer';
 
 export class SparqlNotebookController {
   readonly controllerId = `${extensionId}-controller-id`;
@@ -109,8 +113,9 @@ export class SparqlNotebookController {
     const data = queryResult.data;
     let isSuccess = true;
 
-    if (contentType === "application/sparql-results+json") {
-      if (data.hasOwnProperty("boolean")) {
+    if (contentType === MimeType.sparqlResultsJson) {
+      const parsedData = JSON.parse(data);
+      if (parsedData.hasOwnProperty("boolean")) {
         // sparql ask
         execution.replaceOutput([this._writeAskResult(data)]);
         execution.end(isSuccess, Date.now());
@@ -123,16 +128,17 @@ export class SparqlNotebookController {
       return;
     }
 
-    if (contentType === "text/turtle") {
+    if (contentType === MimeType.turtle) {
       // sparql construct
-      execution.replaceOutput([await this._writeTurtleResult(data, sparqlCell.getPrefixMap())]);
+      execution.replaceOutput([await this._writeTurtleResult(data)]);
       execution.end(isSuccess, Date.now());
       return;
     }
 
-    if (contentType === "application/json") {
+    if (contentType === MimeType.json) {
       // stardog is returning and error as json
-      execution.replaceOutput([this._writeError(data.message)]);
+      const errorObject = JSON.parse(data);
+      execution.replaceOutput([this._writeError(errorObject.message ?? 'An error occurred')]);
       isSuccess = false;
       execution.end(isSuccess, Date.now());
       return;
@@ -146,12 +152,12 @@ export class SparqlNotebookController {
     return;
   }
 
-  private async _writeTurtleResult(resultTTL: string, prefix: PrefixMap): Promise<NotebookCellOutput> {
+  private async _writeTurtleResult(resultTTL: string): Promise<NotebookCellOutput> {
 
     // this is writing markdown to the cell containing a turtle code block
     return new NotebookCellOutput([
 
-      NotebookCellOutputItem.text(resultTTL, "text/plain"),
+      NotebookCellOutputItem.text(resultTTL, MimeType.plainText),
       NotebookCellOutputItem.text(
         `\`\`\`turtle\n${resultTTL}\n\`\`\``,
         "text/markdown"
@@ -159,23 +165,23 @@ export class SparqlNotebookController {
     ]);
   }
 
-  private _writeAskResult(resultJson: any): NotebookCellOutput {
+  private _writeAskResult(resultJson: string): NotebookCellOutput {
     const outputItem = new NotebookCellOutput([
-      this._writeJson(JSON.stringify(resultJson, null, "   ")),
+      this._writeJson(resultJson),
       NotebookCellOutputItem.json(
-        resultJson,
-        "application/sparql-results+json"
+        JSON.parse(resultJson),
+        MimeType.sparqlResultsJson
       ),
     ]);
     return outputItem;
   }
 
-  private _writeSparqlJsonResult(resultJson: any, prefixMap: PrefixMap = {}): NotebookCellOutput {
+  private _writeSparqlJsonResult(resultJson: string, prefixMap: PrefixMap = {}): NotebookCellOutput {
     const outputItem = new NotebookCellOutput([
-      this._writeJson(JSON.stringify(resultJson, null, "   ")),
+      this._writeJson(resultJson),
       NotebookCellOutputItem.json(
-        resultJson,
-        "application/sparql-results+json"
+        JSON.parse(resultJson),
+        MimeType.sparqlResultsJson
       ),
       this._writeDataTableRendererCompatibleJson(resultJson, prefixMap)
     ]);
@@ -183,14 +189,14 @@ export class SparqlNotebookController {
     return outputItem;
   }
 
-  private _writeJson(jsonResult: any): NotebookCellOutputItem {
+  private _writeJson(jsonResult: string): NotebookCellOutputItem {
     return NotebookCellOutputItem.text(
       `\`\`\`json\n${jsonResult}\n\`\`\``,
       "text/markdown"
     );
   }
 
-  private _writeError(message: any): NotebookCellOutput {
+  private _writeError(message: string): NotebookCellOutput {
     return new NotebookCellOutput([
       NotebookCellOutputItem.error({
         name: "SPARQL error",
@@ -199,7 +205,8 @@ export class SparqlNotebookController {
     ]);
   }
 
-  private _writeDataTableRendererCompatibleJson(resultJson: any, prefixMap: PrefixMap = {}) {
+  private _writeDataTableRendererCompatibleJson(resultJsonString: string, prefixMap: PrefixMap = {}) {
+    const resultJson = JSON.parse(resultJsonString);
     const dtJonBindings: { [k: string]: any }[] = resultJson.results.bindings;
 
     const dtJson = dtJonBindings.map(item => {
@@ -220,7 +227,7 @@ export class SparqlNotebookController {
     });
 
     const jsonStringified = JSON.stringify(dtJson, null, "   ");
-    return NotebookCellOutputItem.text(jsonStringified, "application/json");
+    return NotebookCellOutputItem.text(jsonStringified, MimeType.json);
   }
 
   dispose() {
@@ -234,28 +241,53 @@ export class SparqlNotebookController {
    * @returns An Endpoint instance for the given SPARQL query, or null if no endpoint could be found.
    */
   private async _getDocumentOrConnectionClient(cell: SparqlNotebookCell, sparqlQuery: SparqlQuery): Promise<Endpoint | null> {
-    const documentEndpoint = sparqlQuery.extractEndpoint();
-    if (documentEndpoint) {
-      if (documentEndpoint.startsWith("http")) {
-        return new HttpEndpoint(documentEndpoint, "", "");
+    const documentEndpoints = sparqlQuery.extractEndpoint().getEndpoints();
+
+    if (documentEndpoints.length > 0) {
+
+      if (documentEndpoints[0].kind === EndpointKind.Http) {
+        // http endpoint (only one is supported)
+        return new HttpEndpoint(documentEndpoints[0].endpoint, "", "");
       }
-      const filePath = documentEndpoint;
-      let fileUri: Uri;
-      if (filePath.startsWith('/')) {
-        // Absolute path
-        fileUri = Uri.file(filePath);
-      } else {
-        // Relative path
-        const activeFileDir = Uri.parse(cell.document.uri.toString(true)).with({ path: cell.document.uri.path.replace(/\/[^\/]*$/, '') });
-        fileUri = activeFileDir.with({ path: `${activeFileDir.path}/${filePath}` });
+      if (documentEndpoints[0].kind === EndpointKind.File) {
+        // file endpoint
+        const fileEndpoint = new FileEndpoint();
+        for (const extractFileEndpoint of documentEndpoints) {
+          await this.#loadFileToStore(extractFileEndpoint.endpoint, fileEndpoint);
+        }
+        return fileEndpoint;
       }
-      console.log('fileUri', fileUri.fsPath);
-      const fileEndpoint = new FileEndpoint();
-      await fileEndpoint.addFile(fileUri);
-      return fileEndpoint;
     }
     return notebookEndpoint.endpoint;
+
   }
 
+  async #loadFileToStore(filePathPattern: string, fileEndpoint: FileEndpoint): Promise<void> {
+    const notebookUri = window.activeNotebookEditor?.notebook.uri;
+    const fileUri: Uri[] = [];
+
+    if (filePathPattern.startsWith('/')) {
+      // Absolute pattern
+      const fileName = path.basename(filePathPattern);
+      const directory = path.dirname(filePathPattern);
+      const relativePattern = new RelativePattern(directory, fileName);
+      const files = await workspace.findFiles(relativePattern);
+
+      fileUri.push(...files);
+    } else {
+      // Relative pattern
+      const relativePatternString = filePathPattern.startsWith('./') ? filePathPattern.replace('./', '') : filePathPattern;
+      const notebookDirectory = path.dirname(notebookUri!.fsPath);
+      const relativePattern = new RelativePattern(notebookDirectory, relativePatternString);
+      const files = await workspace.findFiles(relativePattern);
+      fileUri.push(...files);
+    }
+
+    for (const uri of fileUri) {
+      await fileEndpoint.addFile(uri);
+    };
+
+
+  }
 
 }

@@ -2,6 +2,15 @@
 
 All notable changes to the "vscode-sparql-notebook" extension will be documented in this file.
 
+## 0.0.39
+- Oxigraph update
+- Feature: You can load multiple files for "local" queries.
+
+## 0.0.38
+- Oxigraph update
+- Fix: Correct SPARQL select result order
+- Fix: Correct SPARQL optional empty filed rendering
+
 ## 0.0.37
 - Fix: Windows path issue with external query files.
 

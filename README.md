@@ -69,6 +69,24 @@ or
 ```
 Working with relative paths makes the notebook portable.
 
+For file based endpoints you can have multiple files in the endpoint definitions in many ways:
+
+Absolute or relative paths pattern are supported but i suggest to use relative paths for portability.
+```sparql
+# [endpoint=./rdf/{a,b}.ttl]
+```
+or 
+```sparql
+# [endpoint=./rdf/*.ttl]
+```
+or 
+```sparql
+# [endpoint=./rdf/a.ttl]
+# [endpoint=./rdf/b.ttl]
+```
+
+Note: You cannot mix HTTP endpoints and file endpoints in the same cell.
+
 ### Cell Status Bar
 The cell status bar displays information about the endpoint in use and its source.
 

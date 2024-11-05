@@ -2,16 +2,17 @@
 import { Uri, window } from 'vscode';
 import * as fs from 'fs';
 
-import { Endpoint } from '../endpoint';
+import { Endpoint, SimpleHttpResponse } from '../endpoint';
 import { RdfMimeType, SparqlStore } from '../../sparql-store/sparql-store';
 import { SparqlQuery } from '../model/sparql-query';
+import { SPARQLQueryKind } from "../enum/sparql-query-kind";
+import { MimeType } from '../../enum/mime-type';
 
 /**
  * Represents an HTTP SPARQL endpoint.
  */
 export class FileEndpoint extends Endpoint {
     #url: string = '';
-    readonly #files: Set<Uri> = new Set<Uri>();
     readonly #store: SparqlStore;
 
     /**
@@ -79,8 +80,37 @@ export class FileEndpoint extends Endpoint {
      * @param sparqlQuery - The SPARQL query to execute.
      * @param execution - The execution object.
      */
-    public async query(sparqlQuery: SparqlQuery, execution?: any): Promise<any> {
-        const res = this.#store.query(sparqlQuery);
-        return res;
+    public async query(sparqlQuery: SparqlQuery, execution?: any): Promise<SimpleHttpResponse> | never {
+        let response: SimpleHttpResponse | null = null;
+        switch (sparqlQuery.kind) {
+            case SPARQLQueryKind.ask:
+                response = {
+                    headers: { 'content-type': MimeType.sparqlResultsJson },
+                    data: this.#store.ask(sparqlQuery),
+                };
+                break;
+            case SPARQLQueryKind.select:
+                response = {
+                    headers: { 'content-type': MimeType.sparqlResultsJson },
+                    data: this.#store.select(sparqlQuery),
+                };
+                break;
+            case SPARQLQueryKind.describe:
+                response = {
+                    headers: { 'content-type': MimeType.turtle },
+                    data: this.#store.describe(sparqlQuery),
+                };
+                break;
+            case SPARQLQueryKind.construct:
+                response = {
+                    headers: { 'content-type': MimeType.turtle },
+                    data: this.#store.construct(sparqlQuery),
+                };
+                break;
+            default:
+                throw new Error('Unknown query type');
+        }
+
+        return Promise.resolve(response);
     }
 }
