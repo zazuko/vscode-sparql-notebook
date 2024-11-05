@@ -74,7 +74,7 @@ You can provide a file path or a glob pattern.
 
 Here are a few patterns:
 ```sparql
-# [endpoint=./rdf/curia.nt]
+# [endpoint=./rdf/a.nt]
 ```
 or
 ```sparql

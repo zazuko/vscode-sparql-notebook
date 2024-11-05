@@ -4,15 +4,7 @@
 #
 # change 
 # windows change
-PREFIX gont: <https://gont.ch/>
-PREFIX schema: <http://schema.org/>
-SELECT ?name ?abbr ?date WHERE {
-    { 
-        ?canton a gont:Canton;
-            gont:cantonAbbreviation ?abbr ;
-            gont:date ?date ;
-            gont:longName ?name . 
-    } UNION {
-        gont:Canton ?p ?o .
-    }
+
+SELECT ?p ?o WHERE {
+  <https://agriculture.ld.admin.ch/fsvo/animal-disease> ?p ?o .
 } 
