@@ -22,7 +22,7 @@
   {
     "kind": 2,
     "language": "sparql",
-    "value": "# from file queries/z-external-query.rq\n# [endpoint=https://lindas.admin.ch/query]\n#\nPREFIX gont: <https://gont.ch/>\nPREFIX schema: <http://schema.org/>\nSELECT ?name ?abbr ?date WHERE {\n    { \n        ?canton a gont:Canton;\n            gont:cantonAbbreviation ?abbr ;\n            gont:date ?date ;\n            gont:longName ?name . \n    } UNION {\n        gont:Canton ?p ?o .\n    }\n} \n",
+    "value": "# from file queries/z-external-query.rq\n\n\n# [endpoint=https://lindas.admin.ch/query]\n#\n# change \n# windows change\nPREFIX gont: <https://gont.ch/>\nPREFIX schema: <http://schema.org/>\nSELECT ?name ?abbr ?date WHERE {\n    { \n        ?canton a gont:Canton;\n            gont:cantonAbbreviation ?abbr ;\n            gont:date ?date ;\n            gont:longName ?name . \n    } UNION {\n        gont:Canton ?p ?o .\n    }\n} \n",
     "metadata": {
       "file": "queries/z-external-query.rq"
     }

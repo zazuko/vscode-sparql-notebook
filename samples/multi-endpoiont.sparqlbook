@@ -1,0 +1,44 @@
+[
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "# [endpoint=./rdf/curia.nt]\n\nPREFIX schema: <http://schema.org/>\nPREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX xsd:<http://www.w3.org/2001/XMLSchema#>\n\nDESCRIBE <https://politics.ld.admin.ch/person/1257>",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "# [endpoint=./rdf/*]\n# error will be shown \nPREFIX schema: <http://schema.org/>\nPREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX xsd:<http://www.w3.org/2001/XMLSchema#>\n\nDESCRIBE <https://politics.ld.admin.ch/person/1257>",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "# [endpoint=./rdf/curia.nt]\n# [endpoint=./rdf/curia.nt]\n# [endpoint=./rdf/curia.nt]\n# [endpoint=./rdf/curia.nt]\nPREFIX schema: <http://schema.org/>\nPREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX xsd:<http://www.w3.org/2001/XMLSchema#>\n\nDESCRIBE <https://politics.ld.admin.ch/person/1257>",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "# [endpoint=./rdf/{a,b}.ttl]\n\nSELECT * WHERE {\n  ?s ?p ?o\n}",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "# [endpoint=./rdf/a.ttl]\n# [endpoint=./rdf/b.ttl]\n\nSELECT * WHERE {\n  ?s ?p ?o\n}",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "# [endpoint=rdf/a.ttl]\n# [endpoint=/Users/benjaminhofstetter/code/zazuko/github/vscode-sparql-notebook/samples/rdf/b.ttl]\n\nSELECT * WHERE {\n  ?s ?p ?o\n}",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "# [endpoint=rdf/a.ttl]\n# Test [endpoint=https://query.wikidata.org/bigdata/namespace/wdq/sparql] Test \n# \nPREFIX wd: <http://www.wikidata.org/entity/>\nPREFIX wdt: <http://www.wikidata.org/prop/direct/>\nPREFIX wikibase: <http://wikiba.se/ontology#>\nPREFIX bd: <http://www.bigdata.com/rdf#>\n\nSELECT DISTINCT ?euMemberCountry ?euMemberCountryLabel ?headOfState ?headOfStateLabel\n \nWHERE {\n  ?euMemberCountry wdt:P463 wd:Q458;\n      wdt:P35 ?headOfState .\n  SERVICE wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\". }\n}",
+    "metadata": {}
+  }
+]

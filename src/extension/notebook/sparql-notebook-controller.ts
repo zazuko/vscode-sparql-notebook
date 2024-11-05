@@ -1,13 +1,15 @@
-import { NotebookCell, NotebookCellOutput, NotebookCellOutputItem, NotebookController, NotebookDocument, Uri, commands, notebooks, window, workspace } from 'vscode';
+import { NotebookCell, NotebookCellOutput, RelativePattern, GlobPattern, NotebookCellOutputItem, NotebookController, NotebookDocument, Uri, commands, notebooks, window, workspace } from 'vscode';
 import { extensionId } from "../extension";
 import { Endpoint, FileEndpoint, HttpEndpoint, } from "../endpoint";
 import { PrefixMap } from '../model/prefix-map';
 import { notebookEndpoint } from '../endpoint/endpoint';
 import { SparqlNotebookCell } from './sparql-notebook-cell';
 import { shrink } from '@zazuko/prefixes';
-import { SparqlQuery } from '../endpoint/model/sparql-query';
+import { EndpointKind, SparqlQuery } from '../endpoint/model/sparql-query';
 import { MimeType } from '../enum/mime-type';
-import { MIMEParams, MIMEType } from 'util';
+import path = require('path');
+import { Glob } from 'glob';
+import { File } from 'buffer';
 
 export class SparqlNotebookController {
   readonly controllerId = `${extensionId}-controller-id`;
@@ -239,27 +241,53 @@ export class SparqlNotebookController {
    * @returns An Endpoint instance for the given SPARQL query, or null if no endpoint could be found.
    */
   private async _getDocumentOrConnectionClient(cell: SparqlNotebookCell, sparqlQuery: SparqlQuery): Promise<Endpoint | null> {
-    const documentEndpoint = sparqlQuery.extractEndpoint();
-    if (documentEndpoint) {
-      if (documentEndpoint.startsWith("http")) {
-        return new HttpEndpoint(documentEndpoint, "", "");
+    const documentEndpoints = sparqlQuery.extractEndpoint().getEndpoints();
+
+    if (documentEndpoints.length > 0) {
+
+      if (documentEndpoints[0].kind === EndpointKind.Http) {
+        // http endpoint (only one is supported)
+        return new HttpEndpoint(documentEndpoints[0].endpoint, "", "");
       }
-      const filePath = documentEndpoint;
-      let fileUri: Uri;
-      if (filePath.startsWith('/')) {
-        // Absolute path
-        fileUri = Uri.file(filePath);
-      } else {
-        // Relative path
-        const activeFileDir = Uri.parse(cell.document.uri.toString(true)).with({ path: cell.document.uri.path.replace(/\/[^\/]*$/, '') });
-        fileUri = activeFileDir.with({ path: `${activeFileDir.path}/${filePath}` });
+      if (documentEndpoints[0].kind === EndpointKind.File) {
+        // file endpoint
+        const fileEndpoint = new FileEndpoint();
+        for (const extractFileEndpoint of documentEndpoints) {
+          await this.#loadFileToStore(extractFileEndpoint.endpoint, fileEndpoint);
+        }
+        return fileEndpoint;
       }
-      const fileEndpoint = new FileEndpoint();
-      await fileEndpoint.addFile(fileUri);
-      return fileEndpoint;
     }
     return notebookEndpoint.endpoint;
+
   }
 
+  async #loadFileToStore(filePathPattern: string, fileEndpoint: FileEndpoint): Promise<void> {
+    const notebookUri = window.activeNotebookEditor?.notebook.uri;
+    const fileUri: Uri[] = [];
+
+    if (filePathPattern.startsWith('/')) {
+      // Absolute pattern
+      const fileName = path.basename(filePathPattern);
+      const directory = path.dirname(filePathPattern);
+      const relativePattern = new RelativePattern(directory, fileName);
+      const files = await workspace.findFiles(relativePattern);
+
+      fileUri.push(...files);
+    } else {
+      // Relative pattern
+      const relativePatternString = filePathPattern.startsWith('./') ? filePathPattern.replace('./', '') : filePathPattern;
+      const notebookDirectory = path.dirname(notebookUri!.fsPath);
+      const relativePattern = new RelativePattern(notebookDirectory, relativePatternString);
+      const files = await workspace.findFiles(relativePattern);
+      fileUri.push(...files);
+    }
+
+    for (const uri of fileUri) {
+      await fileEndpoint.addFile(uri);
+    };
+
+
+  }
 
 }

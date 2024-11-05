@@ -4,6 +4,7 @@ import {
 } from 'vscode';
 import { SparqlNotebookCell } from './sparql-notebook-cell';
 import { notebookEndpoint } from '../endpoint/endpoint';
+import { EndpointKind } from '../endpoint/model/sparql-query';
 
 // we have 3 possible notebook cell status bar items
 // 1. the connection source - it could be be connected to a "global" notebook connection from the cell
@@ -20,18 +21,30 @@ export enum ConnectionSource {
 }
 
 export class ConnectionSourceStatusBarItem extends NotebookCellStatusBarItem {
-    private readonly icon = ' $(link)';
-    private itemText = 'Notebook Connection';
+    readonly #sparqlEndpointIcon = ' $(link)';
+    #endpointSource: EndpointSource = EndpointSource.notConnected;
+    #endpointSourceIcon: EndpointKindIcon = EndpointKindIcon.NotConnected;
+
     constructor(cell: SparqlNotebookCell, alignment: NotebookCellStatusBarAlignment) {
         super('', alignment);
         const sparqlQuery = cell.sparqlQuery;
-        let commentEndpoint = sparqlQuery.extractEndpoint();
-        if (commentEndpoint) {
-            this.itemText = `Query Comment`;
+        let endpointsFromCell = sparqlQuery.extractEndpoint().getEndpoints();
+        if (endpointsFromCell.length > 0) {
+            if (endpointsFromCell[0].kind === EndpointKind.Http) {
+                this.#endpointSource = EndpointSource.cell;
+                this.#endpointSourceIcon = EndpointKindIcon.Http;
+            } else if (endpointsFromCell[0].kind === EndpointKind.File) {
+                this.#endpointSource = EndpointSource.cell;
+                this.#endpointSourceIcon = EndpointKindIcon.File;
+            }
+        } else if (notebookEndpoint.endpoint) {
+            this.#endpointSource = EndpointSource.notebookEndpointConnection;
+            this.#endpointSourceIcon = EndpointKindIcon.NotConnected;
         }
 
-        this.text = `${this.icon} ${this.itemText} ${commentEndpoint ?? notebookEndpoint.endpoint?.url ? ((commentEndpoint ?? notebookEndpoint.endpoint?.url)?.startsWith('http') ? `$(database)` : '$(file)') : '$(circle-slash)'}`;
-        this.tooltip = `Endpoint: ${commentEndpoint ?? notebookEndpoint.endpoint?.url ?? "None"}`;
+
+        this.text = `${this.#sparqlEndpointIcon} ${this.#endpointSource} ${this.#endpointSourceIcon}`;
+        this.tooltip = `Endpoint: ${this.#endpointSource}`;
     }
 }
 
@@ -50,4 +63,16 @@ export class CellContentStatusBarItem extends NotebookCellStatusBarItem {
         this.text = `${this.icon} ${this.itemText}`;
         this.tooltip = `Cell text source: ${cell.metadata.file ?? "Cell"}`;
     }
+}
+
+enum EndpointSource {
+    cell = 'Cell Comment',
+    notebookEndpointConnection = 'Endpoint Connection',
+    notConnected = 'Not Connected'
+}
+
+enum EndpointKindIcon {
+    File = '$(file)',
+    Http = '$(database)',
+    NotConnected = '$(circle-slash)'
 }

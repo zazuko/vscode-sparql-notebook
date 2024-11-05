@@ -4,7 +4,7 @@ All notable changes to the "vscode-sparql-notebook" extension will be documented
 
 ## 0.0.39
 - Oxigraph update
-- Harmonize SPARQL file and http endpoint query execution
+- Feature: You can load multiple files for "local" queries.
 
 ## 0.0.38
 - Oxigraph update
