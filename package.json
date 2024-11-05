@@ -5,11 +5,11 @@
   "publisher": "Zazuko",
   "license": "MIT",
   "icon": "images/zazuko.png",
-  "preview": true,
+  "preview": false,
   "repository": {
     "url": "https://github.com/zazuko/vscode-sparql-notebook.git"
   },
-  "version": "0.0.39",
+  "version": "1.0.0",
   "engines": {
     "vscode": "^1.90.0"
   },
