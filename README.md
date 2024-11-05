@@ -23,6 +23,9 @@ This extension is still pretty raw but it works for us [tm]. Bug reports & contr
 - [VSCode Marketplace](https://marketplace.visualstudio.com/items?itemName=Zazuko.sparql-notebook)
 -  [Open VSX Registry](https://open-vsx.org/extension/zazuko/sparql-notebook)
 
+## Manual
+- [Manual](./doc/00_intro.md)
+
 ## Features
 
 - Open any `.sparqlbook` file as a Notebook.

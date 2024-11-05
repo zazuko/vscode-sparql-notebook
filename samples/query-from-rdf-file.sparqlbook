@@ -70,5 +70,11 @@
     "metadata": {
       "file": "queries/z-external-query-win.rq"
     }
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "",
+    "metadata": {}
   }
 ]
