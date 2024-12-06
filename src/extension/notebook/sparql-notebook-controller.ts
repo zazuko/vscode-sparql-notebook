@@ -1,4 +1,4 @@
-import { NotebookCell, NotebookCellOutput, RelativePattern, GlobPattern, NotebookCellOutputItem, NotebookController, NotebookDocument, Uri, commands, notebooks, window, workspace } from 'vscode';
+import { NotebookCell, NotebookCellOutput, RelativePattern, NotebookCellOutputItem, NotebookController, NotebookDocument, Uri, commands, notebooks, window, workspace } from 'vscode';
 import { extensionId } from "../extension";
 import { Endpoint, FileEndpoint, HttpEndpoint, } from "../endpoint";
 import { PrefixMap } from '../model/prefix-map';
@@ -8,9 +8,6 @@ import { shrink } from '@zazuko/prefixes';
 import { EndpointKind, SparqlQuery } from '../endpoint/model/sparql-query';
 import { MimeType } from '../enum/mime-type';
 import path = require('path');
-import { Glob } from 'glob';
-import { File } from 'buffer';
-
 export class SparqlNotebookController {
   readonly controllerId = `${extensionId}-controller-id`;
   readonly notebookType = extensionId;
@@ -162,6 +159,8 @@ export class SparqlNotebookController {
         `\`\`\`turtle\n${resultTTL}\n\`\`\``,
         "text/markdown"
       ),
+      NotebookCellOutputItem.text(resultTTL, MimeType.turtle),
+
     ]);
   }
 
