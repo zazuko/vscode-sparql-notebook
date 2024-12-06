@@ -2,6 +2,12 @@
 
 All notable changes to the "vscode-sparql-notebook" extension will be documented in this file.
 
+## 1.0.1
+- Add content type 'text/turtle' to construct query results (needed to support Turtle output renderer)
+
+## 1.0.0
+- Release 1.0.0 without changes
+
 ## 0.0.39
 - Oxigraph update
 - Feature: You can load multiple files for "local" queries.
