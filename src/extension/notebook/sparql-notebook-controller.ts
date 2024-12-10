@@ -276,7 +276,6 @@ export class SparqlNotebookController {
     } else {
       // Relative pattern
 
-      const relativePatternStringFromNotebook = filePathPattern.startsWith('./') ? filePathPattern.replace('./', '') : filePathPattern;
       const notebookDirectory = path.dirname(notebookUri!.fsPath);
       const normalizedPattern = path.normalize(path.join(notebookDirectory, filePathPattern));
 

@@ -2,6 +2,9 @@
 
 All notable changes to the "vscode-sparql-notebook" extension will be documented in this file.
 
+## 1.0.2
+- Fix: Relative File Pattern with '../' in the path
+
 ## 1.0.1
 - Add content type 'text/turtle' to construct query results (needed to support Turtle output renderer)
 
