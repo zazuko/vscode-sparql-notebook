@@ -46,5 +46,11 @@
     "language": "sparql",
     "value": "# [endpoint=rdf/a.ttl]\n# Test [endpoint=https://query.wikidata.org/bigdata/namespace/wdq/sparql] Test \n# \nPREFIX wd: <http://www.wikidata.org/entity/>\nPREFIX wdt: <http://www.wikidata.org/prop/direct/>\nPREFIX wikibase: <http://wikiba.se/ontology#>\nPREFIX bd: <http://www.bigdata.com/rdf#>\n\nSELECT DISTINCT ?euMemberCountry ?euMemberCountryLabel ?headOfState ?headOfStateLabel\n \nWHERE {\n  ?euMemberCountry wdt:P463 wd:Q458;\n      wdt:P35 ?headOfState .\n  SERVICE wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\". }\n}",
     "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "# [endpoint=./deep/deep.ttl]\n\nSELECT * WHERE {\n  ?s ?p ?o\n}",
+    "metadata": {}
   }
 ]

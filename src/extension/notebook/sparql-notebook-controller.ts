@@ -275,11 +275,21 @@ export class SparqlNotebookController {
       fileUri.push(...files);
     } else {
       // Relative pattern
-      const relativePatternString = filePathPattern.startsWith('./') ? filePathPattern.replace('./', '') : filePathPattern;
+
+      const relativePatternStringFromNotebook = filePathPattern.startsWith('./') ? filePathPattern.replace('./', '') : filePathPattern;
       const notebookDirectory = path.dirname(notebookUri!.fsPath);
-      const relativePattern = new RelativePattern(notebookDirectory, relativePatternString);
+      const normalizedPattern = path.normalize(path.join(notebookDirectory, filePathPattern));
+
+      const fileName = path.basename(normalizedPattern);
+      const directory = path.dirname(normalizedPattern);
+
+      const relativePattern = new RelativePattern(directory, fileName);
       const files = await workspace.findFiles(relativePattern);
+
       fileUri.push(...files);
+      if (files.length === 0) {
+        window.showErrorMessage(`No files found for pattern ${filePathPattern}`);
+      }
     }
 
     for (const uri of fileUri) {

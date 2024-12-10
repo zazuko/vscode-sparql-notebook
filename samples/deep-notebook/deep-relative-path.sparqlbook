@@ -1,0 +1,8 @@
+[
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "# [endpoint=../deep/deep.ttl]\n\nSELECT * WHERE {\n    ?s ?p ?o\n}",
+    "metadata": {}
+  }
+]
