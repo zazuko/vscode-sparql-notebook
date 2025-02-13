@@ -1,0 +1,14 @@
+[
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "# [endpoint=http://localhost:7001]\n\nSELECT ?s ?p ?o\nWHERE {\n  ?s ?p ?o\n} LIMIT 10",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "\nSELECT ?s ?p ?o\nWHERE {\n  ?s ?p ?o\n} LIMIT 10",
+    "metadata": {}
+  }
+]

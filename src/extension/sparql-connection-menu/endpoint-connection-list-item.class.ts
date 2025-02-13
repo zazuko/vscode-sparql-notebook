@@ -14,14 +14,14 @@ export class EndpointConnectionListItem extends vscode.TreeItem {
 
         if (isActive) {
             this.iconPath = {
-                dark: path.join(assetsPath, "dark", "endpoint-connected.svg"),
-                light: path.join(assetsPath, "light", "endpoint-connected.svg"),
+                dark: vscode.Uri.file(path.join(assetsPath, "dark", "endpoint-connected.svg")),
+                light: vscode.Uri.file(path.join(assetsPath, "light", "endpoint-connected.svg")),
             };
             this.description = "Connected";
         } else {
             this.iconPath = {
-                dark: path.join(assetsPath, "dark", "endpoint.svg"),
-                light: path.join(assetsPath, "light", "endpoint.svg"),
+                dark: vscode.Uri.file(path.join(assetsPath, "dark", "endpoint.svg")),
+                light: vscode.Uri.file(path.join(assetsPath, "light", "endpoint.svg")),
             };
             this.description = "Inactive";
         }

@@ -2,6 +2,9 @@
 
 All notable changes to the "vscode-sparql-notebook" extension will be documented in this file.
 
+## 1.0.3
+- Fix: Do not send HTTP Authorization header if the password/passowrd is empty
+
 ## 1.0.2
 - Fix: Relative File Pattern with '../' in the path
 
