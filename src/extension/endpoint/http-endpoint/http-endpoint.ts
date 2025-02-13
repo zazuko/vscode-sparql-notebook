@@ -20,14 +20,19 @@ export class HttpEndpoint extends Endpoint {
    */
   constructor(endpointUrl: string, user: string, password: string) {
     super();
+    console.log(user, password);
+    debugger;
     this._url = endpointUrl;
-    this.http = axios.create({
+    const axiosConfig: AxiosRequestConfig = {
       baseURL: endpointUrl,
-      auth: {
+    };
+    if (user && password) {
+      axiosConfig.auth = {
         username: user,
         password: password,
-      },
-    });
+      };
+    }
+    this.http = axios.create(axiosConfig);
   }
 
   get url(): string {
