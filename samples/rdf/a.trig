@@ -1,0 +1,14 @@
+@prefix ex: <http://example.org/> .
+
+# Default graph
+ex:subjectDG ex:predicate1 ex:object1 .
+
+# Named graph 1
+GRAPH <http://example.org/graph1> {
+    ex:subjectG1 ex:predicate2 ex:object2 .
+}
+
+# Named graph 2
+GRAPH <http://example.org/graph2> {
+    ex:subjectG2 ex:predicate3 ex:object3 .
+}

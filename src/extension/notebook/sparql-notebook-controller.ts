@@ -8,6 +8,7 @@ import { shrink } from '@zazuko/prefixes';
 import { EndpointKind, SparqlQuery } from '../endpoint/model/sparql-query';
 import { MimeType } from '../enum/mime-type';
 import path = require('path');
+import { Option } from '@vscode/webview-ui-toolkit';
 export class SparqlNotebookController {
   readonly controllerId = `${extensionId}-controller-id`;
   readonly notebookType = extensionId;
@@ -241,6 +242,8 @@ export class SparqlNotebookController {
    */
   private async _getDocumentOrConnectionClient(cell: SparqlNotebookCell, sparqlQuery: SparqlQuery): Promise<Endpoint | null> {
     const documentEndpoints = sparqlQuery.extractEndpoint().getEndpoints();
+    const queryOptions = sparqlQuery.extractQueryOptions();
+
 
     if (documentEndpoints.length > 0) {
 
@@ -253,6 +256,14 @@ export class SparqlNotebookController {
         const fileEndpoint = new FileEndpoint();
         for (const extractFileEndpoint of documentEndpoints) {
           await this.#loadFileToStore(extractFileEndpoint.endpoint, fileEndpoint);
+        }
+        if (queryOptions.size > 0) {
+          const hasUseDefaultGraphAsUnion = queryOptions.get('use_default_graph_as_union');
+          if (hasUseDefaultGraphAsUnion && hasUseDefaultGraphAsUnion === 'true') {
+            fileEndpoint.useDefaultGraphAsUnion();
+
+          }
+
         }
         return fileEndpoint;
       }

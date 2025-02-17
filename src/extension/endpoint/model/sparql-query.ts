@@ -2,7 +2,6 @@ import { window } from "vscode";
 
 import { SPARQLQueryKind } from "../enum/sparql-query-kind";
 import { getSPARQLQueryKind } from "../sparql-utils";
-import * as glob from 'glob';
 
 export class SparqlQuery {
     readonly #queryString: string;
@@ -64,6 +63,26 @@ export class SparqlQuery {
         return this.#extractedEndpointCollection;
     }
 
+    extractQueryOptions(): Map<string, string> {
+        const commentLines = this.#queryString
+            .split("\n")
+            .map((l) => l.trim())
+            .filter((l) => l.startsWith("#"));
+        const queryOptionsMap = new Map<string, string>();
+        commentLines.forEach((comment: string) => {
+            const optionExp = /\[([a-zA-Z_]+)=([^\]]+)\]/gm;
+            const match = optionExp.exec(comment);
+
+            if (match) {
+                if (match[1] !== 'endpoint') {
+                    queryOptionsMap.set(match[1], match[2]);
+                }
+            }
+
+        });
+        return queryOptionsMap;
+
+    }
 }
 
 

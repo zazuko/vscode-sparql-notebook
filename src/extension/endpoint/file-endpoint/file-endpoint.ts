@@ -35,6 +35,10 @@ export class FileEndpoint extends Endpoint {
         return this.#url;
     }
 
+    useDefaultGraphAsUnion() {
+        this.#store.setQueryOptions({ use_default_graph_as_union: true });
+    }
+
     /**
      * Adds a file to the endpoint.
      * 
