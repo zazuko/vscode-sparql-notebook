@@ -2,6 +2,18 @@
 
 All notable changes to the "vscode-sparql-notebook" extension will be documented in this file.
 
+## 1.0.4
+- You can now enable the union graph in file queries by passing the query parameter as a comment in the SPARQL query: `[use_default_graph_as_union=true]`.
+```sparql
+# [endpoint=./rdf/a.trig]
+# [use_default_graph_as_union=true]
+
+
+SELECT * WHERE {
+    ?s ?p ?o
+}
+```
+
 ## 1.0.3
 - Fix: Do not send HTTP Authorization header if the password/passowrd is empty
 
