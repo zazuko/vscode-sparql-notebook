@@ -1,4 +1,4 @@
-import { Quad, Store, defaultGraph } from 'oxigraph';
+import { BlankNode, NamedNode, Quad, Store, defaultGraph } from 'oxigraph';
 import { SPARQLQueryKind } from '../endpoint/enum/sparql-query-kind';
 import { SparqlQuery } from '../endpoint/model/sparql-query';
 
@@ -10,6 +10,17 @@ export enum RdfMimeType {
     nQuads = 'application/n-quads',
 }
 
+const allowedQueryOptions = ['use_default_graph_as_union'];
+
+
+interface QueryOptions {
+    base_iri: string, // base IRI to resolve relative IRIs in the query
+    use_default_graph_as_union: boolean, // the default graph in the query is the union of all the dataset graphs
+    default_graph: (NamedNode | BlankNode)[], // the default graph of the query is the union of the store default graph and the http://example.com graph
+    named_graphs: (NamedNode | BlankNode)[], // we restrict the available named graphs to the two listed
+    results_format: string, // the response will be serialized a string in the JSON format (media types like application/sparql-results+json also work)
+}
+
 /**
  * This is the local SPARQL endpoint that is used to execute SPARQL queries on the local RDF store.
  * It is based on the Oxigraph.
@@ -17,9 +28,15 @@ export enum RdfMimeType {
 export class SparqlStore {
     // the oxigraph store
     readonly #store: Store;
+    #queryOptions: Partial<QueryOptions> = {};
+
 
     constructor() {
         this.#store = new Store();
+    }
+
+    setQueryOptions(options: Partial<QueryOptions>) {
+        this.#queryOptions = { ...this.setQueryOptions, ...options };
     }
 
     /**
@@ -33,10 +50,10 @@ export class SparqlStore {
         if (query.kind !== SPARQLQueryKind.construct) {
             throw new Error('Query is not a CONSTRUCT query');
         }
+        const options = this.#queryOptions;
+        options.results_format = RdfMimeType.turtle;
 
-        const queryResult = this.#store.query(query.queryString, {
-            results_format: RdfMimeType.turtle,
-        }) as string;
+        const queryResult = this.#store.query(query.queryString, options) as string;
 
         return queryResult;
     }
@@ -53,7 +70,8 @@ export class SparqlStore {
             throw new Error('Query is not a CONSTRUCT query');
         }
 
-        const queryResult = this.#store.query(query.queryString) as Quad[];
+        const options = this.#queryOptions;
+        const queryResult = this.#store.query(query.queryString, options) as Quad[];
 
         return queryResult;
     }
@@ -70,9 +88,9 @@ export class SparqlStore {
             throw new Error('Query is not a SELECT query');
         }
 
-        const queryResult = this.#store.query(query.queryString, {
-            results_format: 'json',
-        }) as string;
+        const options = this.#queryOptions;
+        options.results_format = 'json';
+        const queryResult = this.#store.query(query.queryString, options) as string;
 
         return queryResult;
     }
@@ -87,9 +105,9 @@ export class SparqlStore {
         if (query.kind !== SPARQLQueryKind.ask) {
             throw new Error('Query is not an ASK query');
         }
-        const result = this.#store.query(query.queryString, {
-            results_format: "json",
-        }) as string;
+        const options = this.#queryOptions;
+        options.results_format = "json";
+        const result = this.#store.query(query.queryString, options) as string;
         return result;
     }
 
@@ -104,9 +122,9 @@ export class SparqlStore {
             throw new Error('Query is not a DESCRIBE query');
         }
 
-        const queryResult = this.#store.query(query.queryString, {
-            results_format: RdfMimeType.turtle,
-        }) as string;
+        const options = this.#queryOptions;
+        options.results_format = RdfMimeType.turtle;
+        const queryResult = this.#store.query(query.queryString, options) as string;
 
         return queryResult;
     }
@@ -115,8 +133,8 @@ export class SparqlStore {
         if (query.kind !== SPARQLQueryKind.describe) {
             throw new Error('Query is not a DESCRIBE query');
         }
-
-        const queryResult = this.#store.query(query.queryString) as Quad[];
+        const options = this.#queryOptions;
+        const queryResult = this.#store.query(query.queryString, options) as Quad[];
 
         return queryResult;
     }
@@ -163,9 +181,11 @@ export class SparqlStore {
 }
 
 
-/**
-     const fakeHttpResult = {
-                    headers: { "content-type": "application/sparql-results+json" },
-                    data: JSON.parse(res)
-                };
- */
+
+interface QueryOptions {
+    base_iri: string, // base IRI to resolve relative IRIs in the query
+    use_default_graph_as_union: boolean, // the default graph in the query is the union of all the dataset graphs
+    default_graph: (NamedNode | BlankNode)[], // the default graph of the query is the union of the store default graph and the http://example.com graph
+    named_graphs: (NamedNode | BlankNode)[], // we restrict the available named graphs to the two listed
+    results_format: string, // the response will be serialized a string in the JSON format (media types like application/sparql-results+json also work)
+}
