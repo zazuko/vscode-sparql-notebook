@@ -7,8 +7,8 @@ export enum MimeType {
     json = 'application/json',
     sparqlResultsJson = 'application/sparql-results+json',
     sparqlResultsXml = 'application/sparql-results+xml',
-    sparqlResultsCsv = 'text/csv',
-    sparqlResultsTsv = 'text/tab-separated-values',
+    sparqlResultsCsv = 'text/csv; charset=utf-8',
+    sparqlResultsTsv = 'text/tab-separated-values; charset=utf-8',
     plainText = 'text/plain',
     any = '*/*',
 }
