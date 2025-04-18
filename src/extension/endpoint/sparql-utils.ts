@@ -74,3 +74,24 @@ export function getAcceptHeader(queryType: SPARQLQueryKind): MimeType {
             throw new Error('Unknown query type' + queryType);
     }
 }
+
+
+export function getContentTypeHeader(queryType: SPARQLQueryKind): MimeType {
+    switch (queryType) {
+        case SPARQLQueryKind.ask:
+        case SPARQLQueryKind.select:
+        case SPARQLQueryKind.construct:
+        case SPARQLQueryKind.describe:
+        case SPARQLQueryKind.json:
+            return MimeType.sparqlQuery
+        case SPARQLQueryKind.insert:
+        case SPARQLQueryKind.delete:
+        case SPARQLQueryKind.load:
+        case SPARQLQueryKind.clear:
+        case SPARQLQueryKind.drop:
+        case SPARQLQueryKind.create:
+            return MimeType.sparqlUpdate
+        default:
+            throw new Error('Unknown query type' + queryType);
+    }
+}
