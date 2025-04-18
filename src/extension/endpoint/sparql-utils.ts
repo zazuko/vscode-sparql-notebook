@@ -63,6 +63,7 @@ export function getAcceptHeader(queryType: SPARQLQueryKind): MimeType {
         case SPARQLQueryKind.describe:
             return MimeType.turtle
         case SPARQLQueryKind.insert:
+        case SPARQLQueryKind.delete:
         case SPARQLQueryKind.load:
         case SPARQLQueryKind.clear:
         case SPARQLQueryKind.drop:
