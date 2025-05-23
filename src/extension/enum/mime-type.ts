@@ -9,6 +9,8 @@ export enum MimeType {
     sparqlResultsXml = 'application/sparql-results+xml',
     sparqlResultsCsv = 'text/csv',
     sparqlResultsTsv = 'text/tab-separated-values',
+    sparqlQuery = 'application/sparql-query',
+    sparqlUpdate = 'application/sparql-update',
     plainText = 'text/plain',
     any = '*/*',
 }

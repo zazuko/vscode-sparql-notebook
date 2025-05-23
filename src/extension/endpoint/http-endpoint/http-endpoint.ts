@@ -1,6 +1,6 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
 
-import { getAcceptHeader } from '../sparql-utils';
+import { getAcceptHeader, getContentTypeHeader } from '../sparql-utils';
 import { Endpoint, SimpleHttpResponse } from '../endpoint';
 import { SparqlQuery } from '../model/sparql-query';
 import { MimeType } from '../../enum/mime-type';
@@ -45,16 +45,13 @@ export class HttpEndpoint extends Endpoint {
    * @param execution - The execution object.
    */
   public async query(sparqlQuery: SparqlQuery, execution?: any): Promise<SimpleHttpResponse> {
-    const params = new URLSearchParams();
-    params.append("query", sparqlQuery.queryString);
-
     const abortController = new AbortController();
     const queryKind = sparqlQuery.kind;
 
     const options: AxiosRequestConfig = {
       headers: {
         // eslint-disable-next-line @typescript-eslint/naming-convention
-        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Type': getContentTypeHeader(queryKind),
         // eslint-disable-next-line @typescript-eslint/naming-convention
         Accept: getAcceptHeader(queryKind),
       },
@@ -66,7 +63,7 @@ export class HttpEndpoint extends Endpoint {
         abortController.abort();
       });
     }
-    const response = await this.http.post('', params, options);
+    const response = await this.http.post('', sparqlQuery.queryString, options);
     const mimeType = response.headers['content-type'];
 
     const httpResponse: SimpleHttpResponse = {
