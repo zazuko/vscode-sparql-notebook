@@ -112,18 +112,26 @@ export class SparqlNotebookController {
     let isSuccess = true;
 
     if (contentType === MimeType.sparqlResultsJson) {
-      const parsedData = JSON.parse(data);
-      if (parsedData.hasOwnProperty("boolean")) {
-        // sparql ask
-        execution.replaceOutput([this._writeAskResult(data)]);
+      try {
+        const parsedData = JSON.parse(data);
+        if (parsedData.hasOwnProperty("boolean")) {
+          // sparql ask
+          execution.replaceOutput([this._writeAskResult(data)]);
+          execution.end(isSuccess, Date.now());
+          return;
+        }
+        // sparql select
+        const prefixMap = sparqlCell.getPrefixMap();
+        execution.replaceOutput([this._writeSparqlJsonResult(data, prefixMap)]);
         execution.end(isSuccess, Date.now());
         return;
+      } catch(error: unknown) {
+        let errorMessage = (error as Error).message ?? "error";
+        console.error(errorMessage);
+        execution.replaceOutput([this._writeError(errorMessage)]);
+        execution.end(false, Date.now());
+        return;
       }
-      // sparql select
-      const prefixMap = sparqlCell.getPrefixMap();
-      execution.replaceOutput([this._writeSparqlJsonResult(data, prefixMap)]);
-      execution.end(isSuccess, Date.now());
-      return;
     }
 
     if (contentType === MimeType.turtle) {
