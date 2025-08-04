@@ -1,0 +1,17 @@
+@prefix ex:    <http://example.org/> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+
+# Define some classes
+ex:Animal a owl:Class .
+ex:Mammal a owl:Class ;
+    rdfs:subClassOf ex:Animal .
+ex:Dog a owl:Class ;
+    rdfs:subClassOf ex:Mammal .
+ex:Cat a owl:Class ;
+    rdfs:subClassOf ex:Mammal .
+
+# Define an individual of a subclass
+ex:hank a ex:Dog .
+ex:poppy a ex:Cat .
