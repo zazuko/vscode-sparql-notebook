@@ -5,8 +5,8 @@ import * as fs from 'fs';
 import { Endpoint, SimpleHttpResponse } from '../endpoint';
 import { RdfMimeType, SparqlStore } from '../../sparql-store/sparql-store';
 import { SparqlQuery } from '../model/sparql-query';
-import { SPARQLQueryKind } from "../enum/sparql-query-kind";
-import { MimeType } from '../../enum/mime-type';
+import { SPARQLQueryKind } from "../../../const/enum/sparql-query-kind";
+import { MimeType } from '../../../const/enum/mime-type';
 
 /**
  * Represents an HTTP SPARQL endpoint.

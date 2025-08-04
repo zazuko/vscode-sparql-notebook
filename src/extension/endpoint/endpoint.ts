@@ -1,4 +1,4 @@
-import { MimeType } from "../enum/mime-type";
+import { MimeType } from "../../const/enum/mime-type";
 import { SparqlQuery } from "./model/sparql-query";
 
 /**
@@ -55,7 +55,9 @@ export const notebookEndpoint = new EndpointController();
 export interface SimpleHttpResponse {
 
     headers: HttpContentType,
-    data: string
+    data: string,
+    status: number,
+    statusText: string
 
 }
 
