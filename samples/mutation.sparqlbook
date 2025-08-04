@@ -1,0 +1,14 @@
+[
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "SELECT * WHERE {\n  ?s ?p ?o .\n} LIMIT 10",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "\n\n\nINSERT {\n    ?s ?p ?o\n} WHERE {\n    BIND(<urn:example:subject> as ?s)\n    BIND(<urn:example:predicate> as ?p)\n    BIND(<urn:example:object> as ?o).\n}",
+    "metadata": {}
+  }
+]
