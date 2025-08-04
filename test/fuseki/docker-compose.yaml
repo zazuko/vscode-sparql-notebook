@@ -1,0 +1,20 @@
+services:
+  fuseki:
+    build: . # build from current directory using Dockerfile
+    container_name: fuseki-sparql-notebook-test-server
+    ports:
+      - "3030:3030" # Maps the internal port 3030 in the container to the host machine's 3030
+    volumes:
+      - ./config.ttl:/opt/fuseki/config.ttl # Bind mount the config file
+      - fuseki-data:/opt/fuseki/databases # Named volume for databases
+      - fuseki-config:/opt/fuseki/configuration # Named volume for dataset configurations
+    restart: unless-stopped # restart container if the machine reboots
+    environment: # not used by Dockerfile, but needed for Fuseki's internal processes
+      - FUSEKI_HOME=/opt/fuseki
+      - FUSEKI_BASE=/opt/fuseki
+
+volumes:
+  fuseki-data:
+    driver: local
+  fuseki-config:
+    driver: local

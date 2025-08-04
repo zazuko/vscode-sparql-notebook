@@ -1,0 +1,66 @@
+@prefix fuseki: <http://jena.apache.org/fuseki#> .
+@prefix tdb2:   <http://jena.apache.org/2016/tdb#> .
+@prefix ja:     <http://jena.hpl.hp.com/2005/11/Assembler#> .
+@prefix rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix :       <#> .
+
+#################################################################
+# Server configuration
+# These dataset are defined statically and can't be removed with 
+# the Fuseki UI. If you want to remove one — or add another - do
+# that in this file. If you add or remove datasets, be sure to 
+# update fuseki:services accordingly.
+#################################################################
+[] a fuseki:Server ;
+   fuseki:authConfig "shiro.ini" ;
+   fuseki:datasets "/opt/fuseki/databases" ;
+   fuseki:services (    
+        <#queryService>
+        <#rwService>
+        <#updateService>    
+        ) ;
+   fuseki:datasetDescription "/opt/fuseki/databases" .
+
+#################################################################
+# Service configuration for dataset with OWL Full inference
+# You can change the name of the dataset at the fuseki:name value
+#################################################################
+
+<#queryService> a fuseki:Service ;
+    fuseki:name                     "query" ;
+    fuseki:serviceQuery             "sparql" ;
+    fuseki:dataset                  :dataset-ds-owl ;
+    fuseki:readGraphStore           true .
+
+# Read-write endpoint (queries + updates)
+<#rwService> a fuseki:Service ;
+    fuseki:name                     "rw" ;
+    fuseki:serviceQuery             "sparql" ;
+    fuseki:serviceUpdate            "update" ;
+    fuseki:dataset                  :dataset-ds-owl ;
+    fuseki:readGraphStore           true ;
+    fuseki:updateGraphStore         true .
+
+# Write-only endpoint (updates only)
+<#updateService> a fuseki:Service ;
+    fuseki:name                     "update" ;
+    fuseki:serviceUpdate            "update" ;
+    fuseki:dataset                  :dataset-ds-owl ;
+    fuseki:updateGraphStore         true .
+
+#################################################################
+# Dataset configuration for dataset with OWL Full inference
+#################################################################
+:store-owl  a tdb2:DatasetTDB2 ;
+        tdb2:location "/opt/fuseki/databases/owl" ;
+        tdb2:unionDefaultGraph true .
+
+:storeGraph-owl  a tdb2:GraphTDB ;
+        tdb2:dataset :store-owl .
+
+:infGraph-owl  a ja:InfModel ;
+        ja:baseModel  :storeGraph-owl ;
+        ja:reasoner   [ ja:reasonerURL <http://jena.hpl.hp.com/2003/OWLFBRuleReasoner> ] .
+
+:dataset-ds-owl  a ja:RDFDataset ;
+        ja:defaultGraph :infGraph-owl .
