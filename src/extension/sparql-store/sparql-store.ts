@@ -1,5 +1,5 @@
 import { BlankNode, NamedNode, Quad, Store, defaultGraph } from 'oxigraph';
-import { SPARQLQueryKind } from '../endpoint/enum/sparql-query-kind';
+import { SPARQLQueryKind } from '../../const/enum/sparql-query-kind';
 import { SparqlQuery } from '../endpoint/model/sparql-query';
 
 export enum RdfMimeType {

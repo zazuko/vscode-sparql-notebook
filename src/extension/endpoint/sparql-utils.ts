@@ -1,5 +1,5 @@
-import { MimeType } from "../enum/mime-type";
-import { SPARQLQueryKind } from "./enum/sparql-query-kind";
+import { MimeType } from "../../const/enum/mime-type";
+import { SPARQLQueryKind } from "../../const/enum/sparql-query-kind";
 
 
 export function getSPARQLQueryKind(query: string): SPARQLQueryKind {

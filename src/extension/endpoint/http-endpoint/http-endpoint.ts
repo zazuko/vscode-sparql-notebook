@@ -3,7 +3,7 @@ import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
 import { getAcceptHeader, getContentTypeHeader } from '../sparql-utils';
 import { Endpoint, SimpleHttpResponse } from '../endpoint';
 import { SparqlQuery } from '../model/sparql-query';
-import { MimeType } from '../../enum/mime-type';
+import { MimeType } from '../../../const/enum/mime-type';
 
 /**
  * Represents an HTTP SPARQL endpoint.
@@ -20,8 +20,6 @@ export class HttpEndpoint extends Endpoint {
    */
   constructor(endpointUrl: string, user: string, password: string) {
     super();
-    console.log(user, password);
-    debugger;
     this._url = endpointUrl;
     const axiosConfig: AxiosRequestConfig = {
       baseURL: endpointUrl,
@@ -57,6 +55,9 @@ export class HttpEndpoint extends Endpoint {
       },
       signal: abortController.signal
     };
+
+    console.log('Executing SPARQL query:', options);
+
     if (execution) {
       execution.token.onCancellationRequested((_: any) => {
         console.warn('Request cancelled');
@@ -68,9 +69,13 @@ export class HttpEndpoint extends Endpoint {
 
     const httpResponse: SimpleHttpResponse = {
       headers: { "content-type": mimeType },
-      data: typeof response.data === 'string' ? response.data : JSON.stringify(response.data)
+      data: typeof response.data === 'string' ? response.data : JSON.stringify(response.data),
+      status: response.status,
+      statusText: response.statusText
     };
     return httpResponse;
   }
+
+
 
 }

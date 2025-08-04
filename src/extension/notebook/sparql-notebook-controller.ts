@@ -6,9 +6,17 @@ import { notebookEndpoint } from '../endpoint/endpoint';
 import { SparqlNotebookCell } from './sparql-notebook-cell';
 import { shrink } from '@zazuko/prefixes';
 import { EndpointKind, SparqlQuery } from '../endpoint/model/sparql-query';
-import { MimeType } from '../enum/mime-type';
+import { MimeType } from '../../const/enum/mime-type';
 import path = require('path');
-import { Option } from '@vscode/webview-ui-toolkit';
+import { SparqlQueryHandler } from '../spatql-query-handler/sparql-query-handler';
+import { SelectQueryHandler } from '../spatql-query-handler/select-query-handler';
+import { AskQueryHandler } from '../spatql-query-handler/ask-query-handler';
+import { UpdateQueryHandler } from '../spatql-query-handler/update-query-handler';
+import { ErrorQueryHandler } from '../spatql-query-handler/error-query-handler';
+import { ConstructQueryHandler } from '../spatql-query-handler/construct-query-handler';
+import { writeError } from '../spatql-query-handler/helper/write-error';
+import { SPARQLQueryKind } from '../../const/enum/sparql-query-kind';
+
 export class SparqlNotebookController {
   readonly controllerId = `${extensionId}-controller-id`;
   readonly notebookType = extensionId;
@@ -43,9 +51,25 @@ export class SparqlNotebookController {
    * @param _controller - The notebook controller for the notebook document.
    */
   private _execute(cells: NotebookCell[], _notebook: NotebookDocument, _controller: NotebookController): void {
-
     for (let cell of cells) {
       this._doExecution(cell);
+    }
+  }
+
+
+  private _getHandlerForType(type: string): SparqlQueryHandler {
+    switch (type) {
+      case SPARQLQueryKind.select: return new SelectQueryHandler();
+      case SPARQLQueryKind.ask: return new AskQueryHandler();
+      case SPARQLQueryKind.construct: return new ConstructQueryHandler();
+      case SPARQLQueryKind.describe: return new ConstructQueryHandler();
+      case SPARQLQueryKind.insert: return new UpdateQueryHandler();
+      case SPARQLQueryKind.create: return new UpdateQueryHandler();
+      case SPARQLQueryKind.drop: return new UpdateQueryHandler();
+      case SPARQLQueryKind.clear: return new UpdateQueryHandler();
+      case SPARQLQueryKind.delete: return new UpdateQueryHandler();
+      case SPARQLQueryKind.load: return new UpdateQueryHandler();
+      default: return new ErrorQueryHandler();
     }
   }
 
@@ -53,33 +77,28 @@ export class SparqlNotebookController {
     const sparqlCell = new SparqlNotebookCell(nbCell);
     const execution = this.#controller.createNotebookCellExecution(sparqlCell.cell);
     execution.executionOrder = ++this.#executionOrder;
-
-    // Keep track of elapsed time to execute cell.
     execution.start(Date.now());
 
     const sparqlQuery = sparqlCell.sparqlQuery;
-    // you can configure the endpoint within the query like this # [endpoint='xxxx']
     const sparqlEndpoint = await this._getDocumentOrConnectionClient(sparqlCell, sparqlQuery);
 
     if (!sparqlEndpoint) {
       const errorMessage = "Not connected to a SPARQL Endpoint";
       const actionButton = "Connect to SPARQL Endpoint";
-
       window.showErrorMessage(errorMessage, actionButton).then((action) => {
         if (action === actionButton) {
           commands.executeCommand('sparql-notebook.connect');
-
         }
-      }
-      );
+      });
       execution.replaceOutput([
-        this._writeError(errorMessage)
+        writeError(errorMessage)
       ]);
       execution.end(true, Date.now());
       return;
     }
 
-    // execute the query
+    console.log('Executing SPARQL query:', sparqlQuery.kind);
+
     const queryResult = await sparqlEndpoint.query(sparqlQuery, execution).catch(
       (error) => {
         let errorMessage = error.message ?? "error";
@@ -87,156 +106,29 @@ export class SparqlNotebookController {
           if (error.response.data.message) {
             errorMessage += "\n" + error.response.data.message;
           } else {
-            errorMessage += "\n" + error.response.data;
+            errorMessage += "\n" + error.response.data + "\nstatus: " + error.response.status + " " + error.response.statusText;
           }
         }
-
         execution.replaceOutput([
-          this._writeError(errorMessage)
+          writeError(errorMessage)
         ]);
         console.error('SPARQL execution error:', errorMessage);
         execution.end(false, Date.now());
         return;
       });
 
-    // content type
     if (!queryResult) {
       execution.replaceOutput([
-        this._writeError('No result')
+        writeError('No result')
       ]);
       execution.end(false, Date.now());
       return;
     }
-    const contentType = queryResult.headers["content-type"].split(";")[0];
-    const data = queryResult.data;
-    let isSuccess = true;
 
-    if (contentType === MimeType.sparqlResultsJson) {
-      try {
-        const parsedData = JSON.parse(data);
-        if (parsedData.hasOwnProperty("boolean")) {
-          // sparql ask
-          execution.replaceOutput([this._writeAskResult(data)]);
-          execution.end(isSuccess, Date.now());
-          return;
-        }
-        // sparql select
-        const prefixMap = sparqlCell.getPrefixMap();
-        execution.replaceOutput([this._writeSparqlJsonResult(data, prefixMap)]);
-        execution.end(isSuccess, Date.now());
-        return;
-      } catch(error: unknown) {
-        let errorMessage = (error as Error).message ?? "error";
-        console.error(errorMessage);
-        execution.replaceOutput([this._writeError(errorMessage)]);
-        execution.end(false, Date.now());
-        return;
-      }
-    }
-
-    if (contentType === MimeType.turtle) {
-      // sparql construct
-      execution.replaceOutput([await this._writeTurtleResult(data)]);
-      execution.end(isSuccess, Date.now());
-      return;
-    }
-
-    if (contentType === MimeType.json) {
-      // stardog is returning and error as json
-      const errorObject = JSON.parse(data);
-      execution.replaceOutput([this._writeError(errorObject.message ?? 'An error occurred')]);
-      isSuccess = false;
-      execution.end(isSuccess, Date.now());
-      return;
-    }
-    // we should never reach this point
-    const errorMessage = `Error: Unknown content type ${contentType}\n\n${data}`;
-    console.error(errorMessage);
-    isSuccess = false;
-    execution.replaceOutput([this._writeError(errorMessage)]);
-    execution.end(isSuccess, Date.now());
-    return;
+    const handler = this._getHandlerForType(sparqlQuery.kind);
+    handler.handle(queryResult, sparqlCell, execution);
   }
 
-  private async _writeTurtleResult(resultTTL: string): Promise<NotebookCellOutput> {
-
-    // this is writing markdown to the cell containing a turtle code block
-    return new NotebookCellOutput([
-
-      NotebookCellOutputItem.text(resultTTL, MimeType.plainText),
-      NotebookCellOutputItem.text(
-        `\`\`\`turtle\n${resultTTL}\n\`\`\``,
-        "text/markdown"
-      ),
-      NotebookCellOutputItem.text(resultTTL, MimeType.turtle),
-
-    ]);
-  }
-
-  private _writeAskResult(resultJson: string): NotebookCellOutput {
-    const outputItem = new NotebookCellOutput([
-      this._writeJson(resultJson),
-      NotebookCellOutputItem.json(
-        JSON.parse(resultJson),
-        MimeType.sparqlResultsJson
-      ),
-    ]);
-    return outputItem;
-  }
-
-  private _writeSparqlJsonResult(resultJson: string, prefixMap: PrefixMap = {}): NotebookCellOutput {
-    const outputItem = new NotebookCellOutput([
-      this._writeJson(resultJson),
-      NotebookCellOutputItem.json(
-        JSON.parse(resultJson),
-        MimeType.sparqlResultsJson
-      ),
-      this._writeDataTableRendererCompatibleJson(resultJson, prefixMap)
-    ]);
-    outputItem.metadata = { prefixMap: prefixMap };
-    return outputItem;
-  }
-
-  private _writeJson(jsonResult: string): NotebookCellOutputItem {
-    return NotebookCellOutputItem.text(
-      `\`\`\`json\n${jsonResult}\n\`\`\``,
-      "text/markdown"
-    );
-  }
-
-  private _writeError(message: string): NotebookCellOutput {
-    return new NotebookCellOutput([
-      NotebookCellOutputItem.error({
-        name: "SPARQL error",
-        message: message,
-      }),
-    ]);
-  }
-
-  private _writeDataTableRendererCompatibleJson(resultJsonString: string, prefixMap: PrefixMap = {}) {
-    const resultJson = JSON.parse(resultJsonString);
-    const dtJonBindings: { [k: string]: any }[] = resultJson.results.bindings;
-
-    const dtJson = dtJonBindings.map(item => {
-      const dtMap = Object.keys(item).reduce((prev, key) => {
-        const fieldTypeValue = item[key];
-        let fieldValue = fieldTypeValue.value;
-
-        if (fieldTypeValue.type === "uri") {
-          const prefixedValue = shrink(fieldValue, prefixMap);
-          fieldValue = prefixedValue.length > 0 ? prefixedValue : fieldValue;
-        }
-
-        prev.set(key, fieldValue);
-        return prev;
-      }, new Map());
-
-      return Object.fromEntries(dtMap.entries());
-    });
-
-    const jsonStringified = JSON.stringify(dtJson, null, "   ");
-    return NotebookCellOutputItem.text(jsonStringified, MimeType.json);
-  }
 
   dispose() {
     this.#controller.dispose();
