@@ -1,5 +1,5 @@
 import { NotebookCellOutput, NotebookCellOutputItem } from "vscode";
-import { MimeType } from "../../../const/enum/mime-type";
+import { MimeType } from "../../const/enum/mime-type";
 
 /**
  * Creates a NotebookCellOutput containing a Turtle result.

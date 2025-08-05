@@ -2,6 +2,9 @@
 
 All notable changes to the "vscode-sparql-notebook" extension will be documented in this file.
 
+## 1.0.5
+- Feature: Support SPARQL UPDATE queries. They work if the endpoint supports it. But it's not supported by the file endpoint. Support for systems with separate read and write endpoints will be added in the future.
+
 ## 1.0.4
 - You can now enable the union graph in file queries by passing the query parameter as a comment in the SPARQL query: `[use_default_graph_as_union=true]`.
 ```sparql

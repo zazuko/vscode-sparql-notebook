@@ -1,6 +1,6 @@
 import { NotebookCellOutput, NotebookCellOutputItem } from "vscode";
 import { writeJson } from "./write-json";
-import { MimeType } from "../../../const/enum/mime-type";
+import { MimeType } from "../../const/enum/mime-type";
 
 export function writeAskResult(resultJson: string): NotebookCellOutput {
     const outputItem = new NotebookCellOutput([

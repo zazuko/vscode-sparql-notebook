@@ -1,0 +1,170 @@
+[
+  {
+    "kind": 1,
+    "language": "markdown",
+    "value": "# Test Cases",
+    "metadata": {}
+  },
+  {
+    "kind": 1,
+    "language": "markdown",
+    "value": "# SELECT Query\n",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "#\n# [endpoint=http://localhost:3030/query] \n# \nPREFIX wd: <http://www.wikidata.org/entity/>\nPREFIX wdt: <http://www.wikidata.org/prop/direct/>\nPREFIX wikibase: <http://wikiba.se/ontology#>\n\nSELECT ?subject ?predicate ?object\nWHERE {\n  ?subject ?predicate ?object\n} LIMIT 5",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "#\n# [endpoint=http://localhost:3030/rw] \n# \nPREFIX wd: <http://www.wikidata.org/entity/>\nPREFIX wdt: <http://www.wikidata.org/prop/direct/>\nPREFIX wikibase: <http://wikiba.se/ontology#>\n\nSELECT ?subject ?predicate ?object\nWHERE {\n  ?subject ?predicate ?object\n} LIMIT 5",
+    "metadata": {}
+  },
+  {
+    "kind": 1,
+    "language": "markdown",
+    "value": "# Describe and Construct Queries",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "#\n# [endpoint=http://localhost:3030/rw] \n# \nPREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nCONSTRUCT {\n  ?subject ?predicate ?object\n}\nWHERE {\n  ?subject ?predicate ?object\n} LIMIT 20",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "#\n# [endpoint=http://localhost:3030/rw] \n# \nPREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nDESCRIBE <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>",
+    "metadata": {}
+  },
+  {
+    "kind": 1,
+    "language": "markdown",
+    "value": "# Named Graphs",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "#\n# [endpoint=http://localhost:3030/rw] \n# \nSELECT DISTINCT ?g\nWHERE {\n    GRAPH ?g { ?s ?p ?o }\n}",
+    "metadata": {}
+  },
+  {
+    "kind": 1,
+    "language": "markdown",
+    "value": "# Add a triple to a named graph",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "#\n# [endpoint=http://localhost:3030/rw]\n#\nINSERT DATA {\n    GRAPH <http://example.org/my-graph> {\n        <http://example.org/subject> <http://example.org/predicate> \"object value\" .\n    }\n}",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "#\n# [endpoint=http://localhost:3030/rw]\n#\nSELECT ?s ?p ?o\nWHERE {\n    GRAPH <http://example.org/my-graph> {\n        ?s ?p ?o\n    }\n}",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "#\n# [endpoint=http://localhost:3030/rw]\n#\nSELECT ?s ?p ?o FROM <http://example.org/my-graph>\nWHERE {\n    ?s ?p ?o .\n    \n}",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "#\n# [endpoint=http://localhost:3030/rw]\n#\nDROP GRAPH <http://example.org/my-graph>",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "#\n# [endpoint=http://localhost:3030/rw] \n# \nSELECT DISTINCT ?g\nWHERE {\n    GRAPH ?g { ?s ?p ?o }\n}",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "#\n# [endpoint=http://localhost:3030/rw]\n#\nCREATE GRAPH <http://example.org/my-graph>",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "#\n# [endpoint=http://localhost:3030/rw]\n#\nSELECT ?g\nWHERE {\n    GRAPH ?g{\n    }\n}",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "#\n# [endpoint=http://localhost:3030/rw]\n#\nINSERT DATA {\n    GRAPH <http://example.org/my-graph> {\n        <http://example.org/new-subject> <http://example.org/new-predicate> \"new object value\" .\n    }\n}",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "#\n# [endpoint=http://localhost:3030/rw]\n#\nSELECT ?s ?p ?o FROM <http://example.org/my-graph>\nWHERE {\n    ?s ?p ?o .\n    \n}",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "#\n# [endpoint=http://localhost:3030/rw]\n#\nCLEAR GRAPH <http://example.org/my-graph>",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "#\n# [endpoint=http://localhost:3030/rw]\n#\nSELECT ?s ?p ?o FROM <http://example.org/my-graph>\nWHERE {\n    ?s ?p ?o .\n    \n}",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "#\n# [endpoint=http://localhost:3030/rw]\n#\nSELECT ?g\nWHERE {\n    GRAPH ?g{\n    }\n}",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "#\n# [endpoint=http://localhost:3030/rw]\n#\nDROP GRAPH <http://example.org/my-graph>",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "#\n# [endpoint=http://localhost:3030/rw]\n#\nSELECT ?g\nWHERE {\n    GRAPH ?g{\n    }\n}",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "#\n# [endpoint=http://localhost:3030/rw]\n#\nINSERT DATA {\n    GRAPH <http://example.org/my-graph> {\n        <http://example.org/subject> <http://example.org/predicate> \"object value\" .\n    }\n}",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "#\n# [endpoint=http://localhost:3030/rw]\n#\nSELECT ?s ?p ?o FROM <http://example.org/my-graph>\nWHERE {\n    ?s ?p ?o .\n    \n}",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "#\n# [endpoint=http://localhost:3030/rw]\n#\nDELETE DATA {\n    GRAPH <http://example.org/my-graph> {\n        <http://example.org/subject> <http://example.org/predicate> \"object value\" .\n    }\n}",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "#\n# [endpoint=http://localhost:3030/rw]\n#\nSELECT ?s ?p ?o FROM <http://example.org/my-graph>\nWHERE {\n    ?s ?p ?o .\n    \n}",
+    "metadata": {}
+  }
+]

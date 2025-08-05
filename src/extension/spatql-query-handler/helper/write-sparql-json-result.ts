@@ -1,7 +1,7 @@
 import { NotebookCellOutput, NotebookCellOutputItem } from "vscode";
 import { PrefixMap } from "../../model/prefix-map";
 import { writeJson } from "./write-json";
-import { MimeType } from "../../../const/enum/mime-type";
+import { MimeType } from "../../const/enum/mime-type";
 import { writeDataTableRendererCompatibleJson } from "./write-data-table-renderer-compatible-json";
 
 /**

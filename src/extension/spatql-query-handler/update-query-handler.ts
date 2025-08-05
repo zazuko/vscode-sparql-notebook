@@ -1,8 +1,5 @@
-import { NotebookCellOutputItem } from "vscode";
 import { SimpleHttpResponse } from "../endpoint/endpoint";
 import { SparqlNotebookCell } from "../notebook/sparql-notebook-cell";
-import { writeJson } from "./helper/write-json";
-import { writeSparqlJsonResult } from "./helper/write-sparql-json-result";
 import { SparqlQueryHandler } from "./sparql-query-handler";
 
 
@@ -21,6 +18,7 @@ export class UpdateQueryHandler extends SparqlQueryHandler {
      */
     // Note: UPDATE queries typically do not return results, so we just acknowledge the execution.
     handle(_queryResult: SimpleHttpResponse, sparqlCell: SparqlNotebookCell, execution: any) {
+        execution.replaceOutput([]);
         execution.end(true, Date.now());
     }
 }

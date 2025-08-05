@@ -5,8 +5,8 @@ import * as fs from 'fs';
 import { Endpoint, SimpleHttpResponse } from '../endpoint';
 import { RdfMimeType, SparqlStore } from '../../sparql-store/sparql-store';
 import { SparqlQuery } from '../model/sparql-query';
-import { SPARQLQueryKind } from "../../../const/enum/sparql-query-kind";
-import { MimeType } from '../../../const/enum/mime-type';
+import { SPARQLQueryKind } from "../../const/enum/sparql-query-kind";
+import { MimeType } from '../../const/enum/mime-type';
 
 /**
  * Represents an HTTP SPARQL endpoint.
@@ -91,28 +91,37 @@ export class FileEndpoint extends Endpoint {
                 response = {
                     headers: { 'content-type': MimeType.sparqlResultsJson },
                     data: this.#store.ask(sparqlQuery),
+                    status: 200,
+                    statusText: 'OK'
+
                 };
                 break;
             case SPARQLQueryKind.select:
                 response = {
                     headers: { 'content-type': MimeType.sparqlResultsJson },
                     data: this.#store.select(sparqlQuery),
+                    status: 200,
+                    statusText: 'OK'
                 };
                 break;
             case SPARQLQueryKind.describe:
                 response = {
                     headers: { 'content-type': MimeType.turtle },
                     data: this.#store.describe(sparqlQuery),
+                    status: 200,
+                    statusText: 'OK'
                 };
                 break;
             case SPARQLQueryKind.construct:
                 response = {
                     headers: { 'content-type': MimeType.turtle },
                     data: this.#store.construct(sparqlQuery),
+                    status: 200,
+                    statusText: 'OK'
                 };
                 break;
             default:
-                throw new Error('Unknown query type');
+                throw new Error(`Query type "${sparqlQuery.kind}" is not supported by FileEndpoint`);
         }
 
         return Promise.resolve(response);

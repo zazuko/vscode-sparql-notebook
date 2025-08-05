@@ -6,7 +6,7 @@ import { notebookEndpoint } from '../endpoint/endpoint';
 import { SparqlNotebookCell } from './sparql-notebook-cell';
 import { shrink } from '@zazuko/prefixes';
 import { EndpointKind, SparqlQuery } from '../endpoint/model/sparql-query';
-import { MimeType } from '../../const/enum/mime-type';
+import { MimeType } from '../const/enum/mime-type';
 import path = require('path');
 import { SparqlQueryHandler } from '../spatql-query-handler/sparql-query-handler';
 import { SelectQueryHandler } from '../spatql-query-handler/select-query-handler';
@@ -15,7 +15,7 @@ import { UpdateQueryHandler } from '../spatql-query-handler/update-query-handler
 import { ErrorQueryHandler } from '../spatql-query-handler/error-query-handler';
 import { ConstructQueryHandler } from '../spatql-query-handler/construct-query-handler';
 import { writeError } from '../spatql-query-handler/helper/write-error';
-import { SPARQLQueryKind } from '../../const/enum/sparql-query-kind';
+import { SPARQLQueryKind } from '../const/enum/sparql-query-kind';
 
 export class SparqlNotebookController {
   readonly controllerId = `${extensionId}-controller-id`;
@@ -98,7 +98,6 @@ export class SparqlNotebookController {
     }
 
     console.log('Executing SPARQL query:', sparqlQuery.kind);
-
     const queryResult = await sparqlEndpoint.query(sparqlQuery, execution).catch(
       (error) => {
         let errorMessage = error.message ?? "error";

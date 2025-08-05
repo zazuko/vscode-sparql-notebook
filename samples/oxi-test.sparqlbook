@@ -8,6 +8,12 @@
   {
     "kind": 2,
     "language": "sparql",
+    "value": "# [endpoint=./rdf/a.ttl]\n\nINSERT {\n    ?s ?p ?o\n} WHERE {\n    BIND(<urn:example:subjectddddd> as ?s)\n    BIND(<urn:example:predicatedddd> as ?p)\n    BIND(<urn:example:objectdddd> as ?o).\n}",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
     "value": "# [endpoint=./rdf/a.ttl]\n\nASK WHERE {\n  \n    ?s <https://foo.ch/bar/> ?opti .\n  \n}",
     "metadata": {}
   },

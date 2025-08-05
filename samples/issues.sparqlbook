@@ -2,7 +2,7 @@
   {
     "kind": 1,
     "language": "markdown",
-    "value": "# Using FROM clause yields 'Unknown query type' #74\n\n## Error\nSPARQL error: Unknown query type\n\n## Cause\nThe notebook tries to guess the query type in order to set the HTTP ACCEPT header. Because some stores return a SPO SPARQL JSON result for construct queries and we want turtle.\n\nThe notebook ignores comment and empty lines, so the first non-empty line should be a construct, select, ask, or describe.\n\nThis test is not enough. \n\n## Solution\n\nAt the moment we don't want to parse the query with SPARQLjs. To be store / sparql flavour agnostic. \n",
+    "value": "# Using FROM clause yields 'Unknown query type' #74\n\n## Error\nSPARQL error: Unknown query type\n\n## Cause\nThe notebook tries to guess the query type in order to set the HTTP ACCEPT header. Because some stores return a SPO SPARQL JSON result for construct queries and we want turtle.\n\nThe notebook ignores comment and empty lines, so the first non-empty line should be a construct, select, ask, or describe.\n\nThis test is not enough. \n\n## Solution\n\nAt the moment we don't want to parse the query with SPARQLjs. To be store / sparql flavour agnostic. \n",
     "metadata": {}
   },
   {

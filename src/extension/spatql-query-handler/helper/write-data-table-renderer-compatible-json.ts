@@ -1,7 +1,7 @@
 import { shrink } from "@zazuko/prefixes";
 import { PrefixMap } from "../../model/prefix-map";
 import { NotebookCellOutputItem } from "vscode";
-import { MimeType } from "../../../const/enum/mime-type";
+import { MimeType } from "../../const/enum/mime-type";
 
 /**
  * Transforms a SPARQL query result JSON string into a simplified JSON array of objects,

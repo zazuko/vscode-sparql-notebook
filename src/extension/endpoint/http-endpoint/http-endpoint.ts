@@ -3,7 +3,7 @@ import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
 import { getAcceptHeader, getContentTypeHeader } from '../sparql-utils';
 import { Endpoint, SimpleHttpResponse } from '../endpoint';
 import { SparqlQuery } from '../model/sparql-query';
-import { MimeType } from '../../../const/enum/mime-type';
+import { MimeType } from '../../const/enum/mime-type';
 
 /**
  * Represents an HTTP SPARQL endpoint.

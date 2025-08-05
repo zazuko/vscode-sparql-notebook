@@ -1,6 +1,6 @@
 import { window } from "vscode";
 
-import { SPARQLQueryKind } from "../../../const/enum/sparql-query-kind";
+import { SPARQLQueryKind } from "../../const/enum/sparql-query-kind";
 import { getSPARQLQueryKind } from "../sparql-utils";
 
 export class SparqlQuery {

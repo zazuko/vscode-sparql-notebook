@@ -1,4 +1,4 @@
-import { MimeType } from "../../const/enum/mime-type";
+import { MimeType } from "../const/enum/mime-type";
 import { SparqlQuery } from "./model/sparql-query";
 
 /**
