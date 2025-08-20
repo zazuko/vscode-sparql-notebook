@@ -6,11 +6,26 @@
     {
       "type": "npm",
       "script": "watch",
-      "problemMatcher": ["$ts-webpack-watch", "$tslint-webpack-watch"],
       "isBackground": true,
+      "problemMatcher": [
+        {
+          "pattern": [
+            {
+              "regexp": ".",
+              "file": 1,
+              "location": 2,
+              "message": 3
+            }
+          ],
+          "background": {
+            "activeOnStart": true,
+            "beginsPattern": "watching for changes",
+            "endsPattern": "watching for changes"
+          }
+        }
+      ],
       "presentation": {
-        "reveal": "never",
-        "group": "watchers"
+        "reveal": "never"
       },
       "group": {
         "kind": "build",
@@ -19,19 +34,8 @@
     },
     {
       "type": "npm",
-      "script": "watch-tests",
-      "problemMatcher": "$tsc-watch",
-      "isBackground": true,
-      "presentation": {
-        "reveal": "never",
-        "group": "watchers"
-      },
+      "script": "compile",
       "group": "build"
-    },
-    {
-      "label": "tasks: watch-tests",
-      "dependsOn": ["npm: watch", "npm: watch-tests"],
-      "problemMatcher": []
     }
   ]
 }
