@@ -9,23 +9,28 @@
       "name": "Run Extension",
       "type": "extensionHost",
       "request": "launch",
-      "args": ["--extensionDevelopmentPath=${workspaceFolder}"],
-      "outFiles": ["${workspaceFolder}/dist/**/*.js"],
-      "preLaunchTask": "${defaultBuildTask}"
+      "args": [
+        "--extensionDevelopmentPath=${workspaceFolder}/samples"
+      ],
+      "outFiles": [
+        "${workspaceFolder}/out/**/*.js"
+      ],
+      "debugWebviews": true,
+      "trace": true,
+      "preLaunchTask": "npm: watch"
     },
     {
-      "name": "Extension Tests",
+      "name": "Run Extension (no server)",
       "type": "extensionHost",
       "request": "launch",
       "args": [
-        "--extensionDevelopmentPath=${workspaceFolder}",
-        "--extensionTestsPath=${workspaceFolder}/out/test/suite/index"
+        "--extensionDevelopmentPath=${workspaceFolder}/samples"
       ],
       "outFiles": [
-        "${workspaceFolder}/out/**/*.js",
-        "${workspaceFolder}/dist/**/*.js"
+        "${workspaceFolder}/out/**/*.js"
       ],
-      "preLaunchTask": "tasks: watch-tests"
+      "debugWebviews": true,
+      "preLaunchTask": "npm: watch"
     }
   ]
 }

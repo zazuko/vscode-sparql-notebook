@@ -40,7 +40,7 @@
     "notebookRenderer": [
       {
         "id": "sparql-notebook-json-result",
-        "entrypoint": "./out/renderer.js",
+        "entrypoint": "./out/renderer/sparql-result-json-renderer.js",
         "displayName": "SPARQL JSON Result",
         "mimeTypes": [
           "application/sparql-results+json"
@@ -173,11 +173,16 @@
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
-    "compile": "webpack --mode production",
+    "compile": "copy:oxigraph &&npm run esbuild",
     "lint": "eslint src --ext ts",
-    "watch": "webpack --mode development --watch",
+    "watch": "npm run build:extension -- --watch & npm run build:webview -- --watch & npm run build:renderer -- --watch",
     "deploy": "npx vsce publish",
-    "package": "npx vsce package"
+    "package": "npx vsce package",
+    "build:extension": "esbuild ./src/extension/extension.ts --sourcemap --minify --bundle --platform=node --external:vscode --external:pg-native --outfile=./out/extension.js",
+    "build:webview": "esbuild ./src/webview/index.tsx --sourcemap --minify --bundle --outfile=./out/webview/main-bundle.js",
+    "build:renderer": "esbuild ./src/renderer/sparql-result-json.tsx --sourcemap --minify --bundle --outfile=./out/renderer/sparql-result-json-renderer.js",
+    "copy:oxigraph": "cp node_modules/oxigraph/node_bg.wasm out/",
+    "esbuild": "npm run build:extension && npm run build:webview && npm run build:renderer"
   },
   "devDependencies": {
     "@types/glob": "^8.1.0",
@@ -190,10 +195,10 @@
     "@types/vscode-webview": "^1.57.5",
     "@types/webpack-env": "^1.18.5",
     "@typescript-eslint/eslint-plugin": "^8.12.2",
-    "@typescript-eslint/parser": "^ 8.12.2",
+    "@typescript-eslint/parser": "^8.12.2",
     "css-loader": "^7.1.2",
+    "esbuild": "^0.25.9",
     "eslint": "^9.13.0",
-    "fork-ts-checker-webpack-plugin": "^9.0.2",
     "glob": "^11.0.3",
     "os-browserify": "^0.3.0",
     "path-browserify": "^1.0.1",
@@ -201,9 +206,7 @@
     "ts-loader": "^9.5.1",
     "typescript": "^5.6.3",
     "url": "^0.11.4",
-    "util": "^0.12.5",
-    "webpack": "^5.95.0",
-    "webpack-cli": "^5.1.4"
+    "util": "^0.12.5"
   },
   "dependencies": {
     "@vscode/webview-ui-toolkit": "^1.4.0",
