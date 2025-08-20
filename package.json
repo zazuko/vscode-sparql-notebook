@@ -175,7 +175,7 @@
     "vscode:prepublish": "npm run compile",
     "compile": "copy:oxigraph &&npm run esbuild",
     "lint": "eslint src --ext ts",
-    "watch": "npm run build:extension -- --watch & npm run build:webview -- --watch & npm run build:renderer -- --watch",
+    "watch": "npm run build:extension -- --watch=forever & npm run build:webview -- --watch=forever & npm run build:renderer -- --watch=forever",
     "deploy": "npx vsce publish",
     "package": "npx vsce package",
     "build:extension": "esbuild ./src/extension/extension.ts --sourcemap --minify --bundle --platform=node --external:vscode --external:pg-native --outfile=./out/extension.js",
