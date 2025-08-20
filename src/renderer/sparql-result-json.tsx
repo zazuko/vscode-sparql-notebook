@@ -5,7 +5,22 @@ import { SparqlAskResultComponent } from './components/sparql-result-ask-compone
 import { createRoot } from 'react-dom/client';
 import { prefix } from './prefix.class';
 
-export const activate: ActivationFunction = () => ({
+function injectRendererCss() {
+  const id = 'sparql-notebook-renderer-css';
+  if (!document.getElementById(id)) {
+    const link = document.createElement('link');
+    link.id = id;
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    // Path is relative to the renderer JS file
+    link.href = new URL('./sparql-result-json.css', import.meta.url).toString();
+    document.head.appendChild(link);
+  }
+}
+
+export const activate: ActivationFunction = () => {
+    injectRendererCss();
+   return {
   renderOutputItem(outputItem: OutputItem, element: HTMLElement) {
     const root = createRoot(element);
     if (outputItem.json().hasOwnProperty("boolean")) {
@@ -16,6 +31,6 @@ export const activate: ActivationFunction = () => ({
       root.render(<SparqlResultJsonComponent sparqlResult={outputItem.json()} />);
     }
   },
-});
+}};
 
 

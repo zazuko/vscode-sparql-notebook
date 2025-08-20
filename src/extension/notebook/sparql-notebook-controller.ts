@@ -8,14 +8,15 @@ import { shrink } from '@zazuko/prefixes';
 import { EndpointKind, SparqlQuery } from '../endpoint/model/sparql-query';
 import { MimeType } from '../const/enum/mime-type';
 import path = require('path');
-import { SparqlQueryHandler } from '../spatql-query-handler/sparql-query-handler';
-import { SelectQueryHandler } from '../spatql-query-handler/select-query-handler';
-import { AskQueryHandler } from '../spatql-query-handler/ask-query-handler';
-import { UpdateQueryHandler } from '../spatql-query-handler/update-query-handler';
-import { ErrorQueryHandler } from '../spatql-query-handler/error-query-handler';
-import { ConstructQueryHandler } from '../spatql-query-handler/construct-query-handler';
-import { writeError } from '../spatql-query-handler/helper/write-error';
+import { SparqlQueryHandler } from '../sparql-query-handler/sparql-query-handler';
+import { SelectQueryHandler } from '../sparql-query-handler/select-query-handler';
+import { AskQueryHandler } from '../sparql-query-handler/ask-query-handler';
+import { UpdateQueryHandler } from '../sparql-query-handler/update-query-handler';
+import { ErrorQueryHandler } from '../sparql-query-handler/error-query-handler';
+import { ConstructQueryHandler } from '../sparql-query-handler/construct-query-handler';
+import { writeError } from '../sparql-query-handler/helper/write-error';
 import { SPARQLQueryKind } from '../const/enum/sparql-query-kind';
+import { getAcceptHeader } from '../endpoint/sparql-utils';
 
 export class SparqlNotebookController {
   readonly controllerId = `${extensionId}-controller-id`;
@@ -93,11 +94,10 @@ export class SparqlNotebookController {
       execution.replaceOutput([
         writeError(errorMessage)
       ]);
-      execution.end(true, Date.now());
+      execution.end(false, Date.now());
       return;
     }
 
-    console.log('Executing SPARQL query:', sparqlQuery.kind);
     const queryResult = await sparqlEndpoint.query(sparqlQuery, execution).catch(
       (error) => {
         let errorMessage = error.message ?? "error";
@@ -124,6 +124,15 @@ export class SparqlNotebookController {
       return;
     }
 
+    // stardog return a valid query on error
+    const expectedMimeType = getAcceptHeader(sparqlQuery.kind);
+    if (queryResult.headers['content-type'] !== expectedMimeType) {
+      execution.replaceOutput([
+        writeError(queryResult.headers['content-type'] === MimeType.json ? JSON.stringify(queryResult.data, null, 2) : queryResult.data)
+      ]);
+      execution.end(false, Date.now());
+      return;
+    }
     const handler = this._getHandlerForType(sparqlQuery.kind);
     handler.handle(queryResult, sparqlCell, execution);
   }

@@ -40,7 +40,7 @@
     "notebookRenderer": [
       {
         "id": "sparql-notebook-json-result",
-        "entrypoint": "./out/renderer/sparql-result-json-renderer.js",
+        "entrypoint": "./out/renderer/sparql-result-json.js",
         "displayName": "SPARQL JSON Result",
         "mimeTypes": [
           "application/sparql-results+json"
@@ -173,14 +173,14 @@
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
-    "compile": "copy:oxigraph &&npm run esbuild",
+    "compile": "npm run copy:oxigraph &&npm run esbuild",
     "lint": "eslint src --ext ts",
     "watch": "npm run build:extension -- --watch=forever & npm run build:webview -- --watch=forever & npm run build:renderer -- --watch=forever",
     "deploy": "npx vsce publish",
     "package": "npx vsce package",
     "build:extension": "esbuild ./src/extension/extension.ts --sourcemap --minify --bundle --platform=node --external:vscode --external:pg-native --outfile=./out/extension.js",
     "build:webview": "esbuild ./src/webview/index.tsx --sourcemap --minify --bundle --outfile=./out/webview/main-bundle.js",
-    "build:renderer": "esbuild ./src/renderer/sparql-result-json.tsx --sourcemap --minify --bundle --outfile=./out/renderer/sparql-result-json-renderer.js",
+    "build:renderer": "esbuild ./src/renderer/sparql-result-json.tsx --jsx=automatic --tsconfig=./src/renderer/tsconfig.json --sourcemap --bundle --format=esm --platform=browser --outfile=./out/renderer/sparql-result-json.js",
     "copy:oxigraph": "cp node_modules/oxigraph/node_bg.wasm out/",
     "esbuild": "npm run build:extension && npm run build:webview && npm run build:renderer"
   },
