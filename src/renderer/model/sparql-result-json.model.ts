@@ -15,7 +15,7 @@ export type PrefixMap = {
 };
 
 export interface Term {
-  type: string;
+  type: 'uri' | 'bnode' | 'literal' | 'typed-literal' | 'triple';
   value: string;
   datatype?: string;
   // eslint-disable-next-line @typescript-eslint/naming-convention

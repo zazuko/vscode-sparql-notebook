@@ -14,7 +14,7 @@
   {
     "kind": 2,
     "language": "sparql",
-    "value": "#\n# [endpoint=http://localhost:3030/query] \n# \nPREFIX wd: <http://www.wikidata.org/entity/>\nPREFIX wdt: <http://www.wikidata.org/prop/direct/>\nPREFIX wikibase: <http://wikiba.se/ontology#>\n\nSELECT ?subject ?predicate ?object\nWHERE {\n  ?subject ?predicate ?object\n} LIMIT 5",
+    "value": "#\n# \nPREFIX wd: <http://www.wikidata.org/entity/>\nPREFIX wdt: <http://www.wikidata.org/prop/direct/>\nPREFIX wikibase: <http://wikiba.se/ontology#>\n\nSELECT ?subject ?predicate ?object\nWHERE {\n  ?subject ?predicate ?object\n} LIMIT 5",
     "metadata": {}
   },
   {
@@ -164,7 +164,19 @@
   {
     "kind": 2,
     "language": "sparql",
-    "value": "#\n# [endpoint=http://localhost:3030/rw]\n#\nSELECT ?s ?p ?o FROM <http://example.org/my-graph>\nWHERE {\n    ?s ?p ?o .\n    \n}",
+    "value": "#\n# [endpoint=http://localhost:3030/rw]\n#\nSELECT ?s ?p ?o FROM <http://example.org/my-graph>\nWHERE {\n    <<>> ?p ?o .\n    \n}",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "#\n# [endpoint=http://localhost:3030/rw]\n#\nPREFIX lvn: <https://lasvegasnevada.gov/resource/>\nPREFIX : <http://example.org/ontology/>\n\nINSERT DATA {\n    GRAPH <http://example.org/my-graph> {\n\n      << :liz :married :richard  ~  lvn:w1 >> \n        a :marriage ; \n          :hasInterval [:start 1964 ; :end 1974] .\n   \n      << :liz :married :richard  ~  lvn:w2 >> \n        a :marriage ; \n        :hasInterval [:start 1975 ; :end 1976] .\n\n      << :richard :married :liz  ~  lvn:w1 >> a :Marriage .\n      << :richard :married :liz  ~  lvn:w2 >> a :Marriage .\n    }\n}",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "# [endpoint=http://localhost:3030/rw]\n\nPREFIX lvn: <https://lasvegasnevada.gov/resource/>\nPREFIX : <http://example.org/ontology/>\n\nSELECT * FROM <http://example.org/my-graph>\nWHERE {\n  ?s ?p ?o .\n}",
     "metadata": {}
   }
 ]

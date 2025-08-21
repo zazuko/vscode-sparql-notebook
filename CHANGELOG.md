@@ -2,6 +2,9 @@
 
 All notable changes to the "vscode-sparql-notebook" extension will be documented in this file.
 
+## 1.0.7
+- Experimental Feature: The result table renderer now supports Triple Terms as defined in RDF 1.2
+
 ## 1.0.6
 - Feature: Proxy Support
 The SPARQL notebook now uses the `fetch` API provided by VS Code for HTTP queries. This update enables proxy support, which is fully handled by the VS Code `fetch` implementation and works transparently for extensions.
