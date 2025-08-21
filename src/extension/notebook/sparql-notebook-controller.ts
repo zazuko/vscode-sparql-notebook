@@ -111,7 +111,6 @@ export class SparqlNotebookController {
         execution.replaceOutput([
           writeError(errorMessage)
         ]);
-        console.error('SPARQL execution error:', errorMessage);
         execution.end(false, Date.now());
         return;
       });
@@ -126,9 +125,9 @@ export class SparqlNotebookController {
 
     // stardog return a valid query on error
     const expectedMimeType = getAcceptHeader(sparqlQuery.kind);
-    if (queryResult.headers['content-type'] !== expectedMimeType) {
+    if (queryResult.headers['content-type'] && queryResult.headers['content-type'] !== expectedMimeType) {
       execution.replaceOutput([
-        writeError(queryResult.headers['content-type'] === MimeType.json ? JSON.stringify(queryResult.data, null, 2) : queryResult.data)
+        writeError(queryResult.data)
       ]);
       execution.end(false, Date.now());
       return;

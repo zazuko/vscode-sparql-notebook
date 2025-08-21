@@ -47,11 +47,6 @@ class EndpointController {
  */
 export const notebookEndpoint = new EndpointController();
 
-
-
-
-
-
 export interface SimpleHttpResponse {
 
     headers: HttpContentType,
@@ -62,5 +57,5 @@ export interface SimpleHttpResponse {
 }
 
 export interface HttpContentType {
-    "content-type": MimeType
+    "content-type": string
 }

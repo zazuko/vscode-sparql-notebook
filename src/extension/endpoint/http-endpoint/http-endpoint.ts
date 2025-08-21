@@ -74,37 +74,15 @@ export class HttpEndpoint extends Endpoint {
     }
 
     const mimeTypeStr = response.headers.get('content-type') || '';
-    let mimeType: MimeType | undefined;
-    if (mimeTypeStr.includes(MimeType.sparqlResultsJson)) {
-      mimeType = MimeType.sparqlResultsJson;
-    } else if (mimeTypeStr.includes(MimeType.sparqlResultsXml)) {
-      mimeType = MimeType.sparqlResultsXml;
-    } else if (mimeTypeStr.includes(MimeType.turtle)) {
-      mimeType = MimeType.turtle;
-    } else if (mimeTypeStr.includes(MimeType.ntriples)) {
-      mimeType = MimeType.ntriples;
-    } else if (mimeTypeStr.includes(MimeType.ntriples)) {
-      mimeType = MimeType.ntriples;
-    } else if (mimeTypeStr.includes(MimeType.json)) {
-      mimeType = MimeType.json;
-    } else if (mimeTypeStr.includes(MimeType.sparqlResultsCsv)) {
-      mimeType = MimeType.sparqlResultsCsv;
-    } else if (mimeTypeStr.includes(MimeType.sparqlResultsTsv)) {
-      mimeType = MimeType.sparqlResultsTsv;
-    } else {
-      console.warn('Unknown MIME type:', mimeTypeStr);
-      mimeType = undefined;
-    }
 
-    if (mimeType !== acceptContentType) {
-      console.warn(`Content-Type mismatch: expected ${acceptContentType}, got ${mimeType}`);
-    }
 
+
+    console.log('SPARQL query response:', response.status, response.statusText, mimeTypeStr);
     const data = await response.text();
 
 
     const httpResponse: SimpleHttpResponse = {
-      headers: { "content-type": mimeType ?? MimeType.plainText },
+      headers: { "content-type": mimeTypeStr.split(';')[0] },
       data,
       status: response.status,
       statusText: response.statusText
