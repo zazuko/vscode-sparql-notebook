@@ -4,8 +4,7 @@ All notable changes to the "vscode-sparql-notebook" extension will be documented
 
 ## 1.0.6
 - Feature: Proxy Support
-
-The SPARQL notebook now uses `fetch` for HTTP queries. This update enables proxy support, which is fully handled by the provided `fetch` implementation and works transparently for extensions.
+The SPARQL notebook now uses the `fetch` API provided by VS Code for HTTP queries. This update enables proxy support, which is fully handled by the VS Code `fetch` implementation and works transparently for extensions.
 
 ## 1.0.5
 - Feature: Support SPARQL UPDATE queries. They work if the endpoint supports it. But it's not supported by the file endpoint. Support for systems with separate read and write endpoints will be added in the future.
