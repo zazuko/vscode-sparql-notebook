@@ -1,0 +1,8 @@
+[
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "# [endpoint=./rdf-1-2-ex7.ttl]\n\nSELECT ?s ?p ?o WHERE {\n  ?s ?p ?o .\n}",
+    "metadata": {}
+  }
+]
