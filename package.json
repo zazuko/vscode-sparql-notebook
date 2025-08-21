@@ -9,7 +9,7 @@
   "repository": {
     "url": "https://github.com/zazuko/vscode-sparql-notebook.git"
   },
-  "version": "1.0.7",
+  "version": "1.0.8",
   "engines": {
     "vscode": "^1.90.0"
   },
@@ -210,7 +210,7 @@
   "dependencies": {
     "@vscode/webview-ui-toolkit": "^1.4.0",
     "@zazuko/prefixes": "^2.2.0",
-    "oxigraph": "^0.4.4",
+    "oxigraph": "^0.5.0-beta.3 ",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },

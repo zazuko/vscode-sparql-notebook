@@ -2,6 +2,9 @@
 
 All notable changes to the "vscode-sparql-notebook" extension will be documented in this file.
 
+## 1.0.8
+- Experimental Feature: File based SPARQL with RDF 1.2 support
+
 ## 1.0.7
 - Experimental Feature: The result table renderer now supports Triple Terms as defined in RDF 1.2
 
