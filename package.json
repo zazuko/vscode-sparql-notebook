@@ -179,10 +179,9 @@
     "deploy": "npx vsce publish",
     "package": "npx vsce package",
     "build:extension": "esbuild ./src/extension/extension.ts --sourcemap --minify --bundle --platform=node --external:vscode --external:pg-native --outfile=./out/extension.js",
-    "build:webview": "esbuild ./src/webview/index.tsx --sourcemap --minify --bundle --outfile=./out/webview/main-bundle.js",
     "build:renderer": "esbuild ./src/renderer/sparql-result-json.tsx --sourcemap --minify --jsx=automatic --tsconfig=./src/renderer/tsconfig.json --sourcemap --bundle --format=esm --platform=browser --outfile=./out/renderer/sparql-result-json.js",
     "copy:oxigraph": "cp node_modules/oxigraph/node_bg.wasm out/",
-    "esbuild": "npm run build:extension && npm run build:webview && npm run build:renderer"
+    "esbuild": "npm run build:extension && npm run build:renderer"
   },
   "devDependencies": {
     "@types/glob": "^8.1.0",
@@ -208,7 +207,6 @@
     "util": "^0.12.5"
   },
   "dependencies": {
-    "@vscode/webview-ui-toolkit": "^1.4.0",
     "@zazuko/prefixes": "^2.2.0",
     "oxigraph": "^0.5.0-beta.3 ",
     "react": "^18.3.1",
