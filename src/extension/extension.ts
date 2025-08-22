@@ -1,13 +1,13 @@
 import * as vscode from "vscode";
 
 import { SparqlNotebookController } from "./notebook/sparql-notebook-controller";
-import { EndpointConnections } from "./sparql-connection-menu";
+import { EndpointConnectionTreeDataProvider } from "./sparql-connection-menu/endpoint-tree-data-provider.class";
 
 import { SparqlNotebookSerializer } from "./notebook/file-io";
 
 import { deleteConnection } from "./commands/sparql-connection/delete-connection";
 import { addConnection } from "./commands/sparql-connection/add-connection";
-import { connectToDatabase } from "./commands/sparql-connection/connect-to-database";
+import { connectToEndpoint } from "./commands/sparql-connection/connect-to-endpoint";
 
 import { exportToMarkdown } from "./commands/export/export-to-markdown";
 import { addQueryFromFile } from "./commands/code-cell/add-query-from-file";
@@ -44,21 +44,9 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(vscode.notebooks.registerNotebookCellStatusBarItemProvider(extensionId, sparqlNotebookCellStatusBarItemProvider));
 
   // register the connections sidepanel
-  const connectionsSidepanel = new EndpointConnections(context);
+  const connectionsSidepanel = new EndpointConnectionTreeDataProvider(context);
   vscode.window.registerTreeDataProvider(storageKey, connectionsSidepanel);
 
-  // activateFormProvider(context);
-  /*
-   {
-            "type": "webview",
-            "id": "sparql-notebook.connectionForm",
-            "name": "New SPARQL Connection",
-            "contextualTitle": "New Connection",
-            "visibility": "visible"
-          }
-  */
-  // register the commands
-  // connection related commands
   vscode.commands.registerCommand(
     `${extensionId}.deleteConnectionConfiguration`,
     deleteConnection(context, connectionsSidepanel)
@@ -70,9 +58,10 @@ export function activate(context: vscode.ExtensionContext) {
   );
   vscode.commands.registerCommand(
     `${extensionId}.connect`,
-    connectToDatabase(context, connectionsSidepanel, sparqlNotebookCellStatusBarItemProvider)
+    connectToEndpoint(context, connectionsSidepanel, sparqlNotebookCellStatusBarItemProvider)
   );
 
+  // create store from file
   vscode.commands.registerCommand(
     `${extensionId}.createStoreFromFile`,
     createStoreFromFile(sparqlNotebookCellStatusBarItemProvider)
