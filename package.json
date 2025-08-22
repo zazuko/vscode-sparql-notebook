@@ -136,6 +136,10 @@
       {
         "title": "SPARQL Notebook: Use File as Store",
         "command": "sparql-notebook.createStoreFromFile"
+      },
+      {
+        "command": "sparql-notebook.showEndpointEditor",
+        "title": "SPARQL Notebook: Show Endpoint Editor"
       }
     ],
     "viewsContainers": {
@@ -173,15 +177,16 @@
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
-    "compile": "npm run copy:oxigraph &&npm run esbuild",
+    "compile": "npm run clean && npm run copy:oxigraph &&npm run esbuild",
     "lint": "eslint src --ext ts",
-    "watch": "npm run build:extension -- --watch=forever & npm run build:webview -- --watch=forever & npm run build:renderer -- --watch=forever",
     "deploy": "npx vsce publish",
     "package": "npx vsce package",
     "build:extension": "esbuild ./src/extension/extension.ts --sourcemap --minify --bundle --platform=node --external:vscode --external:pg-native --outfile=./out/extension.js",
     "build:renderer": "esbuild ./src/renderer/sparql-result-json.tsx --sourcemap --minify --jsx=automatic --tsconfig=./src/renderer/tsconfig.json --sourcemap --bundle --format=esm --platform=browser --outfile=./out/renderer/sparql-result-json.js",
+    "build:webview": "cd src/webview/endpoint/endpoint-view && npm run build && rm -rf ../../../../out/webview/ && mkdir -p ../../../../out/webview/ && mv dist/endpoint-view ../../../../out/webview/ ",
     "copy:oxigraph": "cp node_modules/oxigraph/node_bg.wasm out/",
-    "esbuild": "npm run build:extension && npm run build:renderer"
+    "esbuild": "npm run build:extension && npm run build:renderer && npm run build:webview",
+    "clean": "rm -rf out/ && mkdir out/"
   },
   "devDependencies": {
     "@types/glob": "^8.1.0",

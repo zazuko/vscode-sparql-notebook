@@ -16,6 +16,7 @@ import { createStoreFromFile } from "./commands/store-from-file/store-from-file"
 import { SparqlNotebookCellStatusBarItemProvider } from './notebook/SparqlNotebookCellStatusBarItemProvider';
 
 import * as path from "path";
+import { EndpointConnectionListItem } from "./sparql-connection-menu/endpoint-connection-list-item.class";
 
 export const extensionId = "sparql-notebook";
 export const storageKey = `${extensionId}-connections`;
@@ -26,6 +27,43 @@ export const storageKey = `${extensionId}-connections`;
  * @param context activate the form provider
  */
 export function activate(context: vscode.ExtensionContext) {
+
+
+  // Register command to show the endpoint editor webview
+  let endpointEditorPanel: vscode.WebviewPanel | undefined;
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
+      `${extensionId}.showEndpointEditor`,
+      () => {
+        if (endpointEditorPanel) {
+          endpointEditorPanel.reveal(vscode.ViewColumn.One);
+          return;
+        }
+        endpointEditorPanel = vscode.window.createWebviewPanel(
+          'endpointEditor',
+          'Endpoint Editor',
+          vscode.ViewColumn.One,
+          {
+            enableScripts: true,
+            localResourceRoots: [
+              vscode.Uri.file(path.join(context.extensionPath, 'out', 'webview', 'endpoint-view', 'browser'))
+            ]
+          }
+        );
+        endpointEditorPanel.webview.html = getWebviewContent(endpointEditorPanel, context.extensionPath);
+        // Send the active connection to the webview after it loads
+        const activeConn = connectionsSidepanel.getActiveConnection && connectionsSidepanel.getActiveConnection();
+        if (activeConn) {
+          setTimeout(() => {
+            endpointEditorPanel?.webview.postMessage({ type: 'active-connection', data: activeConn });
+          }, 100);
+        }
+        endpointEditorPanel.onDidDispose(() => {
+          endpointEditorPanel = undefined;
+        }, null, context.subscriptions);
+      }
+    )
+  );
 
   // register the sparql notebook serializer
   context.subscriptions.push(
@@ -60,6 +98,32 @@ export function activate(context: vscode.ExtensionContext) {
     `${extensionId}.connect`,
     connectToEndpoint(context, connectionsSidepanel, sparqlNotebookCellStatusBarItemProvider)
   );
+
+  // Assuming you have a TreeDataProvider called endpointTreeDataProvider
+  const treeView = vscode.window.createTreeView('sparql-notebook-connections', {
+    treeDataProvider: connectionsSidepanel
+  });
+
+  treeView.onDidChangeSelection(e => {
+    const selected = e.selection[0] as EndpointConnectionListItem | undefined;
+    if (selected) {
+      // Ensure the endpointEditorPanel is shown before posting the message
+      if (!endpointEditorPanel) {
+        vscode.commands.executeCommand(`${extensionId}.showEndpointEditor`).then(() => {
+          // Wait a tick for the panel to be created and shown
+          setTimeout(() => {
+            if (endpointEditorPanel) {
+              endpointEditorPanel.reveal(vscode.ViewColumn.One);
+              endpointEditorPanel.webview.postMessage({ type: 'active-connection', data: selected!.config });
+            }
+          }, 100);
+        });
+      } else {
+        endpointEditorPanel.reveal(vscode.ViewColumn.One);
+        endpointEditorPanel.webview.postMessage({ type: 'active-connection', data: selected!.config });
+      }
+    }
+  });
 
   // create store from file
   vscode.commands.registerCommand(
@@ -169,3 +233,33 @@ export function activate(context: vscode.ExtensionContext) {
 
 // this method is called when your extension is deactivated
 export function deactivate() { }
+
+
+
+// Utility to get webview HTML for Angular app
+function getWebviewContent(panel: vscode.WebviewPanel, extensionPath: string) {
+  const appDistPath = vscode.Uri.file(
+    path.join(extensionPath, 'out', 'webview', 'endpoint-view', 'browser')
+  );
+  const indexHtmlPath = path.join(appDistPath.fsPath, 'index.html');
+  let indexHtml = '';
+  try {
+    indexHtml = require('fs').readFileSync(indexHtmlPath, 'utf8');
+  } catch (e) {
+    return `<html><body><h1>Could not load Angular app</h1><pre>${e}</pre></body></html>`;
+  }
+  // Rewrite local resource URLs to webview URIs
+  indexHtml = indexHtml.replace(/src=\"(.+?)\"/g, (match, src) => {
+    if (src.startsWith('http') || src.startsWith('data:')) return match;
+    const resourceUri = panel.webview.asWebviewUri(vscode.Uri.file(path.join(appDistPath.fsPath, src)));
+    return `src=\"${resourceUri}\"`;
+  });
+  indexHtml = indexHtml.replace(/href=\"(.+?)\"/g, (match, href) => {
+    if (href.startsWith('http') || href.startsWith('data:') || href.startsWith('#')) return match;
+    const resourceUri = panel.webview.asWebviewUri(vscode.Uri.file(path.join(appDistPath.fsPath, href)));
+    return `href=\"${resourceUri}\"`;
+  });
+  return indexHtml;
+}
+
+

@@ -17,7 +17,7 @@
       ],
       "debugWebviews": true,
       "trace": true,
-      "preLaunchTask": "npm: watch"
+      "preLaunchTask": "npm: compile"
     },
     {
       "name": "Run Extension (no server)",
