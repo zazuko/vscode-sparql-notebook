@@ -3,7 +3,7 @@ import * as vscode from "vscode";
 import { storageKey } from "../../extension";
 import { EndpointConnectionTreeDataProvider } from "../../sparql-connection-menu/endpoint-tree-data-provider.class";
 import { EndpointConnectionListItem } from "../../sparql-connection-menu/endpoint-connection-list-item.class";
-import { EndpointConfiguration } from "../../model/endpoint-configuration";
+import { EndpointConfiguration } from "../../model/endpoint-configuration-v1";
 
 export function deleteConnection(context: vscode.ExtensionContext, connectionsSidepanel: EndpointConnectionTreeDataProvider) {
     return async (item: EndpointConnectionListItem) => {

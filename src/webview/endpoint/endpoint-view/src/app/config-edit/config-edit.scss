@@ -1,0 +1,32 @@
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 400px;
+  background: var(--vscode-editor-background);
+  padding: 24px;
+  border-radius: 6px;
+  border: 1px solid var(--vscode-editorWidget-border);
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: var(--vscode-descriptionForeground);
+  font-weight: 500;
+}
+
+input {
+  background: var(--vscode-input-background);
+  color: var(--vscode-input-foreground);
+  border: 1px solid var(--vscode-input-border);
+  border-radius: 3px;
+  padding: 6px 8px;
+  font-size: 1rem;
+  outline: none;
+}
+
+hr {
+  border: 1px solid var(--vscode-editorWidget-border);
+}

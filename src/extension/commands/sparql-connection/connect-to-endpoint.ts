@@ -7,7 +7,8 @@ import { SparqlNotebookCellStatusBarItemProvider } from '../../notebook/SparqlNo
 import { SparqlQuery } from '../../endpoint/model/sparql-query';
 import { EndpointConnectionTreeDataProvider } from '../../sparql-connection-menu/endpoint-tree-data-provider.class';
 import { EndpointConnectionListItem } from '../../sparql-connection-menu/endpoint-connection-list-item.class';
-import { EndpointConfiguration } from '../../model/endpoint-configuration';
+import { EndpointConfigurationV1 } from '../../model/endpoint-configuration-v1';
+import { config } from 'process';
 
 
 /**
@@ -24,43 +25,55 @@ export function connectToEndpoint(
     sparqlNotebookCellStatusBarItemProvider: SparqlNotebookCellStatusBarItemProvider
 ) {
     return async (item?: EndpointConnectionListItem) => {
-        let selectedName = item?.config.name;
+        console.log('connectToEndpoint called with item:', item);
+        let selectedId = item?.config.id;
 
-        if (selectedName === undefined) {
+        if (selectedId === undefined) {
             // no item selected, show quick pick
-            const connectionNameList = context.globalState.get(storageKey, []).map(({ name }) => name);
+            const connections = context.globalState.get<EndpointConfigurationV1[]>(storageKey, []);
+            const quickPickItems = connections.map(({ id, name }) => ({
+                label: name,
+                description: id,
+                id,
+            }));
 
-            const namePicked = await window.showQuickPick(connectionNameList, { ignoreFocusOut: true });
+            const picked = await window.showQuickPick(quickPickItems, {
+                ignoreFocusOut: true,
+                placeHolder: 'Select a SPARQL endpoint connection',
+            });
 
-            if (namePicked === undefined) {
-                window.showErrorMessage(`Invalid endpoint connection name.`);
+            if (!picked) {
+                window.showErrorMessage(`No endpoint connection selected.`);
                 return;
             }
-            selectedName = namePicked;
+            selectedId = picked.id;
         }
 
         // find the connection configuration
-        const endpointConfiguration = context.globalState.get<EndpointConfiguration[]>(storageKey, []).find(connection => connection.name === selectedName);
+        const endpointConfiguration = context.globalState.get<EndpointConfigurationV1[]>(storageKey, []).find(connection => connection.id === selectedId);
 
 
         if (endpointConfiguration === undefined) {
             // connection not found
             window.showErrorMessage(
-                `"${selectedName}" not found. Please add the connection config in the sidebar before connecting.`
+                `"${selectedId}" not found. Please add the connection config in the sidebar before connecting.`
             );
             return;
         }
 
         // get the password from the secret store
-        const passwordFromStore = await context.secrets.get(endpointConfiguration.passwordKey);
+        const passwordFromStore = endpointConfiguration.passwordKey ? await context.secrets.get(endpointConfiguration.passwordKey) : undefined;
         const password = passwordFromStore ?? '';
 
-        const connectionData: EndpointConfiguration = {
+        const connectionData: EndpointConfigurationV1 = {
+            configVersion: 1,
+            id: endpointConfiguration.id,
             name: endpointConfiguration.name,
             endpointURL: endpointConfiguration.endpointURL,
             user: endpointConfiguration.user,
             passwordKey: password,
         };
+
         const testedHttpEndpoint = await testConnectionWithConfiguration(connectionData);
         if (!testedHttpEndpoint) {
             notebookEndpoint.endpoint = null;
@@ -76,9 +89,9 @@ export function connectToEndpoint(
 }
 
 
-async function testConnectionWithConfiguration(config: EndpointConfiguration): Promise<HttpEndpoint | null> {
+async function testConnectionWithConfiguration(config: EndpointConfigurationV1): Promise<HttpEndpoint | null> {
     try {
-        const endpoint = new HttpEndpoint(config.endpointURL, config.user, config.passwordKey);
+        const endpoint = new HttpEndpoint(config.endpointURL, config.user ?? '', config.passwordKey ?? '');
 
         const result = await endpoint.query(new SparqlQuery("SELECT * WHERE {?s ?p ?o.} LIMIT 1"));
         if (!result || result.status !== 200) {

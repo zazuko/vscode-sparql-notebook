@@ -17,6 +17,8 @@ import { SparqlNotebookCellStatusBarItemProvider } from './notebook/SparqlNotebo
 
 import * as path from "path";
 import { EndpointConnectionListItem } from "./sparql-connection-menu/endpoint-connection-list-item.class";
+import { EndpointConfigurationV1, EndpointConfigurationV1WithPassword, migrateEndpointConfigurationsToV1, migratePassword } from './model/endpoint-configuration-v1';
+import { EndpointConfiguration } from "./model/endpoint-configuration";
 
 export const extensionId = "sparql-notebook";
 export const storageKey = `${extensionId}-connections`;
@@ -26,8 +28,16 @@ export const storageKey = `${extensionId}-connections`;
  * 
  * @param context activate the form provider
  */
-export function activate(context: vscode.ExtensionContext) {
-
+export async function activate(context: vscode.ExtensionContext) {
+  // Migrate endpoint configs at startup
+  const configs = context.globalState.get<(EndpointConfiguration | EndpointConfigurationV1)[]>(storageKey, []);
+  const oldConfigs = configs.filter(cfg => (cfg as EndpointConfigurationV1).configVersion === undefined);
+  const newConfigs = configs.filter(cfg => (cfg as EndpointConfigurationV1).configVersion === 1);
+  if (oldConfigs.length) {
+    console.log(`Migrating ${oldConfigs.length} old endpoint configurations to v1...`);
+    const migratedConfigs = await migrateEndpointConfigurationsToV1(oldConfigs, context);
+    context.globalState.update(storageKey, [...migratedConfigs, ...newConfigs]);
+  }
 
   // Register command to show the endpoint editor webview
   let endpointEditorPanel: vscode.WebviewPanel | undefined;
@@ -52,18 +62,135 @@ export function activate(context: vscode.ExtensionContext) {
         );
         endpointEditorPanel.webview.html = getWebviewContent(endpointEditorPanel, context.extensionPath);
         // Send the active connection to the webview after it loads
-        const activeConn = connectionsSidepanel.getActiveConnection && connectionsSidepanel.getActiveConnection();
+        const activeConn = connectionsSidepanel.getActiveConnection();
         if (activeConn) {
           setTimeout(() => {
+            // reconnect to this new connection
+            connectToEndpoint(context, connectionsSidepanel, sparqlNotebookCellStatusBarItemProvider)
             endpointEditorPanel?.webview.postMessage({ type: 'active-connection', data: activeConn });
           }, 100);
         }
         endpointEditorPanel.onDidDispose(() => {
           endpointEditorPanel = undefined;
         }, null, context.subscriptions);
+
+        // Register the webview message handler here so it is always attached to the correct panel
+        endpointEditorPanel.webview.onDidReceiveMessage(async (message) => {
+          console.log('Webview message received:', message);
+          if (message.type === 'update-connection') {
+            const updatedConfig = message.data as Partial<EndpointConfigurationV1WithPassword>; // The updated config sent from the webview
+            console.log('Received updated config from webview:', updatedConfig);
+
+            // 1. Load all configs from storage
+            const configs = context.globalState.get<EndpointConfigurationV1[]>(storageKey, []);
+
+            // 2. Find and update the matching config (by id)
+            const idx = configs.findIndex(cfg => cfg.id === updatedConfig.id);
+            if (idx !== -1) {
+              const didPasswordChange = 'password' in updatedConfig;
+              const didUpdatePasswordChange = 'updatePassword' in updatedConfig;
+              const didQleverUpdateTokenChange = 'qleverUpdateToken' in updatedConfig;
+              configs[idx] = { ...configs[idx], ...updatedConfig };
+
+              if (didPasswordChange) {
+                const password = updatedConfig.password;
+                const passwordKey = `${extensionId}.${updatedConfig.id}`;
+                if (updatedConfig.id && password !== undefined) {
+                  await context.secrets.store(passwordKey, password);
+                }
+              }
+              if (didUpdatePasswordChange) {
+                const updatePassword = updatedConfig.updatePassword;
+                const updatePasswordKey = `${extensionId}.${updatedConfig.id}.updatePassword`;
+                if (updatedConfig.id && updatePassword !== undefined) {
+                  await context.secrets.store(updatePasswordKey, updatePassword);
+                }
+              }
+              if (didQleverUpdateTokenChange) {
+                const qleverUpdateToken = updatedConfig.qleverUpdateToken;
+                const qleverUpdateTokenKey = `${extensionId}.${updatedConfig.id}.qleverUpdateToken`;
+                if (updatedConfig.id && qleverUpdateToken !== undefined) {
+                  await context.secrets.store(qleverUpdateTokenKey, qleverUpdateToken);
+                }
+              }
+
+              // 3. Save back to storage
+              await context.globalState.update(storageKey, configs);
+              // 4. Optionally, refresh your UI
+              connectionsSidepanel.refresh();
+              setTimeout(() => {
+                // 1. Load all configs from storage
+                const configs = context.globalState.get<EndpointConfigurationV1[]>(storageKey, []);
+
+                // 2. Find and update the matching config (by id)
+                const idx = configs.findIndex(cfg => cfg.id === updatedConfig.id);
+                const activeConn = configs[idx];
+                if (activeConn) {
+                  connectionsSidepanel.setActive(activeConn.id)
+                  const item = new EndpointConnectionListItem(activeConn, true, vscode.TreeItemCollapsibleState.None);
+
+                  connectToEndpoint(context, connectionsSidepanel, sparqlNotebookCellStatusBarItemProvider)(item);
+                  endpointEditorPanel?.webview.postMessage({ type: 'active-connection', data: activeConn });
+                }
+              }, 100);
+            }
+          }
+        });
+      }))
+
+  if (endpointEditorPanel) {
+    endpointEditorPanel.webview.onDidReceiveMessage(async (message) => {
+      console.log('Webview message received:', message);
+      if (message.type === 'update-connection') {
+        const updatedConfig = message.data as Partial<EndpointConfigurationV1WithPassword>; // The updated config sent from the webview
+        console.log('Received updated config from webview:', updatedConfig);
+
+        // 1. Load all configs from storage
+        const configs = context.globalState.get<EndpointConfigurationV1[]>(storageKey, []);
+
+        // 2. Find and update the matching config (by id)
+        const idx = configs.findIndex(cfg => cfg.id === updatedConfig.id);
+        if (idx !== -1) {
+          const didPasswordChange = 'password' in updatedConfig;
+          const didUpdatePasswordChange = 'updatePassword' in updatedConfig;
+          const didQleverUpdateTokenChange = 'qleverUpdateToken' in updatedConfig;
+          configs[idx] = { ...configs[idx], ...updatedConfig };
+
+          if (didPasswordChange) {
+            const password = updatedConfig.password;
+            const passwordKey = `${extensionId}.${updatedConfig.id}`;
+            if (updatedConfig.id && password !== undefined) {
+              await context.secrets.store(passwordKey, password);
+            }
+          }
+          if (didUpdatePasswordChange) {
+            const updatePassword = updatedConfig.updatePassword;
+            const updatePasswordKey = `${extensionId}.${updatedConfig.id}.updatePassword`;
+            if (updatedConfig.id && updatePassword !== undefined) {
+              await context.secrets.store(updatePasswordKey, updatePassword);
+            }
+          }
+          if (didQleverUpdateTokenChange) {
+            const qleverUpdateToken = updatedConfig.qleverUpdateToken;
+            const qleverUpdateTokenKey = `${extensionId}.${updatedConfig.id}.qleverUpdateToken`;
+            if (updatedConfig.id && qleverUpdateToken !== undefined) {
+              await context.secrets.store(qleverUpdateTokenKey, qleverUpdateToken);
+            }
+          }
+
+          // 3. Save back to storage
+
+          await context.globalState.update(storageKey, configs);
+          // 4. Optionally, refresh your UI
+          connectionsSidepanel.refresh();
+        }
       }
-    )
-  );
+    });
+  }
+
+
+
+
 
   // register the sparql notebook serializer
   context.subscriptions.push(

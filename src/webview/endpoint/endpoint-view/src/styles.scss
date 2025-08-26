@@ -1,1 +1,23 @@
-/* You can add global styles to this file, and also import other style files */
+button {
+  background: var(--vscode-button-background);
+  color: var(--vscode-button-foreground);
+  border: 1px solid var(--vscode-button-border);
+  border-radius: 3px;
+  padding: 6px 12px;
+  font-size: 1rem;
+  cursor: pointer;
+  outline: none;
+}
+
+button:hover {
+  background: var(--vscode-button-hoverBackground);
+}
+
+
+button:disabled {
+  background: var(--vscode-button-disabledBackground);
+  color: var(--vscode-button-disabledForeground);
+  border-color: var(--vscode-button-disabledBorder);
+  cursor: not-allowed;
+  opacity: 0.7;
+}

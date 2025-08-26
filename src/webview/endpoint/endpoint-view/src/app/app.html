@@ -4,6 +4,8 @@
     {{ connectionService.connection()?.name || 'No Connection' }}
   </h1>
 </header>
+
+@if (!showEditForm()) {
 <section style="margin: 24px 0;">
   <dl style="display: grid; grid-template-columns: max-content 1fr; gap: 6px 16px; align-items: center;">
     <dt style="font-weight: 500; color: var(--vscode-descriptionForeground);">Endpoint URL:</dt>
@@ -15,5 +17,21 @@
     <dd style="margin: 0; color: var(--vscode-editor-foreground);">{{ connectionService.connection()?.user }}</dd>
     }
   </dl>
+  @if (connectionService.connection()?.isQLever) {
+  <div style="grid-column: 1 / -1; color: var(--vscode-editor-foreground); margin-top: 8px;">
+    <span style="font-weight: 500;">QLever configuration detected</span>
+  </div>
+  } @else {
+  <div style="grid-column: 1 / -1; color: var(--vscode-editor-foreground); margin-top: 8px;">
+    <span style="font-weight: 500;">Not a QLever configuration</span>
+  </div>
+  }
 </section>
+<button type="button" (click)="openEditForm()" style="margin-left: 16px;">Edit</button>
+
+} @else {
+<app-config-edit [config]="connectionService.connection()!" (onCancel)="closeEditForm()"
+  (onSave)="saveEditForm($event)" />
+}
+
 <pre>{{ connectionService.connection() | json }}</pre>

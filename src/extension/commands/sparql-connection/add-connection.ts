@@ -2,7 +2,8 @@ import * as vscode from "vscode";
 
 import { extensionId, storageKey } from "../../extension";
 import { EndpointConnectionTreeDataProvider } from "../../sparql-connection-menu/endpoint-tree-data-provider.class";
-import { EndpointConfiguration } from "../../model/endpoint-configuration";
+import { EndpointConfigurationV1 } from "../../model/endpoint-configuration-v1";
+import { randomUUID } from "crypto";
 
 /**
  * Create a new SPARQL endpoint connection.
@@ -43,7 +44,9 @@ export function addConnection(
         await context.secrets.store(passwordKey, password || "");
 
         // create the connection configuration
-        const config: EndpointConfiguration = {
+        const config: EndpointConfigurationV1 = {
+            id: randomUUID(),
+            configVersion: 1,
             name: displayName,
             endpointURL: endpointURL || "",
             user: user ?? "",
@@ -52,7 +55,7 @@ export function addConnection(
 
         // get existing connections
         const existing = context.globalState
-            .get<EndpointConfiguration[]>(storageKey, [])
+            .get<EndpointConfigurationV1[]>(storageKey, [])
             .filter(({ name }) => name !== displayName);
         existing.push(config);
 

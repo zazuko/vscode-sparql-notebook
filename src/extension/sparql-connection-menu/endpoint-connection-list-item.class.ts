@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import * as path from "path";
-import { EndpointConfiguration } from "../model/endpoint-configuration";
+import { EndpointConfiguration } from "../model/endpoint-configuration-v1";
 
 
 export class EndpointConnectionListItem extends vscode.TreeItem {

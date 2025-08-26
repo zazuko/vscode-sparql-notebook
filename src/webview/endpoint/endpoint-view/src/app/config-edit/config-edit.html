@@ -1,0 +1,132 @@
+<section style="margin: 24px 0;">
+  <form [formGroup]="form" class="flex flex-col gap-4 p-4">
+    <fieldset>
+      <legend>Read Endpoint</legend>
+      <div style="display: flex; flex-direction: column; gap: 16px;">
+        <label>
+          Name
+          <input type="text" formControlName="name">
+          @if (form.get('name')?.touched && form.get('name')?.invalid) {
+          <span style="color: var(--vscode-editorError-foreground); font-size: 0.95em;">
+            Name is required.
+          </span>
+          }
+        </label>
+        <label>
+          Endpoint URL
+          <input type="text" formControlName="endpointURL">
+          @if (form.get('endpointURL')?.touched && form.get('endpointURL')?.invalid) {
+          <span style="color: var(--vscode-editorError-foreground); font-size: 0.95em;">
+            Endpoint URL is required.
+          </span>
+          }
+        </label>
+        <label>
+          Username
+          <input type="text" formControlName="user">
+        </label>
+        <label>
+          Password
+          @if(showPasswordInput()) {
+          <input type="password" formControlName="password" autofocus>
+          } @else {
+          <input type="password" value="********" (click)="showPasswordInput.set(true)">
+          }
+        </label>
+        <label>
+          Is this a QLever store?
+          <input type="checkbox" formControlName="isQLever">
+
+        </label>
+      </div>
+    </fieldset>
+
+    @if (hasUpdateEndpoint() || addEndpoint()) {
+    @if (isQLever()) {
+    <fieldset>
+      <legend>Write Endpoint</legend>
+      <div style="display: flex; flex-direction: column; gap: 16px;">
+        <label>
+          Access Token
+          @if(showQleverUpdateToken()) {
+          <input type="password" formControlName="qleverUpdateToken" autofocus>
+          @if (form.get('qleverUpdateToken')?.touched && form.get('qleverUpdateToken')?.invalid) {
+          <span style="color: var(--vscode-editorError-foreground); font-size: 0.95em;">
+            Access Token is required.
+          </span>
+          }
+          } @else {
+          <input type="password" value="********" (click)="showQleverUpdateToken.set(true)">
+          }
+
+        </label>
+        <button type="button" (click)="removeWriteEndpoint()" class="self-start">
+          Remove Write Endpoint
+        </button>
+      </div>
+    </fieldset>
+    } @else {
+    <fieldset>
+      <legend>Write Endpoint</legend>
+      <div style="display: flex; flex-direction: column; gap: 16px;">
+        <label>
+          Endpoint URL
+          <input type="text" formControlName="updateEndpointURL">
+        </label>
+        <label>
+          Username
+          <input type="text" formControlName="updateUser">
+        </label>
+        <label>
+          Password
+          @if(showUpdatePassword()) {
+          <input type="password" formControlName="updatePassword" autofocus>
+          } @else {
+          <input type="password" value="********" (click)="showUpdatePassword.set(true)">
+          }
+        </label>
+        <button type="button" (click)="removeWriteEndpoint()" class="self-start">
+          Remove Write Endpoint
+        </button>
+      </div>
+    </fieldset>
+    }
+    } @else {
+    <div>
+      No write endpoint configured
+      <button type="button" (click)="addWriteEndpoint()">
+        Add Write Endpoint
+      </button>
+    </div>
+    }
+    <div class="flex gap-2 mt-4">
+      <button type="submit" [disabled]="form.invalid || !form.touched" (click)="saveConfig()">
+        Save
+      </button>
+      <button type="button" (click)="cancelEdit()">
+        Cancel
+      </button>
+    </div>
+
+
+    <!-- Debug -->
+    <div>form valid: {{form.valid}}</div>
+    <div>touched: {{form.touched}}</div>
+    <div>disabled: {{form.invalid || !form.touched}}</div>
+    <!-- Error Summary (outside form)     -->
+    @if(form.valid === false ) {
+    <div class="error-summary">
+      <h3>Form Errors:</h3>
+      <ul>
+        @for(err of getFormValidationErrors(); track err.error) {
+        <li>{{ err.error }}</li>
+        }
+      </ul>
+    </div>
+    }
+
+
+    <div>is Qlever mode {{isQLever()}}</div>
+    <pre class="bg-gray-50 p-2 rounded text-xs">{{ form.value | json }}</pre>
+  </form>
+</section>
