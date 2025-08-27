@@ -21,6 +21,8 @@ export class Connection {
     window.addEventListener('message', (event) => {
       if (event.data?.type === 'active-connection') {
         this.#connection.set(event.data.data as EndpointConfigurationV1);
+      } else if (event.data?.type === 'new-connection') {
+        this.#connection.set(event.data.data as EndpointConfigurationV1);
       }
     });
   }

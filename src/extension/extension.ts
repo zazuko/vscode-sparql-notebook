@@ -41,6 +41,11 @@ export async function activate(context: vscode.ExtensionContext) {
 
   // Register command to show the endpoint editor webview
   let endpointEditorPanel: vscode.WebviewPanel | undefined;
+
+  // Getter for the current endpointEditorPanel
+  function getEndpointEditorPanel() {
+    return endpointEditorPanel;
+  }
   context.subscriptions.push(
     vscode.commands.registerCommand(
       `${extensionId}.showEndpointEditor`,
@@ -85,7 +90,13 @@ export async function activate(context: vscode.ExtensionContext) {
             const configs = context.globalState.get<EndpointConfigurationV1[]>(storageKey, []);
 
             // 2. Find and update the matching config (by id)
-            const idx = configs.findIndex(cfg => cfg.id === updatedConfig.id);
+            let idx = configs.findIndex(cfg => cfg.id === updatedConfig.id);
+            if (idx === -1) {
+              console.log('No matching config found for update:, it is new connection');
+              configs.push(updatedConfig as EndpointConfigurationV1);
+              // set idx to the new config's index
+              idx = configs.length - 1;
+            }
             if (idx !== -1) {
               const didPasswordChange = 'password' in updatedConfig;
               const didUpdatePasswordChange = 'updatePassword' in updatedConfig;
@@ -180,7 +191,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
   vscode.commands.registerCommand(
     `${extensionId}.addNewConnectionConfiguration`,
-    addConnection(context, connectionsSidepanel)
+    addConnection(context, connectionsSidepanel, getEndpointEditorPanel)
   );
   vscode.commands.registerCommand(
     `${extensionId}.connect`,

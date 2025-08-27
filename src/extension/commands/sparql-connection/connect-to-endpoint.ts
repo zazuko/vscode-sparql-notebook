@@ -79,7 +79,7 @@ export function connectToEndpoint(
             connectionsSidepanel.setActive(null);
         } else {
             notebookEndpoint.endpoint = testedHttpEndpoint;
-            connectionsSidepanel.setActive(connectionData.name);
+            connectionsSidepanel.setActive(connectionData.id);
             window.showInformationMessage(`Successfully connected to "${connectionData.name}"`);
         }
         // update the status bar of all SPARQL notebook cells
