@@ -8,7 +8,6 @@ import { SparqlQuery } from '../../endpoint/model/sparql-query';
 import { EndpointConnectionTreeDataProvider } from '../../sparql-connection-menu/endpoint-tree-data-provider.class';
 import { EndpointConnectionListItem } from '../../sparql-connection-menu/endpoint-connection-list-item.class';
 import { EndpointConfigurationV1 } from '../../model/endpoint-configuration-v1';
-import { config } from 'process';
 
 
 /**

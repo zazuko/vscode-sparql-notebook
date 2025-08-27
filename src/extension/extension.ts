@@ -98,6 +98,10 @@ export async function activate(context: vscode.ExtensionContext) {
                 if (updatedConfig.id && password !== undefined) {
                   await context.secrets.store(passwordKey, password);
                 }
+                // remove the password from updatedConfig because it's stored in the secret store
+                delete (configs[idx] as Partial<EndpointConfigurationV1WithPassword>).password;
+                console.log('Password updated in secret store');
+                console.log('Updated config after password change:', updatedConfig);
               }
               if (didUpdatePasswordChange) {
                 const updatePassword = updatedConfig.updatePassword;
@@ -105,6 +109,8 @@ export async function activate(context: vscode.ExtensionContext) {
                 if (updatedConfig.id && updatePassword !== undefined) {
                   await context.secrets.store(updatePasswordKey, updatePassword);
                 }
+                // remove the updatePassword from updatedConfig because it's stored in the secret store
+                delete (configs[idx] as Partial<EndpointConfigurationV1WithPassword>).updatePassword;
               }
               if (didQleverUpdateTokenChange) {
                 const qleverUpdateToken = updatedConfig.qleverUpdateToken;
@@ -112,6 +118,8 @@ export async function activate(context: vscode.ExtensionContext) {
                 if (updatedConfig.id && qleverUpdateToken !== undefined) {
                   await context.secrets.store(qleverUpdateTokenKey, qleverUpdateToken);
                 }
+                // remove the qleverUpdateToken from updatedConfig because it's stored in the secret store
+                delete (configs[idx] as Partial<EndpointConfigurationV1WithPassword>).qleverUpdateToken;
               }
 
               // 3. Save back to storage
@@ -138,55 +146,8 @@ export async function activate(context: vscode.ExtensionContext) {
         });
       }))
 
-  if (endpointEditorPanel) {
-    endpointEditorPanel.webview.onDidReceiveMessage(async (message) => {
-      console.log('Webview message received:', message);
-      if (message.type === 'update-connection') {
-        const updatedConfig = message.data as Partial<EndpointConfigurationV1WithPassword>; // The updated config sent from the webview
-        console.log('Received updated config from webview:', updatedConfig);
 
-        // 1. Load all configs from storage
-        const configs = context.globalState.get<EndpointConfigurationV1[]>(storageKey, []);
 
-        // 2. Find and update the matching config (by id)
-        const idx = configs.findIndex(cfg => cfg.id === updatedConfig.id);
-        if (idx !== -1) {
-          const didPasswordChange = 'password' in updatedConfig;
-          const didUpdatePasswordChange = 'updatePassword' in updatedConfig;
-          const didQleverUpdateTokenChange = 'qleverUpdateToken' in updatedConfig;
-          configs[idx] = { ...configs[idx], ...updatedConfig };
-
-          if (didPasswordChange) {
-            const password = updatedConfig.password;
-            const passwordKey = `${extensionId}.${updatedConfig.id}`;
-            if (updatedConfig.id && password !== undefined) {
-              await context.secrets.store(passwordKey, password);
-            }
-          }
-          if (didUpdatePasswordChange) {
-            const updatePassword = updatedConfig.updatePassword;
-            const updatePasswordKey = `${extensionId}.${updatedConfig.id}.updatePassword`;
-            if (updatedConfig.id && updatePassword !== undefined) {
-              await context.secrets.store(updatePasswordKey, updatePassword);
-            }
-          }
-          if (didQleverUpdateTokenChange) {
-            const qleverUpdateToken = updatedConfig.qleverUpdateToken;
-            const qleverUpdateTokenKey = `${extensionId}.${updatedConfig.id}.qleverUpdateToken`;
-            if (updatedConfig.id && qleverUpdateToken !== undefined) {
-              await context.secrets.store(qleverUpdateTokenKey, qleverUpdateToken);
-            }
-          }
-
-          // 3. Save back to storage
-
-          await context.globalState.update(storageKey, configs);
-          // 4. Optionally, refresh your UI
-          connectionsSidepanel.refresh();
-        }
-      }
-    });
-  }
 
 
 
