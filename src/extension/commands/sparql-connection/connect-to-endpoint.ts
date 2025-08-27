@@ -8,6 +8,7 @@ import { SparqlQuery } from '../../endpoint/model/sparql-query';
 import { EndpointConnectionTreeDataProvider } from '../../sparql-connection-menu/endpoint-tree-data-provider.class';
 import { EndpointConnectionListItem } from '../../sparql-connection-menu/endpoint-connection-list-item.class';
 import { EndpointConfigurationV1 } from '../../model/endpoint-configuration-v1';
+import { endpointFactory } from '../../endpoint/endpoint-factory';
 
 
 /**
@@ -60,27 +61,19 @@ export function connectToEndpoint(
             return;
         }
 
-        // get the password from the secret store
-        const passwordFromStore = endpointConfiguration.passwordKey ? await context.secrets.get(endpointConfiguration.passwordKey) : undefined;
-        const password = passwordFromStore ?? '';
 
-        const connectionData: EndpointConfigurationV1 = {
-            configVersion: 1,
-            id: endpointConfiguration.id,
-            name: endpointConfiguration.name,
-            endpointURL: endpointConfiguration.endpointURL,
-            user: endpointConfiguration.user,
-            passwordKey: password,
-        };
 
-        const testedHttpEndpoint = await testConnectionWithConfiguration(connectionData);
-        if (!testedHttpEndpoint) {
+        const readEndpoint = await endpointFactory.createReadOnlyEndpoint(endpointConfiguration, context);
+
+        if (readEndpoint === null) {
             notebookEndpoint.endpoint = null;
             connectionsSidepanel.setActive(null);
         } else {
+            const testedHttpEndpoint = await testConnectionWithConfiguration(readEndpoint, endpointConfiguration);
             notebookEndpoint.endpoint = testedHttpEndpoint;
-            connectionsSidepanel.setActive(connectionData.id);
-            window.showInformationMessage(`Successfully connected to "${connectionData.name}"`);
+            connectionsSidepanel.setActive(endpointConfiguration.id);
+            notebookEndpoint.endpoint = await endpointFactory.createUpdateEndpoint(endpointConfiguration, context);
+            window.showInformationMessage(`Successfully connected to "${endpointConfiguration.name}"`);
         }
         // update the status bar of all SPARQL notebook cells
         sparqlNotebookCellStatusBarItemProvider.updateCellStatusBarItems();
@@ -88,14 +81,12 @@ export function connectToEndpoint(
 }
 
 
-async function testConnectionWithConfiguration(config: EndpointConfigurationV1): Promise<HttpEndpoint | null> {
+async function testConnectionWithConfiguration(endpoint: HttpEndpoint, config: EndpointConfigurationV1): Promise<HttpEndpoint | null> {
     try {
-        const endpoint = new HttpEndpoint(config.endpointURL, config.user ?? '', config.passwordKey ?? '');
-
         const result = await endpoint.query(new SparqlQuery("SELECT * WHERE {?s ?p ?o.} LIMIT 1"));
         if (!result || result.status !== 200) {
             window.showErrorMessage(
-                `Failed to connect to "${config.name}". HTTP status: ${result?.status} ${result?.statusText ?? ''}`
+                `Failed to connect to "${config.endpointURL}". HTTP status: ${result?.status} ${result?.statusText ?? ''}`
             );
             return null;
         }

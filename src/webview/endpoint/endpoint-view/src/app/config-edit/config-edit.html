@@ -47,6 +47,10 @@
       <legend>Write Endpoint</legend>
       <div style="display: flex; flex-direction: column; gap: 16px;">
         <label>
+          Endpoint URL
+          <input type="text" formControlName="updateEndpointURL">
+        </label>
+        <label>
           Access Token
           @if(showQleverUpdateToken()) {
           <input type="password" formControlName="qleverUpdateToken" autofocus>

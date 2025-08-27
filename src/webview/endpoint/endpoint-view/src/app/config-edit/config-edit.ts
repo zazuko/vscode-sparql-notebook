@@ -94,6 +94,7 @@ export class ConfigEdit {
           touched[key] = control.value;
         }
       });
+      console.log('touched', touched);
       const newConfig = { ...config, ...touched };
       this.onSave.emit(newConfig);
     }
@@ -103,7 +104,7 @@ export class ConfigEdit {
   updateFormValidatorsAndValues(validatorMode: 'NoUpdateEndpoint' | 'QleverUpdateEndpoint' | 'DefaultUpdateEndpoint', addEndpoint: boolean): void {
     if (validatorMode === 'QleverUpdateEndpoint') {
       this.form.controls.qleverUpdateToken.setValidators([Validators.required]);
-      this.form.controls.updateEndpointURL.clearValidators();
+      this.form.controls.updateEndpointURL.setValidators([Validators.required]);
       this.form.controls.updateUser.clearValidators();
       this.form.controls.updatePassword.clearValidators();
       if (addEndpoint) {
@@ -113,6 +114,7 @@ export class ConfigEdit {
           updatePassword: '',
           qleverUpdateToken: ''
         });
+        this.form.controls['updateEndpointURL'].markAsTouched();
       }
     } else if (validatorMode === 'DefaultUpdateEndpoint') {
       this.form.controls.qleverUpdateToken.clearValidators();
@@ -126,6 +128,8 @@ export class ConfigEdit {
           updatePassword: '',
           qleverUpdateToken: ''
         });
+        this.form.controls['updateEndpointURL'].markAsTouched();
+        this.form.controls['updateUser'].markAsTouched();
       }
     } else if (validatorMode === 'NoUpdateEndpoint') {
       this.form.controls.qleverUpdateToken.clearValidators();
@@ -139,7 +143,11 @@ export class ConfigEdit {
           updatePassword: '',
           qleverUpdateToken: ''
         });
+        this.form.controls['qleverUpdateToken'].markAsTouched();
+        this.form.controls['updateEndpointURL'].markAsTouched();
+        this.form.controls['updateUser'].markAsTouched();
       }
+
     }
 
   }

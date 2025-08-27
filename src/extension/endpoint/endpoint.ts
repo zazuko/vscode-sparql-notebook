@@ -1,4 +1,3 @@
-import { MimeType } from "../const/enum/mime-type";
 import { SparqlQuery } from "./model/sparql-query";
 
 /**
@@ -10,6 +9,7 @@ import { SparqlQuery } from "./model/sparql-query";
 export abstract class Endpoint {
     public abstract url: string;
     abstract query(sparqlQuery: SparqlQuery, execution?: any): Promise<SimpleHttpResponse> | never;
+    abstract readonly isQLeverEndpoint: boolean;
 }
 
 /**
@@ -17,7 +17,8 @@ export abstract class Endpoint {
  * 
  */
 class EndpointController {
-    private _endpoint: Endpoint | null = null;
+    #endpoint: Endpoint | null = null;
+    #updateEndpoint: Endpoint | null = null;
 
     constructor() { }
 
@@ -27,17 +28,34 @@ class EndpointController {
      * @return The current endpoint or null if no endpoint is set.
      */
     get endpoint(): Endpoint | null {
-        return this._endpoint;
+        return this.#endpoint;
     }
 
     /**
-     * Setter for the endpoint.
+     * Getter for the update endpoint.
+     */
+    get updateEndpoint(): Endpoint | null {
+        return this.#updateEndpoint;
+    }
+
+    /**
+     * Setter for the update endpoint.
      * 
      * @param endpoint The endpoint to set or null to unset the endpoint.
      * 
      */
     set endpoint(endpoint: Endpoint | null) {
-        this._endpoint = endpoint;
+        this.#endpoint = endpoint;
+    }
+
+    /**
+     * Setter for the update endpoint.
+     * 
+     * @param endpoint The endpoint to set or null to unset the endpoint.
+     * 
+     */
+    set updateEndpoint(endpoint: Endpoint | null) {
+        this.#updateEndpoint = endpoint;
     }
 }
 

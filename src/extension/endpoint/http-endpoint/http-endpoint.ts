@@ -7,9 +7,10 @@ import { MimeType } from '../../const/enum/mime-type';
  * Represents an HTTP SPARQL endpoint.
  */
 export class HttpEndpoint extends Endpoint {
-  private _url: string;
-  private _user: string;
-  private _password: string;
+  #url: string;
+  #user: string;
+  #password: string;
+  readonly isQLeverEndpoint: boolean;
 
   /**
    * Creates a new instance of the HttpEndpoint class.
@@ -17,15 +18,16 @@ export class HttpEndpoint extends Endpoint {
    * @param user - The username for authentication.
    * @param password - The password for authentication.
    */
-  constructor(endpointUrl: string, user: string, password: string) {
+  constructor(endpointUrl: string, user: string, password: string, isQLever: boolean = false) {
     super();
-    this._url = endpointUrl;
-    this._user = user;
-    this._password = password;
+    this.#url = endpointUrl;
+    this.#user = user;
+    this.#password = password;
+    this.isQLeverEndpoint = isQLever;
   }
 
   get url(): string {
-    return this._url;
+    return this.#url;
   }
 
   /**
@@ -43,9 +45,14 @@ export class HttpEndpoint extends Endpoint {
       Accept: acceptContentType,
     };
 
+    // QLever specific headers
+    if (sparqlQuery.isUpdateQuery() && this.isQLeverEndpoint) {
+      headers['Authorization'] = `Bearer ${this.#password}`;
+    }
+
     // Basic Auth if needed
-    if (this._user && this._password) {
-      const encoded = Buffer.from(`${this._user}:${this._password}`).toString('base64');
+    if (this.#user && this.#password) {
+      const encoded = Buffer.from(`${this.#user}:${this.#password}`).toString('base64');
       headers['Authorization'] = `Basic ${encoded}`;
     }
 
@@ -56,11 +63,11 @@ export class HttpEndpoint extends Endpoint {
       });
     }
 
-    console.log('Executing SPARQL query (fetch):', { url: this._url, headers });
+    console.log('Executing SPARQL query (fetch):', { url: this.#url, headers });
 
     let response: Response;
     try {
-      response = await fetch(this._url, {
+      response = await fetch(this.#url, {
         method: 'POST',
         headers,
         body: sparqlQuery.queryString,
@@ -79,6 +86,19 @@ export class HttpEndpoint extends Endpoint {
 
     console.log('SPARQL query response:', response.status, response.statusText, mimeTypeStr);
     const data = await response.text();
+
+    if (this.isQLeverEndpoint && sparqlQuery.isUpdateQuery() && response.status === 200) {
+
+      const json = JSON.parse(data);
+      const httpResponse: SimpleHttpResponse = {
+        headers: { "content-type": MimeType.plainText },
+        data: 'experimental',
+        status: response.status,
+        statusText: response.statusText
+      };
+      return httpResponse;
+
+    }
 
 
     const httpResponse: SimpleHttpResponse = {

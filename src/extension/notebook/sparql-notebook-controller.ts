@@ -125,7 +125,7 @@ export class SparqlNotebookController {
 
     // stardog return a valid query on error
     const expectedMimeType = getAcceptHeader(sparqlQuery.kind);
-    if (queryResult.headers['content-type'] && queryResult.headers['content-type'] !== expectedMimeType) {
+    if (queryResult.headers['content-type'] && queryResult.headers['content-type'] !== expectedMimeType && !sparqlEndpoint.isQLeverEndpoint) {
       execution.replaceOutput([
         writeError(queryResult.data)
       ]);
