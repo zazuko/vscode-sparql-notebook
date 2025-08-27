@@ -1,14 +1,20 @@
 [
   {
-    "kind": 2,
-    "language": "sparql",
-    "value": "# [endpoint=http://localhost:7001]\n\nSELECT ?s ?p ?o\nWHERE {\n  ?s ?p ?o\n} LIMIT 10",
+    "kind": 1,
+    "language": "markdown",
+    "value": "# QLever Tests",
     "metadata": {}
   },
   {
     "kind": 2,
     "language": "sparql",
-    "value": "\nSELECT ?s ?p ?o\nWHERE {\n  ?s ?p ?o\n} LIMIT 10",
+    "value": "SELECT DISTINCT ?g WHERE {\n    GRAPH ?g { ?s ?p ?o }\n}",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "SELECT ?s ?p ?o WHERE {\n    ?s ?p ?o\n}",
     "metadata": {}
   }
 ]

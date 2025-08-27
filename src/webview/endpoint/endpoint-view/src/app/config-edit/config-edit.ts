@@ -16,8 +16,6 @@ import { EndpointConfigurationV1, EndpointConfigurationV1WithPassword } from '..
 import { JsonPipe } from '@angular/common';
 import { toSignal } from '@angular/core/rxjs-interop';
 
-type WriteMode = 'readonly' | 'same' | 'separate';
-
 @Component({
   selector: 'app-config-edit',
   imports: [ReactiveFormsModule, JsonPipe],
@@ -39,7 +37,7 @@ export class ConfigEdit {
   showPasswordInput = signal<boolean>(false);
   showUpdatePassword = signal<boolean>(false);
   showQleverUpdateToken = signal<boolean>(false);
-  // Form (typed)
+
   readonly form = this.#fb.group({
     name: this.#fb.control('', { validators: [Validators.required] }),
     endpointURL: this.#fb.control('', { validators: [Validators.required] }),
@@ -151,32 +149,6 @@ export class ConfigEdit {
     }
 
   }
-
-
-  /*
-    private applyAuthValidators(auth: EndpointAuthForm, qlever: boolean): void {
-      // QLever => require accessToken; Basic => all optional
-      if (qlever) {
-        auth.controls.accessToken.setValidators([Validators.required]);
-        auth.controls.username.clearValidators();
-        auth.controls.password.clearValidators();
-      } else {
-        auth.controls.accessToken.clearValidators();
-        // username/password remain optional; keep clear
-        auth.controls.username.clearValidators();
-        auth.controls.password.clearValidators();
-      }
-      this.updateAll(auth);
-    }
-
-    private clearAuthValidators(auth: EndpointAuthForm): void {
-      auth.controls.accessToken.clearValidators();
-      auth.controls.username.clearValidators();
-      auth.controls.password.clearValidators();
-      this.updateAll(auth);
-    }
-  */
-
 
   getFormValidationErrors() {
     const errors: { control: string; error: string }[] = [];

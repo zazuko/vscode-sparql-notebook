@@ -33,10 +33,9 @@
           <input type="password" value="********" (click)="showPasswordInput.set(true)">
           }
         </label>
-        <label>
-          Is this a QLever store?
-          <input type="checkbox" formControlName="isQLever">
-
+        <label style="display: flex; flex-direction: row; align-items: center; gap: 8px;">
+          <input type="checkbox" formControlName="isQLever" style="margin: 0;">
+          <span>Is this a QLever store?</span>
         </label>
       </div>
     </fieldset>
