@@ -2,6 +2,15 @@
 
 All notable changes to the "vscode-sparql-notebook" extension will be documented in this file.
 
+## 1.0.9
+- Feature: SPARQL Endpoint Configuration Editor
+- Feature: Support for Separate Update and Read Endpoints
+- Feature: QLever update query support
+- Update: Oxigraph 0.5.0-beta.4 (for file based SPARQL)
+
+The notebook now supports using distinct endpoints for read and update SPARQL queries. To enable updates, you must configure a dedicated Update Endpoint.
+⚠️ Note: This change may affect existing configurations. If you currently use updates, be sure to add an Update Endpoint to your setup.
+
 ## 1.0.8
 - Experimental Feature: File based SPARQL with RDF 1.2 support
 
