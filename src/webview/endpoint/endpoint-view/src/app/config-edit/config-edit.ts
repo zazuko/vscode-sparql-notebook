@@ -6,6 +6,7 @@ import {
   input,
   output,
   signal,
+  linkedSignal
 } from '@angular/core';
 import {
   NonNullableFormBuilder,
@@ -13,12 +14,11 @@ import {
   Validators,
 } from '@angular/forms';
 import { EndpointConfigurationV1, EndpointConfigurationV1WithPassword } from '../service/connection';
-import { JsonPipe } from '@angular/common';
 import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-config-edit',
-  imports: [ReactiveFormsModule, JsonPipe],
+  imports: [ReactiveFormsModule],
   templateUrl: './config-edit.html',
   styleUrl: './config-edit.scss'
 })
@@ -28,12 +28,8 @@ export class ConfigEdit {
   onSave = output<Partial<EndpointConfigurationV1WithPassword>>();
   readonly #fb = inject(NonNullableFormBuilder);
 
-  hasUpdateEndpoint = computed<boolean>(() => {
-    const config = this.config();
-    return config.updateEndpointURL !== undefined && config.updateEndpointURL !== '';
-  });
+  hasUpdateEndpoint = signal<boolean>(false);
 
-  addEndpoint = signal<boolean>(false);
   showPasswordInput = signal<boolean>(false);
   showUpdatePassword = signal<boolean>(false);
   showQleverUpdateToken = signal<boolean>(false);
@@ -58,24 +54,41 @@ export class ConfigEdit {
     effect(() => {
       const config = this.config();
       this.form.patchValue(config);
+      const updateEndpointURL = config.updateEndpointURL;
+      if (updateEndpointURL) {
+        this.hasUpdateEndpoint.set(true);
+      }
+    });
+
+
+    effect(() => {
+      const isQLever = this.isQLever() ?? false;
+      const hasUpdateEndpoint = this.hasUpdateEndpoint();
+
+      if (isQLever && hasUpdateEndpoint) {
+        this.updateFormValidatorsAndValues('QleverUpdateEndpoint');
+        return;
+      }
+
+      if (hasUpdateEndpoint) {
+        this.updateFormValidatorsAndValues("DefaultUpdateEndpoint");
+        return;
+      }
+
+      this.updateFormValidatorsAndValues('NoUpdateEndpoint');
+
+
     });
 
 
   }
 
   addWriteEndpoint() {
-    if (this.isQLever()) {
-      this.updateFormValidatorsAndValues('QleverUpdateEndpoint', true);
-    } else {
-      this.updateFormValidatorsAndValues('DefaultUpdateEndpoint', true);
-    }
-    this.addEndpoint.set(true);
-    this.form.markAsTouched();
+    this.hasUpdateEndpoint.set(true);
   }
 
   removeWriteEndpoint() {
-    this.updateFormValidatorsAndValues('NoUpdateEndpoint', false);
-    this.addEndpoint.set(false);
+    this.hasUpdateEndpoint.set(false);
   }
 
   cancelEdit() {
@@ -92,87 +105,59 @@ export class ConfigEdit {
           touched[key] = control.value;
         }
       });
-      console.log('touched', touched);
       const newConfig = { ...config, ...touched };
       this.onSave.emit(newConfig);
     }
   }
 
 
-  updateFormValidatorsAndValues(validatorMode: 'NoUpdateEndpoint' | 'QleverUpdateEndpoint' | 'DefaultUpdateEndpoint', addEndpoint: boolean): void {
+  updateFormValidatorsAndValues(validatorMode: 'NoUpdateEndpoint' | 'QleverUpdateEndpoint' | 'DefaultUpdateEndpoint'): void {
     if (validatorMode === 'QleverUpdateEndpoint') {
-      this.form.controls.qleverUpdateToken.setValidators([Validators.required]);
+      this.form.controls.qleverUpdateToken.clearValidators();
       this.form.controls.updateEndpointURL.setValidators([Validators.required]);
       this.form.controls.updateUser.clearValidators();
       this.form.controls.updatePassword.clearValidators();
-      if (addEndpoint) {
-        this.form.patchValue({
-          updateEndpointURL: this.config().endpointURL,
-          updateUser: '',
-          updatePassword: '',
-          qleverUpdateToken: ''
-        });
-        this.form.controls['updateEndpointURL'].markAsTouched();
-      }
+
+      this.form.patchValue({
+        updateEndpointURL: this.config().endpointURL,
+        updateUser: '',
+        updatePassword: '',
+        qleverUpdateToken: ''
+      });
+      this.form.controls['updateEndpointURL'].markAsTouched();
+
     } else if (validatorMode === 'DefaultUpdateEndpoint') {
       this.form.controls.qleverUpdateToken.clearValidators();
       this.form.controls.updateEndpointURL.setValidators([Validators.required]);
-      this.form.controls.updateUser.setValidators([Validators.required]);
-      this.form.controls.updatePassword.setValidators([Validators.required]);
-      if (addEndpoint) {
-        this.form.patchValue({
-          updateEndpointURL: this.config().endpointURL,
-          updateUser: this.config().user ?? '',
-          updatePassword: '',
-          qleverUpdateToken: ''
-        });
-        this.form.controls['updateEndpointURL'].markAsTouched();
-        this.form.controls['updateUser'].markAsTouched();
-      }
+      this.form.controls.updateUser.clearValidators();
+      this.form.controls.updatePassword.clearValidators();
+
+      this.form.patchValue({
+        updateEndpointURL: this.config().endpointURL,
+        updateUser: this.config().user ?? '',
+        updatePassword: '',
+        qleverUpdateToken: ''
+      });
+      this.form.controls['updateEndpointURL'].markAsTouched();
+      this.form.controls['updateUser'].markAsTouched();
+
     } else if (validatorMode === 'NoUpdateEndpoint') {
       this.form.controls.qleverUpdateToken.clearValidators();
       this.form.controls.updateEndpointURL.clearValidators();
       this.form.controls.updateUser.clearValidators();
       this.form.controls.updatePassword.clearValidators();
-      if (!addEndpoint) {
-        this.form.patchValue({
-          updateEndpointURL: '',
-          updateUser: '',
-          updatePassword: '',
-          qleverUpdateToken: ''
-        });
-        this.form.controls['qleverUpdateToken'].markAsTouched();
-        this.form.controls['updateEndpointURL'].markAsTouched();
-        this.form.controls['updateUser'].markAsTouched();
-      }
 
+      this.form.patchValue({
+        updateEndpointURL: '',
+        updateUser: '',
+        updatePassword: '',
+        qleverUpdateToken: ''
+      });
+      this.form.controls['qleverUpdateToken'].markAsTouched();
+      this.form.controls['updateEndpointURL'].markAsTouched();
+      this.form.controls['updateUser'].markAsTouched();
     }
 
   }
 
-  getFormValidationErrors() {
-    const errors: { control: string; error: string }[] = [];
-
-    Object.keys(this.form.controls).forEach(key => {
-      const control = this.form.get(key);
-
-      if (control && control.errors) {
-        Object.keys(control.errors).forEach(errorKey => {
-          let message = '';
-
-          switch (errorKey) {
-            case 'required':
-              message = `${key} is required`;
-              break;
-            default:
-              message = `${key} has error: ${errorKey}`;
-          }
-
-          errors.push({ control: key, error: message });
-        });
-      }
-    });
-
-    return errors;
-  }
 }

@@ -9,6 +9,16 @@ form {
   border: 1px solid var(--vscode-editorWidget-border);
 }
 
+fieldset {
+  margin-left: 8px;
+  margin-right: 8px;
+  margin-top: 0px;
+  margin-bottom: 8px;
+  border: none;
+  padding: 0;
+
+}
+
 label {
   display: flex;
   flex-direction: column;
@@ -29,4 +39,43 @@ input {
 
 hr {
   border: 1px solid var(--vscode-editorWidget-border);
+}
+
+
+.remove-btn.danger {
+  background: transparent;
+  color: rgba(255, 0, 0, 0.8);
+  border-radius: 50%;
+  padding: 6px 8px;
+  font-size: 1rem;
+  outline: none;
+  cursor: pointer;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 0, 0, 0.8);;
+}
+
+
+.remove-btn.danger:hover {
+  background-color: rgba(255, 0, 0, 0.8);
+  color: var(--vscode-editorWidget-border);
+  border: none;
+
+}
+
+.remove-btn.danger:hover:has(+ .write-endpoint-fieldset),
+.write-endpoint-fieldset:has(.remove-btn.danger:hover) {
+  background-color: rgb(71, 45, 45);
+}
+
+.write-endpoint-fieldset {
+  border-radius: 15px;
+  padding-top: 15px;
+
+  fieldset {
+    margin-left: 8px;
+  }
 }

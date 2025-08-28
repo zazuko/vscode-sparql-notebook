@@ -73,7 +73,7 @@ export async function activate(context: vscode.ExtensionContext) {
             // reconnect to this new connection
             connectToEndpoint(context, connectionsSidepanel, sparqlNotebookCellStatusBarItemProvider)
             endpointEditorPanel?.webview.postMessage({ type: 'active-connection', data: activeConn });
-          }, 100);
+          }, 500);
         }
         endpointEditorPanel.onDidDispose(() => {
           endpointEditorPanel = undefined;

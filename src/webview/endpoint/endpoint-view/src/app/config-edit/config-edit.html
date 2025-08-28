@@ -1,135 +1,152 @@
-<section style="margin: 24px 0;">
-  <form [formGroup]="form" class="flex flex-col gap-4 p-4">
+<section style="margin-top: 32px">
+  <form [formGroup]="form"
+    style="background: var(--vscode-editorWidget-background); border: 1px solid var(--vscode-panel-border); border-radius: 4px; box-shadow: none; padding: 24px 32px; display: flex; flex-direction: column; gap: 20px; font-family: var(--vscode-font-family);">
     <fieldset>
-      <legend>Read Endpoint</legend>
-      <div style="display: flex; flex-direction: column; gap: 16px;">
-        <label>
+      <legend style="color: var(--vscode-titleBar-activeForeground); font-weight: 600; margin-bottom: 8px;">Read
+        Endpoint</legend>
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <label
+          style="color: var(--vscode-foreground); font-size: 0.98em; display: flex; flex-direction: column; gap: 2px;">
           Name
-          <input type="text" formControlName="name">
+          <input type="text" formControlName="name"
+            style="background: var(--vscode-input-background); color: var(--vscode-input-foreground); border: 1px solid var(--vscode-input-border); border-radius: 2px; padding: 4px 8px; font-size: 1em; outline: none;">
           @if (form.get('name')?.touched && form.get('name')?.invalid) {
-          <span style="color: var(--vscode-editorError-foreground); font-size: 0.95em;">
+          <span style="color: var(--vscode-editorError-foreground); font-size: 0.95em; margin-top: 2px;">
             Name is required.
           </span>
           }
         </label>
-        <label>
+        <label
+          style="color: var(--vscode-foreground); font-size: 0.98em; display: flex; flex-direction: column; gap: 2px;">
           Endpoint URL
-          <input type="text" formControlName="endpointURL">
+          <input type="text" formControlName="endpointURL"
+            style="background: var(--vscode-input-background); color: var(--vscode-input-foreground); border: 1px solid var(--vscode-input-border); border-radius: 2px; padding: 4px 8px; font-size: 1em; outline: none;">
           @if (form.get('endpointURL')?.touched && form.get('endpointURL')?.invalid) {
-          <span style="color: var(--vscode-editorError-foreground); font-size: 0.95em;">
+          <span style="color: var(--vscode-editorError-foreground); font-size: 0.95em; margin-top: 2px;">
             Endpoint URL is required.
           </span>
           }
         </label>
-        <label>
+        <label
+          style="color: var(--vscode-foreground); font-size: 0.98em; display: flex; flex-direction: column; gap: 2px;">
           Username
-          <input type="text" formControlName="user">
+          <input type="text" formControlName="user"
+            style="background: var(--vscode-input-background); color: var(--vscode-input-foreground); border: 1px solid var(--vscode-input-border); border-radius: 2px; padding: 4px 8px; font-size: 1em; outline: none;">
         </label>
-        <label>
+        <label
+          style="color: var(--vscode-foreground); font-size: 0.98em; display: flex; flex-direction: column; gap: 2px;">
           Password
           @if(showPasswordInput()) {
-          <input type="password" formControlName="password" autofocus>
+          <input type="password" formControlName="password" autofocus
+            style="background: var(--vscode-input-background); color: var(--vscode-input-foreground); border: 1px solid var(--vscode-input-border); border-radius: 2px; padding: 4px 8px; font-size: 1em; outline: none;">
           } @else {
-          <input type="password" value="********" (click)="showPasswordInput.set(true)">
+          <input type="password" value="********" (click)="showPasswordInput.set(true)"
+            style="background: var(--vscode-input-background); color: var(--vscode-input-foreground); border: 1px solid var(--vscode-input-border); border-radius: 2px; padding: 4px 8px; font-size: 1em; outline: none; cursor: pointer;">
           }
         </label>
-        <label style="display: flex; flex-direction: row; align-items: center; gap: 8px;">
-          <input type="checkbox" formControlName="isQLever" style="margin: 0;">
+        <label
+          style="display: flex; flex-direction: row; align-items: center; gap: 8px; color: var(--vscode-foreground); font-size: 0.98em;">
+          <input type="checkbox" formControlName="isQLever"
+            style="margin: 0; accent-color: var(--vscode-checkbox-background);">
           <span>Is this a QLever store?</span>
         </label>
       </div>
     </fieldset>
 
-    @if (hasUpdateEndpoint() || addEndpoint()) {
+    @if (hasUpdateEndpoint()) {
     @if (isQLever()) {
-    <fieldset>
-      <legend>Write Endpoint</legend>
-      <div style="display: flex; flex-direction: column; gap: 16px;">
-        <label>
-          Endpoint URL
-          <input type="text" formControlName="updateEndpointURL">
-        </label>
-        <label>
-          Access Token
-          @if(showQleverUpdateToken()) {
-          <input type="password" formControlName="qleverUpdateToken" autofocus>
-          @if (form.get('qleverUpdateToken')?.touched && form.get('qleverUpdateToken')?.invalid) {
-          <span style="color: var(--vscode-editorError-foreground); font-size: 0.95em;">
-            Access Token is required.
-          </span>
-          }
-          } @else {
-          <input type="password" value="********" (click)="showQleverUpdateToken.set(true)">
-          }
-
-        </label>
-        <button type="button" (click)="removeWriteEndpoint()" class="self-start">
-          Remove Write Endpoint
-        </button>
-      </div>
-    </fieldset>
+    <div class="write-endpoint-fieldset">
+      <fieldset>
+        <legend style="color: var(--vscode-titleBar-activeForeground); font-weight: 600; margin-bottom: 8px;">Write
+          Endpoint</legend>
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <label
+            style="color: var(--vscode-foreground); font-size: 0.98em; display: flex; flex-direction: column; gap: 2px;">
+            Endpoint URL
+            <input type="text" formControlName="updateEndpointURL"
+              style="background: var(--vscode-input-background); color: var(--vscode-input-foreground); border: 1px solid var(--vscode-input-border); border-radius: 2px; padding: 4px 8px; font-size: 1em; outline: none;">
+          </label>
+          <label
+            style="color: var(--vscode-foreground); font-size: 0.98em; display: flex; flex-direction: column; gap: 2px;">
+            Access Token
+            @if(showQleverUpdateToken()) {
+            <input type="password" formControlName="qleverUpdateToken" autofocus
+              style="background: var(--vscode-input-background); color: var(--vscode-input-foreground); border: 1px solid var(--vscode-input-border); border-radius: 2px; padding: 4px 8px; font-size: 1em; outline: none;">
+            @if (form.get('qleverUpdateToken')?.touched && form.get('qleverUpdateToken')?.invalid) {
+            <span style="color: var(--vscode-editorError-foreground); font-size: 0.95em; margin-top: 2px;">
+              Access Token is required.
+            </span>
+            }
+            } @else {
+            <input type="password" value="********" (click)="showQleverUpdateToken.set(true)"
+              style="background: var(--vscode-input-background); color: var(--vscode-input-foreground); border: 1px solid var(--vscode-input-border); border-radius: 2px; padding: 4px 8px; font-size: 1em; outline: none; cursor: pointer;">
+            }
+          </label>
+          <div style="display: flex; flex-direction: row; justify-content: flex-end; gap: 8px; width: 100%;">
+            <button type="button" (click)="removeWriteEndpoint()" title="Remove Write Endpoint"
+              class="remove-btn danger">
+              <span aria-hidden="true">&minus;</span>
+            </button>
+          </div>
+        </div>
+      </fieldset>
+    </div>
     } @else {
-    <fieldset>
-      <legend>Write Endpoint</legend>
-      <div style="display: flex; flex-direction: column; gap: 16px;">
-        <label>
-          Endpoint URL
-          <input type="text" formControlName="updateEndpointURL">
-        </label>
-        <label>
-          Username
-          <input type="text" formControlName="updateUser">
-        </label>
-        <label>
-          Password
-          @if(showUpdatePassword()) {
-          <input type="password" formControlName="updatePassword" autofocus>
-          } @else {
-          <input type="password" value="********" (click)="showUpdatePassword.set(true)">
-          }
-        </label>
-        <button type="button" (click)="removeWriteEndpoint()" class="self-start">
-          Remove Write Endpoint
-        </button>
-      </div>
-    </fieldset>
+    <div class="write-endpoint-fieldset">
+
+      <fieldset>
+        <legend style="color: var(--vscode-titleBar-activeForeground); font-weight: 600; margin-bottom: 8px;">Write
+          Endpoint</legend>
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <label
+            style="color: var(--vscode-foreground); font-size: 0.98em; display: flex; flex-direction: column; gap: 2px;">
+            Endpoint URL
+            <input type="text" formControlName="updateEndpointURL"
+              style="background: var(--vscode-input-background); color: var(--vscode-input-foreground); border: 1px solid var(--vscode-input-border); border-radius: 2px; padding: 4px 8px; font-size: 1em; outline: none;">
+          </label>
+          <label
+            style="color: var(--vscode-foreground); font-size: 0.98em; display: flex; flex-direction: column; gap: 2px;">
+            Username
+            <input type="text" formControlName="updateUser"
+              style="background: var(--vscode-input-background); color: var(--vscode-input-foreground); border: 1px solid var(--vscode-input-border); border-radius: 2px; padding: 4px 8px; font-size: 1em; outline: none;">
+          </label>
+          <label
+            style="color: var(--vscode-foreground); font-size: 0.98em; display: flex; flex-direction: column; gap: 2px;">
+            Password
+            @if(showUpdatePassword()) {
+            <input type="password" formControlName="updatePassword" autofocus
+              style="background: var(--vscode-input-background); color: var(--vscode-input-foreground); border: 1px solid var(--vscode-input-border); border-radius: 2px; padding: 4px 8px; font-size: 1em; outline: none;">
+            } @else {
+            <input type="password" value="********" (click)="showUpdatePassword.set(true)"
+              style="background: var(--vscode-input-background); color: var(--vscode-input-foreground); border: 1px solid var(--vscode-input-border); border-radius: 2px; padding: 4px 8px; font-size: 1em; outline: none; cursor: pointer;">
+            }
+          </label>
+          <div style="display: flex; flex-direction: row; justify-content: flex-end; gap: 8px; width: 100%;">
+            <button type="button" (click)="removeWriteEndpoint()" class="remove-btn danger"
+              title="Remove Write Endpoint">
+              <span aria-hidden="true">&minus;</span>
+            </button>
+          </div>
+        </div>
+      </fieldset>
+    </div>
     }
     } @else {
-    <div>
+    <div style="color: var(--vscode-descriptionForeground); font-size: 0.98em; margin-bottom: 8px;">
       No write endpoint configured
       <button type="button" (click)="addWriteEndpoint()">
         Add Write Endpoint
       </button>
     </div>
     }
-    <div class="flex gap-2 mt-4">
-      <button type="submit" [disabled]="form.invalid || !form.touched" (click)="saveConfig()">
+    <div style="display: flex; flex-direction: row; gap: 12px; margin-top: 16px;">
+      <button type="submit" [disabled]="form.invalid || !form.touched" (click)="saveConfig()"
+        [style.opacity]="form.invalid || !form.touched ? 0.6 : 1">
         Save
       </button>
       <button type="button" (click)="cancelEdit()">
         Cancel
       </button>
     </div>
-
-
-    <!-- Debug -->
-    <div>form valid: {{form.valid}}</div>
-    <div>touched: {{form.touched}}</div>
-    <div>disabled: {{form.invalid || !form.touched}}</div>
-    <!-- Error Summary (outside form)     -->
-    @if(form.valid === false ) {
-    <div class="error-summary">
-      <h3>Form Errors:</h3>
-      <ul>
-        @for(err of getFormValidationErrors(); track err.error) {
-        <li>{{ err.error }}</li>
-        }
-      </ul>
-    </div>
-    }
-
-
-    <div>is Qlever mode {{isQLever()}}</div>
-    <pre class="bg-gray-50 p-2 rounded text-xs">{{ form.value | json }}</pre>
   </form>
 </section>

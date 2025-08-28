@@ -70,10 +70,12 @@ export function connectToEndpoint(
             connectionsSidepanel.setActive(null);
         } else {
             const testedHttpEndpoint = await testConnectionWithConfiguration(readEndpoint, endpointConfiguration);
-            notebookEndpoint.endpoint = testedHttpEndpoint;
-            connectionsSidepanel.setActive(endpointConfiguration.id);
-            notebookEndpoint.endpoint = await endpointFactory.createUpdateEndpoint(endpointConfiguration, context);
-            window.showInformationMessage(`Successfully connected to "${endpointConfiguration.name}"`);
+            if (testedHttpEndpoint) {
+                notebookEndpoint.endpoint = testedHttpEndpoint;
+                connectionsSidepanel.setActive(endpointConfiguration.id);
+                notebookEndpoint.updateEndpoint = await endpointFactory.createUpdateEndpoint(endpointConfiguration, context);
+                window.showInformationMessage(`Successfully connected to "${endpointConfiguration.name}"`);
+            }
         }
         // update the status bar of all SPARQL notebook cells
         sparqlNotebookCellStatusBarItemProvider.updateCellStatusBarItems();
@@ -86,7 +88,7 @@ async function testConnectionWithConfiguration(endpoint: HttpEndpoint, config: E
         const result = await endpoint.query(new SparqlQuery("SELECT * WHERE {?s ?p ?o.} LIMIT 1"));
         if (!result || result.status !== 200) {
             window.showErrorMessage(
-                `Failed to connect to "${config.endpointURL}". HTTP status: ${result?.status} ${result?.statusText ?? ''}`
+                `Failed to connect to "${config.endpointURL}". HTTP status: ${result?.status} ${result?.statusText ?? ''} ${result.data ?? ''}`
             );
             return null;
         }

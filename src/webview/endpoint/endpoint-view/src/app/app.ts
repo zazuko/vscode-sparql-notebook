@@ -1,12 +1,11 @@
 import { Component, inject, signal, computed } from '@angular/core';
 
 import { Connection, EndpointConfigurationV1 } from './service/connection';
-import { JsonPipe } from '@angular/common';
 import { ConfigEdit } from "./config-edit/config-edit";
 
 @Component({
   selector: 'app-root',
-  imports: [JsonPipe, ConfigEdit],
+  imports: [ConfigEdit],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })

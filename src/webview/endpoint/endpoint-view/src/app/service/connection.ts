@@ -13,7 +13,8 @@ export class Connection {
     "user": "zazu-agschwend1",
     "passwordKey": "sparql-notebook.Mopo",
     "configVersion": 1,
-    "id": "aebdb6a6-6bf5-4c60-8231-121230e0c4c3"
+    "id": "aebdb6a6-6bf5-4c60-8231-121230e0c4c3",
+    "updateEndpointURL": "https://stardog-test.cluster.ldbar.ch/mopo-app-20220302/update"
   });
   connection = this.#connection.asReadonly();
 

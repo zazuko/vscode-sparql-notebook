@@ -1,0 +1,14 @@
+[
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "SELECT ?subject ?predicate ?object\nWHERE {\n    ?subject ?predicate ?object.\n}\nLIMIT 10",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "INSERT DATA {\n    <http://example.org/subject1> <http://example.org/predicate1> \"object1\" .\n}",
+    "metadata": {}
+  }
+]
