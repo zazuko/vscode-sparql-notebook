@@ -1,8 +1,26 @@
 [
   {
+    "kind": 1,
+    "language": "markdown",
+    "value": "# QLever Test Notebook\n\nThis is my Notebook to test the QLever. ",
+    "metadata": {}
+  },
+  {
+    "kind": 1,
+    "language": "markdown",
+    "value": "## Just fetch 10 SPOs\n",
+    "metadata": {}
+  },
+  {
     "kind": 2,
     "language": "sparql",
     "value": "SELECT * WHERE {\n  ?s ?p ?o .\n} LIMIT 10",
+    "metadata": {}
+  },
+  {
+    "kind": 1,
+    "language": "markdown",
+    "value": "# Insert a Triple\n",
     "metadata": {}
   },
   {

@@ -5,35 +5,6 @@
   "tasks": [
     {
       "type": "npm",
-      "script": "watch",
-      "isBackground": true,
-      "problemMatcher": [
-        {
-          "pattern": [
-            {
-              "regexp": ".",
-              "file": 1,
-              "location": 2,
-              "message": 3
-            }
-          ],
-          "background": {
-            "activeOnStart": true,
-            "beginsPattern": "watching for changes",
-            "endsPattern": "watching for changes"
-          }
-        }
-      ],
-      "presentation": {
-        "reveal": "never"
-      },
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      }
-    },
-    {
-      "type": "npm",
       "script": "compile",
       "group": "build"
     }

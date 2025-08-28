@@ -19,9 +19,8 @@ export class SparqlNotebookCellStatusBarItemProvider implements NotebookCellStat
         if (cell.kind === NotebookCellKind.Markup) {
             return [];
         }
+
         const sparqlCell = new SparqlNotebookCell(cell);
-
-
         const statusBarItems: NotebookCellStatusBarItem[] = [];
 
         statusBarItems.push(new ConnectionSourceStatusBarItem(sparqlCell, NotebookCellStatusBarAlignment.Right));

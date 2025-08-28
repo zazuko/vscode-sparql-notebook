@@ -7,13 +7,13 @@ lvn:t1 :added-in lvn:rdf-registry ; :stored-by :john .
 lvn:t1 :on-date "2006-03-12Z"^^xsd:date .
 lvn:t1 :provenance lvn:database-1975-123973q2 .
 
-<< :liz :married :richard  ~  lvn:c1 >> a lvn:WeddingCertificate .
+#<< :liz :married :richard  ~  lvn:c1 >> a lvn:WeddingCertificate .
 lvn:c1 lvn:wedding-starts 1975 .
 
-<< :liz :married :richard  ~  lvn:c2 >> a lvn:WeddingCertificate .
+#<< :liz :married :richard  ~  lvn:c2 >> a lvn:WeddingCertificate .
 lvn:c2 lvn:wedding-starts 1964 .
 
-<< :liz :married :richard  ~  lvn:c3 >> a lvn:WeddingCertificate .
+#<< :liz :married :richard  ~  lvn:c3 >> a lvn:WeddingCertificate .
 lvn:c3 lvn:wedding-starts 1971 .
 
 lvn:c1 :printed-on "2020-10-11Z"^^xsd:date .

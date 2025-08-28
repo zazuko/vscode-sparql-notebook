@@ -1,0 +1,40 @@
+<header
+  style="padding: 16px 0; border-bottom: 1px solid var(--vscode-editorWidget-border); background: var(--vscode-editor-background);">
+  <h1 style="margin: 0; font-size: 1.8rem; color: var(--vscode-editor-foreground); font-weight: 500;">
+    {{ connectionService.connection()?.name || 'No Connection' }}
+  </h1>
+</header>
+
+@if (!showEditForm()) {
+<section style="margin: 24px 0;">
+  <dl style="display: grid; grid-template-columns: max-content 1fr; gap: 6px 16px; align-items: center;">
+    <dt style="font-weight: 500; color: var(--vscode-descriptionForeground);">Endpoint URL:</dt>
+    <dd style="margin: 0; color: var(--vscode-editor-foreground);">{{ connectionService.connection()?.endpointURL || '—'
+      }}</dd>
+
+    @if (connectionService.connection() && connectionService.connection()?.user) {
+    <dt style="font-weight: 500; color: var(--vscode-descriptionForeground);">User:</dt>
+    <dd style="margin: 0; color: var(--vscode-editor-foreground);">{{ connectionService.connection()?.user }}</dd>
+    }
+    @if (connectionService.connection() && connectionService.connection()?.updateEndpointURL) {
+    <dt style="font-weight: 500; color: var(--vscode-descriptionForeground);">Update Endpoint URL:</dt>
+    <dd style="margin: 0; color: var(--vscode-editor-foreground);">{{ connectionService.connection()?.updateEndpointURL
+      }}</dd>
+    }
+    @if (connectionService.connection() && connectionService.connection()?.updateUser) {
+    <dt style="font-weight: 500; color: var(--vscode-descriptionForeground);">Update User:</dt>
+    <dd style="margin: 0; color: var(--vscode-editor-foreground);">{{ connectionService.connection()?.updateUser }}</dd>
+    }
+  </dl>
+  @if (connectionService.connection()?.isQLever) {
+  <div style="grid-column: 1 / -1; color: var(--vscode-editor-foreground); margin-top: 8px;">
+    <span style="font-weight: 500;"><strong>QLever</strong> configuration</span>
+  </div>
+  }
+</section>
+<button type="button" (click)="openEditForm()" style="margin-left: 16px;">Edit</button>
+
+} @else {
+<app-config-edit [config]="connectionService.connection()!" (onCancel)="closeEditForm()"
+  (onSave)="saveEditForm($event)" />
+}

@@ -81,16 +81,22 @@ export class SparqlNotebookController {
     execution.start(Date.now());
 
     const sparqlQuery = sparqlCell.sparqlQuery;
-    const sparqlEndpoint = await this._getDocumentOrConnectionClient(sparqlCell, sparqlQuery);
+    const sparqlEndpoint = await this.#getDocumentOrConnectionClient(sparqlCell, sparqlQuery);
 
     if (!sparqlEndpoint) {
-      const errorMessage = "Not connected to a SPARQL Endpoint";
-      const actionButton = "Connect to SPARQL Endpoint";
-      window.showErrorMessage(errorMessage, actionButton).then((action) => {
-        if (action === actionButton) {
-          commands.executeCommand('sparql-notebook.connect');
-        }
-      });
+      let errorMessage = "";
+      if (sparqlQuery.isUpdateQuery() && notebookEndpoint.endpoint) {
+        errorMessage = "Not connected to a SPARQL Update Endpoint. Configure your endpoint settings.";
+      } else {
+        errorMessage = "Not connected to a SPARQL Endpoint";
+
+        const actionButton = "Connect to SPARQL Endpoint";
+        window.showErrorMessage(errorMessage, actionButton).then((action) => {
+          if (action === actionButton) {
+            commands.executeCommand('sparql-notebook.connect');
+          }
+        });
+      }
       execution.replaceOutput([
         writeError(errorMessage)
       ]);
@@ -125,7 +131,7 @@ export class SparqlNotebookController {
 
     // stardog return a valid query on error
     const expectedMimeType = getAcceptHeader(sparqlQuery.kind);
-    if (queryResult.headers['content-type'] && queryResult.headers['content-type'] !== expectedMimeType) {
+    if (queryResult.headers['content-type'] && queryResult.headers['content-type'] !== expectedMimeType && !sparqlEndpoint.isQLeverEndpoint) {
       execution.replaceOutput([
         writeError(queryResult.data)
       ]);
@@ -147,7 +153,7 @@ export class SparqlNotebookController {
    * @param sparqlQuery - The SPARQL query to get the endpoint for.
    * @returns An Endpoint instance for the given SPARQL query, or null if no endpoint could be found.
    */
-  private async _getDocumentOrConnectionClient(cell: SparqlNotebookCell, sparqlQuery: SparqlQuery): Promise<Endpoint | null> {
+  async #getDocumentOrConnectionClient(cell: SparqlNotebookCell, sparqlQuery: SparqlQuery): Promise<Endpoint | null> {
     const documentEndpoints = sparqlQuery.extractEndpoint().getEndpoints();
     const queryOptions = sparqlQuery.extractQueryOptions();
 
@@ -175,8 +181,10 @@ export class SparqlNotebookController {
         return fileEndpoint;
       }
     }
+    if (sparqlQuery.isUpdateQuery()) {
+      return notebookEndpoint.updateEndpoint;
+    }
     return notebookEndpoint.endpoint;
-
   }
 
   async #loadFileToStore(filePathPattern: string, fileEndpoint: FileEndpoint): Promise<void> {

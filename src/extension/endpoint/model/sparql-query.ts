@@ -34,8 +34,8 @@ export class SparqlQuery {
 
     /**
      * Try to extract the endpoint from the SPARQL query. Looks for a line like:
-     * [endpoint: <http://example.org/sparql>]
-     * 
+     * [endpoint=http://example.org/sparql]
+     *
      * @returns the endpoint url or undefined if not found
      */
     extractEndpoint(): EndpointCollection {
@@ -63,6 +63,12 @@ export class SparqlQuery {
         return this.#extractedEndpointCollection;
     }
 
+    /**
+     * Extracts query options from the SPARQL query. These options are specified in
+     * comments in the query string and are of the form [option=value].
+     * 
+     * @returns a map of query options.
+     */
     extractQueryOptions(): Map<string, string> {
         const commentLines = this.#queryString
             .split("\n")
@@ -82,6 +88,21 @@ export class SparqlQuery {
         });
         return queryOptionsMap;
 
+    }
+
+    /**
+     * Checks if the SPARQL query is an update query.
+     * @returns true if the query is an update query, false otherwise.
+     */
+    isUpdateQuery(): boolean {
+        return [
+            SPARQLQueryKind.insert,
+            SPARQLQueryKind.delete,
+            SPARQLQueryKind.load,
+            SPARQLQueryKind.clear,
+            SPARQLQueryKind.drop,
+            SPARQLQueryKind.create
+        ].includes(this.#queryKind);
     }
 }
 
