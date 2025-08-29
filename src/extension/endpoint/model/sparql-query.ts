@@ -1,13 +1,23 @@
-import { window } from "vscode";
 
 import { SPARQLQueryKind } from "../../const/enum/sparql-query-kind";
 import { getSPARQLQueryKind } from "../sparql-utils";
+import { EndpointKind } from "../const/endpoint-kind";
+import { ExtractedEndpoint } from "./extracted-endpoint";
+import { EndpointSet } from "./endpoint-set";
 
+
+/**
+ * Represents a SPARQL query.
+ * The query can be of different kinds (select, ask, construct, describe, update).
+ * It can also extract endpoints and query options from the query string.
+ * It can also extract query params from the query string.
+ */
 export class SparqlQuery {
     readonly #queryString: string;
     readonly #queryKind: SPARQLQueryKind;
 
-    #extractedEndpointCollection: EndpointCollection | undefined = undefined;
+    #extractedHttpOrFileEndpoint: EndpointSet | undefined = undefined;
+    #extractedQueryOptions: Map<string, string> | undefined = undefined;
 
     /**
      * Creates a new instance of the SparqlQuery class.
@@ -35,46 +45,62 @@ export class SparqlQuery {
     /**
      * Try to extract the endpoint from the SPARQL query. Looks for a line like:
      * [endpoint=http://example.org/sparql]
+     * [endpoint=../bar/foo.ttl]
      *
-     * @returns the endpoint url or undefined if not found
+     * @returns 
      */
-    extractEndpoint(): EndpointCollection {
-        if (this.#extractedEndpointCollection !== undefined) {
-            return this.#extractedEndpointCollection;
+    extractEndpoint(): EndpointSet {
+        if (this.#extractedHttpOrFileEndpoint === undefined) {
+            this.#extractedHttpOrFileEndpoint = this.#parseEndpointComments(this.#queryString);
         }
-        const commentLines = this.#queryString
+        return this.#extractedHttpOrFileEndpoint;
+    }
+
+    #parseEndpointComments(query: string): EndpointSet {
+        const commentLines = query
             .split("\n")
             .map((l) => l.trim())
             .filter((l) => l.startsWith("#"));
-        const endpointsSet = new Set<string>();
+
+        const matchedEndpointStringSet = new Set<string>();
+
         commentLines.forEach((comment: string) => {
             const endpointExp = /\[endpoint=(.*)\]/gm;
             const match = endpointExp.exec(comment);
             if (match) {
-                endpointsSet.add(match[1]);
+                matchedEndpointStringSet.add(match[1]);
             }
         });
 
-        const endpoints: ExtractedEndpoint[] = [...endpointsSet].flatMap(endpoint => {
+        const endpoints: ExtractedEndpoint[] = [...matchedEndpointStringSet].flatMap(endpoint => {
             const kind = endpoint.startsWith("http://") || endpoint.startsWith('https://') ? EndpointKind.Http : EndpointKind.File;
             return [{ kind, endpoint }];
         });
-        this.#extractedEndpointCollection = new EndpointCollection(endpoints);
-        return this.#extractedEndpointCollection;
+        return new EndpointSet(endpoints);
     }
 
     /**
-     * Extracts query options from the SPARQL query. These options are specified in
-     * comments in the query string and are of the form [option=value].
-     * 
+     * Extracts query options from the SPARQL query.
+     * These options are specified in comments in the query string and are of the form [option=value].
+     * This can be used in Oxigraph file endpoint configuration.
+     *
      * @returns a map of query options.
      */
     extractQueryOptions(): Map<string, string> {
-        const commentLines = this.#queryString
+        if (this.#extractedQueryOptions === undefined) {
+            this.#extractedQueryOptions = this.#parseQueryOptions(this.#queryString);
+        }
+        return this.#extractedQueryOptions;
+    }
+
+    #parseQueryOptions(query: string): Map<string, string> {
+        const commentLines = query
             .split("\n")
             .map((l) => l.trim())
             .filter((l) => l.startsWith("#"));
+
         const queryOptionsMap = new Map<string, string>();
+
         commentLines.forEach((comment: string) => {
             const optionExp = /\[([a-zA-Z_]+)=([^\]]+)\]/gm;
             const match = optionExp.exec(comment);
@@ -92,9 +118,10 @@ export class SparqlQuery {
 
     /**
      * Checks if the SPARQL query is an update query.
+     * 
      * @returns true if the query is an update query, false otherwise.
      */
-    isUpdateQuery(): boolean {
+    get isUpdateQuery(): boolean {
         return [
             SPARQLQueryKind.insert,
             SPARQLQueryKind.delete,
@@ -104,55 +131,4 @@ export class SparqlQuery {
             SPARQLQueryKind.create
         ].includes(this.#queryKind);
     }
-}
-
-
-export enum EndpointKind {
-    File = 'file',
-    Http = 'http'
-}
-
-export interface ExtractedEndpoint {
-    kind: EndpointKind;
-    endpoint: string;
-}
-
-export class EndpointCollection {
-    readonly #endpoints: ExtractedEndpoint[];
-
-    constructor(endpoints: ExtractedEndpoint[]) {
-        this.#endpoints = endpoints;
-    }
-
-    get #hasHttpEndpoint(): boolean {
-        return this.#endpoints.some(e => e.kind === 'http');
-    }
-
-    get #hasFileEndpoint(): boolean {
-        return this.#endpoints.some(e => e.kind === 'file');
-    }
-
-    /**
-     * Get the configured endpoints from the SPARQL query. The output is an array of endpoints.
-     * If the query contains both file and http endpoints, an error message is shown and an empty array is returned.
-     * If the query contains multiple http endpoints, an error message is shown and an empty array is returned.
-     * If all is ok the array of endpoints is returned. 
-     * @returns the extracted endpoints from the SPARQL query.
-     */
-    getEndpoints(): ExtractedEndpoint[] {
-        if (this.#endpoints.length === 0) {
-            return [];
-        }
-        if (this.#hasFileEndpoint && this.#hasHttpEndpoint) {
-            window.showWarningMessage('SPARQL query contains both file and http endpoints. Please remove one of them.');
-            return [];
-        }
-
-        if (this.#hasHttpEndpoint && this.#endpoints.length > 1) {
-            window.showWarningMessage('SPARQL query contains multiple http endpoints. Please remove all but one.');
-            return [];
-        }
-        return this.#endpoints;
-    }
-
 }

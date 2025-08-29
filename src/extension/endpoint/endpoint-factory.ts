@@ -11,6 +11,10 @@ class EndpointFactory {
         // get the password from the secret store
         const passwordFromStore = configuration.passwordKey ? await context.secrets.get(configuration.passwordKey) : undefined;
         const password = passwordFromStore ?? '';
+        if (configuration.isQLever) {
+            return new HttpEndpoint(configuration.endpointURL, configuration.user ?? '', password, true);
+        }
+
         return new HttpEndpoint(configuration.endpointURL, configuration.user ?? '', password);
     }
 

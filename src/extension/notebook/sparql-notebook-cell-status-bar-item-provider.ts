@@ -4,7 +4,7 @@ import {
 } from 'vscode';
 import { SparqlNotebookCell } from './sparql-notebook-cell';
 import { notebookEndpoint } from '../endpoint/endpoint';
-import { EndpointKind } from '../endpoint/model/sparql-query';
+import { EndpointKind } from "../endpoint/const/endpoint-kind";
 
 // we have 3 possible notebook cell status bar items
 // 1. the connection source - it could be be connected to a "global" notebook connection from the cell

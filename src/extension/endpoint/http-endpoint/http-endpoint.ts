@@ -46,7 +46,7 @@ export class HttpEndpoint extends Endpoint {
     };
 
     // QLever specific headers
-    if (sparqlQuery.isUpdateQuery() && this.isQLeverEndpoint) {
+    if (sparqlQuery.isUpdateQuery && this.isQLeverEndpoint) {
       headers['Authorization'] = `Bearer ${this.#password}`;
     }
 
@@ -87,7 +87,7 @@ export class HttpEndpoint extends Endpoint {
     console.log('SPARQL query response:', response.status, response.statusText, mimeTypeStr);
     const data = await response.text();
 
-    if (this.isQLeverEndpoint && sparqlQuery.isUpdateQuery() && response.status === 200) {
+    if (this.isQLeverEndpoint && sparqlQuery.isUpdateQuery && response.status === 200) {
 
       const json = JSON.parse(data);
       const httpResponse: SimpleHttpResponse = {
@@ -99,7 +99,6 @@ export class HttpEndpoint extends Endpoint {
       return httpResponse;
 
     }
-
 
     const httpResponse: SimpleHttpResponse = {
       headers: { "content-type": mimeTypeStr.split(';')[0] },
