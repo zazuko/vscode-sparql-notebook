@@ -29,6 +29,7 @@ export class App {
 
   saveEditForm(event: Partial<EndpointConfigurationV1>) {
     this.showEditForm.set(false);
+    console.log('Saving config', event);
     this.connectionService.updateConnection(event);
   };
 }

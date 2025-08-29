@@ -2,7 +2,25 @@
   {
     "kind": 2,
     "language": "sparql",
-    "value": "# [disabled_endpoint=http://localhost:7200/repositories/sparql-notebook]\nSELECT * WHERE {\n    ?s ?p ?o\n} limit 20",
+    "value": "# [dendpoint=http://localhost:7200/repositories/sparql-notebook]\nSELECT * WHERE {\n    ?s ?p ?o\n} limit 20",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "SELECT DISTINCT ?g WHERE {\n    GRAPH ?g { ?s ?p ?o }\n}",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "DROP GRAPH <http://t> ",
+    "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "SELECT * WHERE {\n    ?s ?p ?o\n} LIMIT 10",
     "metadata": {}
   }
 ]

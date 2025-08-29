@@ -85,7 +85,6 @@ export async function activate(context: vscode.ExtensionContext) {
           if (message.type === 'update-connection') {
             const updatedConfig = message.data as Partial<EndpointConfigurationV1WithPassword>; // The updated config sent from the webview
             console.log('Received updated config from webview:', updatedConfig);
-
             // 1. Load all configs from storage
             const configs = context.globalState.get<EndpointConfigurationV1[]>(storageKey, []);
 
@@ -111,6 +110,7 @@ export async function activate(context: vscode.ExtensionContext) {
                 }
                 // remove the password from updatedConfig because it's stored in the secret store
                 delete (configs[idx] as Partial<EndpointConfigurationV1WithPassword>).password;
+                configs[idx].passwordKey = passwordKey;
                 console.log('Password updated in secret store');
                 console.log('Updated config after password change:', updatedConfig);
               }
