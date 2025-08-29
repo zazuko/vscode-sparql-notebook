@@ -119,7 +119,7 @@ export class ConfigEdit {
       this.form.controls.updatePassword.clearValidators();
 
       this.form.patchValue({
-        updateEndpointURL: this.config().endpointURL,
+        updateEndpointURL: this.config().updateEndpointURL,
         updateUser: '',
         updatePassword: '',
         qleverUpdateToken: ''
@@ -133,8 +133,8 @@ export class ConfigEdit {
       this.form.controls.updatePassword.clearValidators();
 
       this.form.patchValue({
-        updateEndpointURL: this.config().endpointURL,
-        updateUser: this.config().user ?? '',
+        updateEndpointURL: this.config().updateEndpointURL ?? '',
+        updateUser: this.config().updateUser ?? '',
         updatePassword: '',
         qleverUpdateToken: ''
       });
