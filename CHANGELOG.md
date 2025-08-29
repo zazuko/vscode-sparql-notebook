@@ -2,6 +2,9 @@
 
 All notable changes to the "vscode-sparql-notebook" extension will be documented in this file.
 
+## 1.0.10
+- Fix: Password handling in endpoint configuration
+
 ## 1.0.9
 - Feature: SPARQL Endpoint Configuration Editor
 - Feature: Support for Separate Update and Read Endpoints
