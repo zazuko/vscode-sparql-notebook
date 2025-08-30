@@ -111,7 +111,7 @@ export async function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(vscode.notebooks.registerNotebookCellStatusBarItemProvider(extensionId, sparqlNotebookCellStatusBarItemProvider));
 
   // register the connections sidepanel
-  const connectionsSidepanel = new EndpointConnectionTreeDataProvider(context);
+  const connectionsSidepanel = new EndpointConnectionTreeDataProvider();
   vscode.window.registerTreeDataProvider(storageKey, connectionsSidepanel);
 
   vscode.commands.registerCommand(
@@ -189,11 +189,11 @@ export async function activate(context: vscode.ExtensionContext) {
     const notebookDirectory = path.dirname(notebookPath);
 
     // cells with a file metadata
-    notebookDocument.getCells().filter(cell => cell.kind === vscode.NotebookCellKind.Code && cell.metadata.file).forEach(async cell => {
+    notebookDocument.getCells().filter(cell => cell.kind === vscode.NotebookCellKind.Code && cell.metadata["file"]).forEach(async cell => {
       const activeNotebook = cell.notebook;
 
       if (activeNotebook) {
-        const sparqlFilePath = cell.metadata.file.replace(/\\/g, '/');
+        const sparqlFilePath = cell.metadata['file'].replace(/\\/g, '/');
 
         try {
           let relativeSparqlFilePath = sparqlFilePath;
@@ -233,10 +233,10 @@ export async function activate(context: vscode.ExtensionContext) {
     const notebookDirectory = path.dirname(notebookPath);
 
     // cells with a file metadata
-    notebookDocument.getCells().filter(cell => cell.kind === vscode.NotebookCellKind.Code && cell.metadata.file).forEach(async cell => {
+    notebookDocument.getCells().filter(cell => cell.kind === vscode.NotebookCellKind.Code && cell.metadata["file"]).forEach(async cell => {
       const activeNotebook = cell.notebook;
       if (activeNotebook) {
-        const sparqlFilePath = cell.metadata.file.replace(/\\/g, '/');
+        const sparqlFilePath = cell.metadata["file"].replace(/\\/g, '/');
         try {
           let relativeSparqlFilePath = sparqlFilePath;
           if (path.isAbsolute(sparqlFilePath)) {
