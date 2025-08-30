@@ -17,8 +17,9 @@ import { SparqlNotebookCellStatusBarItemProvider } from './notebook/SparqlNotebo
 
 import * as path from "path";
 import { EndpointConnectionListItem } from "./sparql-connection-menu/endpoint-connection-list-item.class";
-import { EndpointConfigurationV1WithPassword } from './model/endpoint-configuration-v1';
 import { connectionConfigurationManager } from "./connection/connectioin-configuration";
+import { EndpointEditorPanel } from "./ui/editor/editor-panel";
+
 
 export const extensionId = "sparql-notebook";
 export const storageKey = `${extensionId}-connections`;
@@ -32,67 +33,20 @@ export const connectionManager = connectionConfigurationManager;
 export async function activate(context: vscode.ExtensionContext) {
   await connectionManager.initialize(context);
 
+  const connectionsSidepanel = new EndpointConnectionTreeDataProvider();
+  const sparqlNotebookCellStatusBarItemProvider = new SparqlNotebookCellStatusBarItemProvider();
+
+  // Instantiate the EndpointEditorPanel class
+  const endpointEditorPanel = new EndpointEditorPanel(context, connectionsSidepanel, sparqlNotebookCellStatusBarItemProvider,
+  );
+
   // Register command to show the endpoint editor webview
-  let endpointEditorPanel: vscode.WebviewPanel | undefined;
-
-  // Getter for the current endpointEditorPanel
-  function getEndpointEditorPanel() {
-    return endpointEditorPanel;
-  }
-
   context.subscriptions.push(
     vscode.commands.registerCommand(
       `${extensionId}.showEndpointEditor`,
-      () => {
-        if (endpointEditorPanel) {
-          endpointEditorPanel.reveal(vscode.ViewColumn.One);
-          return;
-        }
-        endpointEditorPanel = vscode.window.createWebviewPanel(
-          'endpointEditor',
-          'Endpoint Editor',
-          vscode.ViewColumn.One,
-          {
-            enableScripts: true,
-            localResourceRoots: [
-              vscode.Uri.file(path.join(context.extensionPath, 'out', 'webview', 'endpoint-view', 'browser'))
-            ]
-          }
-        );
-        endpointEditorPanel.webview.html = getWebviewContent(endpointEditorPanel, context.extensionPath);
-        // Send the active connection to the webview after it loads
-        const activeConn = connectionsSidepanel.getActiveConnection();
-        if (activeConn) {
-          setTimeout(() => {
-            // reconnect to this new connection
-            connectToEndpoint(context, connectionsSidepanel, sparqlNotebookCellStatusBarItemProvider)
-            endpointEditorPanel?.webview.postMessage({ type: 'active-connection', data: activeConn });
-          }, 500);
-        }
-        endpointEditorPanel.onDidDispose(() => {
-          endpointEditorPanel = undefined;
-        }, null, context.subscriptions);
-
-        // Register the webview message handler here so it is always attached to the correct panel
-        endpointEditorPanel.webview.onDidReceiveMessage(async (message) => {
-
-          if (message.type === 'update-connection') {
-            const updatedConfigPartial = message.data as Partial<EndpointConfigurationV1WithPassword>;
-            const updatedConfig = await connectionManager.update(updatedConfigPartial);
-            connectionsSidepanel.refresh();
-
-            // inform the webview about the active connection change
-            endpointEditorPanel?.webview.postMessage({ type: 'active-connection', data: updatedConfig });
-
-            // connect to the updated endpoint
-            const item = new EndpointConnectionListItem(updatedConfig, true, vscode.TreeItemCollapsibleState.None);
-            connectToEndpoint(context, connectionsSidepanel, sparqlNotebookCellStatusBarItemProvider)(item);
-          }
-        }
-        );
-      }
+      () => endpointEditorPanel.showPanel()
     )
-  )
+  );
 
   // register the sparql notebook serializer
   context.subscriptions.push(
@@ -107,11 +61,9 @@ export async function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(sparqlNotebookController);
 
   // register the cell status bar item provider
-  const sparqlNotebookCellStatusBarItemProvider = new SparqlNotebookCellStatusBarItemProvider();
   context.subscriptions.push(vscode.notebooks.registerNotebookCellStatusBarItemProvider(extensionId, sparqlNotebookCellStatusBarItemProvider));
 
   // register the connections sidepanel
-  const connectionsSidepanel = new EndpointConnectionTreeDataProvider();
   vscode.window.registerTreeDataProvider(storageKey, connectionsSidepanel);
 
   vscode.commands.registerCommand(
@@ -121,35 +73,27 @@ export async function activate(context: vscode.ExtensionContext) {
 
   vscode.commands.registerCommand(
     `${extensionId}.addNewConnectionConfiguration`,
-    addConnection(context, connectionsSidepanel, getEndpointEditorPanel)
+    addConnection(endpointEditorPanel)
   );
   vscode.commands.registerCommand(
     `${extensionId}.connect`,
     connectToEndpoint(context, connectionsSidepanel, sparqlNotebookCellStatusBarItemProvider)
   );
 
+
   const treeView = vscode.window.createTreeView('sparql-notebook-connections', {
     treeDataProvider: connectionsSidepanel
   });
 
+
+
   treeView.onDidChangeSelection(e => {
     const selected = e.selection[0] as EndpointConnectionListItem | undefined;
-    if (selected) {
-      // Ensure the endpointEditorPanel is shown before posting the message
-      if (!endpointEditorPanel) {
-        vscode.commands.executeCommand(`${extensionId}.showEndpointEditor`).then(() => {
-          // Wait a tick for the panel to be created and shown
-          setTimeout(() => {
-            if (endpointEditorPanel) {
-              endpointEditorPanel.reveal(vscode.ViewColumn.One);
-              endpointEditorPanel.webview.postMessage({ type: 'active-connection', data: selected!.config });
-            }
-          }, 100);
-        });
-      } else {
-        endpointEditorPanel.reveal(vscode.ViewColumn.One);
-        endpointEditorPanel.webview.postMessage({ type: 'active-connection', data: selected!.config });
-      }
+
+    if (selected && selected.config) {
+      endpointEditorPanel.showPanel();
+      endpointEditorPanel.editConnection(selected.config);
+
     }
   });
 
@@ -261,31 +205,3 @@ export async function activate(context: vscode.ExtensionContext) {
 
 // this method is called when your extension is deactivated
 export function deactivate() { }
-
-
-
-// Utility to get webview HTML for Angular app
-function getWebviewContent(panel: vscode.WebviewPanel, extensionPath: string) {
-  const appDistPath = vscode.Uri.file(
-    path.join(extensionPath, 'out', 'webview', 'endpoint-view', 'browser')
-  );
-  const indexHtmlPath = path.join(appDistPath.fsPath, 'index.html');
-  let indexHtml = '';
-  try {
-    indexHtml = require('fs').readFileSync(indexHtmlPath, 'utf8');
-  } catch (e) {
-    return `<html><body><h1>Could not load Angular app</h1><pre>${e}</pre></body></html>`;
-  }
-  // Rewrite local resource URLs to webview URIs
-  indexHtml = indexHtml.replace(/src=\"(.+?)\"/g, (match, src) => {
-    if (src.startsWith('http') || src.startsWith('data:')) return match;
-    const resourceUri = panel.webview.asWebviewUri(vscode.Uri.file(path.join(appDistPath.fsPath, src)));
-    return `src=\"${resourceUri}\"`;
-  });
-  indexHtml = indexHtml.replace(/href=\"(.+?)\"/g, (match, href) => {
-    if (href.startsWith('http') || href.startsWith('data:') || href.startsWith('#')) return match;
-    const resourceUri = panel.webview.asWebviewUri(vscode.Uri.file(path.join(appDistPath.fsPath, href)));
-    return `href=\"${resourceUri}\"`;
-  });
-  return indexHtml;
-}
