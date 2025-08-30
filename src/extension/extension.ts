@@ -17,11 +17,12 @@ import { SparqlNotebookCellStatusBarItemProvider } from './notebook/SparqlNotebo
 
 import * as path from "path";
 import { EndpointConnectionListItem } from "./sparql-connection-menu/endpoint-connection-list-item.class";
-import { EndpointConfigurationV1, EndpointConfigurationV1WithPassword, migrateEndpointConfigurationsToV1, migratePassword } from './model/endpoint-configuration-v1';
-import { EndpointConfiguration } from "./model/endpoint-configuration";
+import { EndpointConfigurationV1WithPassword } from './model/endpoint-configuration-v1';
+import { connectionConfigurationManager } from "./connection/connectioin-configuration";
 
 export const extensionId = "sparql-notebook";
 export const storageKey = `${extensionId}-connections`;
+export const connectionManager = connectionConfigurationManager;
 
 /**
  * Activate the extension.
@@ -29,15 +30,7 @@ export const storageKey = `${extensionId}-connections`;
  * @param context activate the form provider
  */
 export async function activate(context: vscode.ExtensionContext) {
-  // Migrate endpoint configs at startup
-  const configs = context.globalState.get<(EndpointConfiguration | EndpointConfigurationV1)[]>(storageKey, []);
-  const oldConfigs = configs.filter(cfg => (cfg as EndpointConfigurationV1).configVersion === undefined);
-  const newConfigs = configs.filter(cfg => (cfg as EndpointConfigurationV1).configVersion === 1);
-  if (oldConfigs.length) {
-    console.log(`Migrating ${oldConfigs.length} old endpoint configurations to v1...`);
-    const migratedConfigs = await migrateEndpointConfigurationsToV1(oldConfigs, context);
-    context.globalState.update(storageKey, [...migratedConfigs, ...newConfigs]);
-  }
+  await connectionManager.initialize(context);
 
   // Register command to show the endpoint editor webview
   let endpointEditorPanel: vscode.WebviewPanel | undefined;
@@ -46,6 +39,7 @@ export async function activate(context: vscode.ExtensionContext) {
   function getEndpointEditorPanel() {
     return endpointEditorPanel;
   }
+
   context.subscriptions.push(
     vscode.commands.registerCommand(
       `${extensionId}.showEndpointEditor`,
@@ -81,88 +75,24 @@ export async function activate(context: vscode.ExtensionContext) {
 
         // Register the webview message handler here so it is always attached to the correct panel
         endpointEditorPanel.webview.onDidReceiveMessage(async (message) => {
-          console.log('Webview message received:', message);
+
           if (message.type === 'update-connection') {
-            const updatedConfig = message.data as Partial<EndpointConfigurationV1WithPassword>; // The updated config sent from the webview
-            console.log('Received updated config from webview:', updatedConfig);
-            // 1. Load all configs from storage
-            const configs = context.globalState.get<EndpointConfigurationV1[]>(storageKey, []);
+            const updatedConfigPartial = message.data as Partial<EndpointConfigurationV1WithPassword>;
+            const updatedConfig = await connectionManager.update(updatedConfigPartial);
+            connectionsSidepanel.refresh();
 
-            // 2. Find and update the matching config (by id)
-            let idx = configs.findIndex(cfg => cfg.id === updatedConfig.id);
-            if (idx === -1) {
-              console.log('No matching config found for update:, it is new connection');
-              configs.push(updatedConfig as EndpointConfigurationV1);
-              // set idx to the new config's index
-              idx = configs.length - 1;
-            }
-            if (idx !== -1) {
-              const didPasswordChange = 'password' in updatedConfig;
-              const didUpdatePasswordChange = 'updatePassword' in updatedConfig;
-              const didQleverUpdateTokenChange = 'qleverUpdateToken' in updatedConfig;
-              configs[idx] = { ...configs[idx], ...updatedConfig };
+            // inform the webview about the active connection change
+            endpointEditorPanel?.webview.postMessage({ type: 'active-connection', data: updatedConfig });
 
-              if (didPasswordChange) {
-                const password = updatedConfig.password;
-                const passwordKey = `${extensionId}.${updatedConfig.id}`;
-                if (updatedConfig.id && password !== undefined) {
-                  await context.secrets.store(passwordKey, password);
-                }
-                // remove the password from updatedConfig because it's stored in the secret store
-                delete (configs[idx] as Partial<EndpointConfigurationV1WithPassword>).password;
-                configs[idx].passwordKey = passwordKey;
-                console.log('Password updated in secret store');
-                console.log('Updated config after password change:', updatedConfig);
-              }
-              if (didUpdatePasswordChange) {
-                const updatePassword = updatedConfig.updatePassword;
-                const updatePasswordKey = `${extensionId}.${updatedConfig.id}.updatePassword`;
-                if (updatedConfig.id && updatePassword !== undefined) {
-                  await context.secrets.store(updatePasswordKey, updatePassword);
-                }
-                // remove the updatePassword from updatedConfig because it's stored in the secret store
-                delete (configs[idx] as Partial<EndpointConfigurationV1WithPassword>).updatePassword;
-              }
-              if (didQleverUpdateTokenChange) {
-                const qleverUpdateToken = updatedConfig.qleverUpdateToken;
-                const qleverUpdateTokenKey = `${extensionId}.${updatedConfig.id}.qleverUpdateToken`;
-                if (updatedConfig.id && qleverUpdateToken !== undefined) {
-                  await context.secrets.store(qleverUpdateTokenKey, qleverUpdateToken);
-                }
-                // remove the qleverUpdateToken from updatedConfig because it's stored in the secret store
-                delete (configs[idx] as Partial<EndpointConfigurationV1WithPassword>).qleverUpdateToken;
-              }
-
-              // 3. Save back to storage
-              await context.globalState.update(storageKey, configs);
-              // 4. Optionally, refresh your UI
-              connectionsSidepanel.refresh();
-              setTimeout(() => {
-                // 1. Load all configs from storage
-                const configs = context.globalState.get<EndpointConfigurationV1[]>(storageKey, []);
-
-                // 2. Find and update the matching config (by id)
-                const idx = configs.findIndex(cfg => cfg.id === updatedConfig.id);
-                const activeConn = configs[idx];
-                if (activeConn) {
-                  connectionsSidepanel.setActive(activeConn.id)
-                  const item = new EndpointConnectionListItem(activeConn, true, vscode.TreeItemCollapsibleState.None);
-
-                  connectToEndpoint(context, connectionsSidepanel, sparqlNotebookCellStatusBarItemProvider)(item);
-                  endpointEditorPanel?.webview.postMessage({ type: 'active-connection', data: activeConn });
-                }
-              }, 100);
-            }
+            // connect to the updated endpoint
+            const item = new EndpointConnectionListItem(updatedConfig, true, vscode.TreeItemCollapsibleState.None);
+            connectToEndpoint(context, connectionsSidepanel, sparqlNotebookCellStatusBarItemProvider)(item);
           }
-        });
-      }))
-
-
-
-
-
-
-
+        }
+        );
+      }
+    )
+  )
 
   // register the sparql notebook serializer
   context.subscriptions.push(
@@ -198,7 +128,6 @@ export async function activate(context: vscode.ExtensionContext) {
     connectToEndpoint(context, connectionsSidepanel, sparqlNotebookCellStatusBarItemProvider)
   );
 
-  // Assuming you have a TreeDataProvider called endpointTreeDataProvider
   const treeView = vscode.window.createTreeView('sparql-notebook-connections', {
     treeDataProvider: connectionsSidepanel
   });
@@ -360,5 +289,3 @@ function getWebviewContent(panel: vscode.WebviewPanel, extensionPath: string) {
   });
   return indexHtml;
 }
-
-

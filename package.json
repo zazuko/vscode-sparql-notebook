@@ -155,7 +155,7 @@
       "sparql-notebook": [
         {
           "id": "sparql-notebook-connections",
-          "name": "Sparql Connections",
+          "name": "Connections",
           "visibility": "visible",
           "icon": "assets/logo.svg",
           "contextualTitle": "Connections"
