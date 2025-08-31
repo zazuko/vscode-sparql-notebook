@@ -80,12 +80,9 @@ export async function activate(context: vscode.ExtensionContext) {
     connectToEndpoint(context, connectionsSidepanel, sparqlNotebookCellStatusBarItemProvider)
   );
 
-
   const treeView = vscode.window.createTreeView('sparql-notebook-connections', {
     treeDataProvider: connectionsSidepanel
   });
-
-
 
   treeView.onDidChangeSelection(e => {
     const selected = e.selection[0] as EndpointConnectionListItem | undefined;

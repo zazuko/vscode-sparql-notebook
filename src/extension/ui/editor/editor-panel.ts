@@ -25,6 +25,11 @@ export class EndpointEditorPanel {
         this.#sparqlNotebookCellStatusBarItemProvider = sparqlNotebookCellStatusBarItemProvider;
     }
 
+    /**
+     * Show the endpoint editor panel.
+     * 
+     * @returns void
+     */
     public showPanel() {
         if (this.#panel) {
             this.#panel.reveal(ViewColumn.One);
@@ -66,6 +71,11 @@ export class EndpointEditorPanel {
         });
     }
 
+    /**
+     * Edit an existing endpoint connection.
+     * 
+     * @param config The updated connection configuration.
+     */
     public editConnection(config: Partial<EndpointConfigurationV1>) {
         this.#panel?.webview.postMessage({ type: 'active-connection', data: config });
     }
