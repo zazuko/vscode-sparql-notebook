@@ -1,16 +1,18 @@
 
-import * as vscode from "vscode";
-import { storageKey } from "../extension";
+import { EventEmitter, TreeItem, TreeDataProvider, TreeItemCollapsibleState } from "vscode";
 import type { EndpointConfigurationV1 } from "../model/endpoint-configuration-v1";
 import { EndpointConnectionListItem } from "./endpoint-connection-list-item.class";
+import { connectionManager } from "../extension";
 
-export class EndpointConnectionTreeDataProvider implements vscode.TreeDataProvider<EndpointConnectionListItem | vscode.TreeItem> {
-  #onDidChangeTreeData: vscode.EventEmitter<EndpointConnectionListItem | undefined | void> = new vscode.EventEmitter<EndpointConnectionListItem | undefined | void>();
-  readonly onDidChangeTreeData: vscode.Event<EndpointConnectionListItem | undefined | void> = this.#onDidChangeTreeData.event;
+export class EndpointConnectionTreeDataProvider implements TreeDataProvider<EndpointConnectionListItem | TreeItem> {
+
+  #onDidChangeTreeData = new EventEmitter<void>();
+
+  readonly onDidChangeTreeData = this.#onDidChangeTreeData.event;
 
   #activeConn: string | null = null;
 
-  constructor(public readonly context: vscode.ExtensionContext) {
+  constructor() {
     this.refresh();
     this.#activeConn = null;
   }
@@ -19,7 +21,7 @@ export class EndpointConnectionTreeDataProvider implements vscode.TreeDataProvid
     this.#onDidChangeTreeData.fire();
   }
 
-  getTreeItem(element: EndpointConnectionListItem): vscode.TreeItem {
+  getTreeItem(element: EndpointConnectionListItem): TreeItem {
     return element;
   }
 
@@ -29,16 +31,20 @@ export class EndpointConnectionTreeDataProvider implements vscode.TreeDataProvid
   }
 
   getActiveConnection(): EndpointConfigurationV1 | null {
-    const connections = this.context.globalState.get<EndpointConfigurationV1[] | null>(storageKey) ?? [];
-    if (!this.#activeConn) return null;
+    const connections = connectionManager.getConnections();
+
+    if (!this.#activeConn) {
+      return null;
+    }
+
     return connections.find((c: EndpointConfigurationV1) => c.id === this.#activeConn) ?? null;
   }
 
-  getChildren(_element?: EndpointConnectionListItem): Thenable<vscode.TreeItem[]> {
-    const connections = this.context.globalState.get<EndpointConfigurationV1[] | null>(storageKey) ?? [];
+  getChildren(_element?: EndpointConnectionListItem): Thenable<TreeItem[]> {
+    const connections = connectionManager.getConnections();
 
     return Promise.resolve(
-      connections.map((config) => new EndpointConnectionListItem(config, config.id === this.#activeConn, vscode.TreeItemCollapsibleState.None))
+      connections.map((config) => new EndpointConnectionListItem(config, config.id === this.#activeConn, TreeItemCollapsibleState.None))
     );
   }
 }

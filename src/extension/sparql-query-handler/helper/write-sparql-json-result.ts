@@ -17,7 +17,9 @@ import { writeDataTableRendererCompatibleJson } from "./write-data-table-rendere
  */
 
 export function writeSparqlJsonResult(resultJson: string, prefixMap: PrefixMap = {}): NotebookCellOutput {
+
     const parsedResult = JSON.parse(resultJson);
+
     const outputItem = new NotebookCellOutput([
         writeJson(JSON.stringify(parsedResult, null, 4)),
         NotebookCellOutputItem.json(
@@ -26,6 +28,6 @@ export function writeSparqlJsonResult(resultJson: string, prefixMap: PrefixMap =
         ),
         writeDataTableRendererCompatibleJson(resultJson, prefixMap)
     ]);
-    outputItem.metadata = { prefixMap: prefixMap };
+    outputItem.metadata = { prefixMap };
     return outputItem;
 }

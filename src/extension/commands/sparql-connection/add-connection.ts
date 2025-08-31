@@ -1,9 +1,9 @@
 import * as vscode from "vscode";
 
 import { extensionId } from "../../extension";
-import { EndpointConnectionTreeDataProvider } from "../../sparql-connection-menu/endpoint-tree-data-provider.class";
 import { EndpointConfigurationV1 } from "../../model/endpoint-configuration-v1";
 import { randomUUID } from "crypto";
+import { EndpointEditorPanel } from "../../ui/editor/editor-panel";
 
 /**
  * Create a new SPARQL endpoint connection.
@@ -21,9 +21,7 @@ import { randomUUID } from "crypto";
  * @param getEndpointEditorPanel - function to get or create the endpointEditorPanel
  */
 export function addConnection(
-    context: vscode.ExtensionContext,
-    connectionsSidepanel: EndpointConnectionTreeDataProvider,
-    getEndpointEditorPanel: () => vscode.WebviewPanel | undefined
+    endpointEditorPanel: EndpointEditorPanel
 ) {
     return async () => {
         // 1. Create a new partial connection
@@ -32,24 +30,8 @@ export function addConnection(
             configVersion: 1,
             name: "New Connection"
         };
-
-        // 2. Open or reveal the endpoint editor panel
-        let panel = getEndpointEditorPanel();
-        if (!panel) {
-            await vscode.commands.executeCommand(`${extensionId}.showEndpointEditor`);
-            // Wait a tick for the panel to be created
-            setTimeout(() => {
-                panel = getEndpointEditorPanel();
-                if (panel) {
-                    panel.reveal(vscode.ViewColumn.One);
-                    // 3. Send the new connection to the webview
-                    panel.webview.postMessage({ type: 'new-connection', data: newConnection });
-                }
-            }, 100);
-        } else {
-            panel.reveal(vscode.ViewColumn.One);
-            panel.webview.postMessage({ type: 'new-connection', data: newConnection });
-        }
+        endpointEditorPanel.showPanel();
+        endpointEditorPanel.editConnection(newConnection);
     };
 }
 
