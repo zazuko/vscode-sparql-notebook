@@ -14,7 +14,7 @@
   {
     "kind": 2,
     "language": "sparql",
-    "value": "SELECT ?s ?p ?o WHERE {\n    ?s ?p ?o\n}",
+    "value": "SELECT ?s ?p ?o WHERE {\n    ?s ?p ?o\n} LIMIT 100",
     "metadata": {}
   }
 ]

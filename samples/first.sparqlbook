@@ -26,7 +26,7 @@
   {
     "kind": 2,
     "language": "sparql",
-    "value": "#\n# [endpointsss=https://lindas.admin.ch/query]\n#\nPREFIX gont: <https://gont.ch/>\nPREFIX schema: <http://schema.org/>\n\nSELECT * WHERE {\n        ?canton a <https://schema.ld.admin.ch/Canton> ; \n        schema:name ?name .\n        FILTER(lang(?name) = 'de')\n} ",
+    "value": "#\n# [endpoint=https://lindas.admin.ch/query]\n#\nPREFIX gont: <https://gont.ch/>\nPREFIX schema: <http://schema.org/>\n\nSELECT * WHERE {\n        ?canton a <https://schema.ld.admin.ch/Canton> ; \n        schema:name ?name .\n        FILTER(lang(?name) = 'de')\n} ",
     "metadata": {}
   },
   {
