@@ -1,19 +1,22 @@
-import { promises as fs } from "fs";
-import * as vscode from "vscode";
-import { TextEncoder } from "util";
+import {
+    Uri,
+    workspace,
+    CancellationTokenSource,
+    NotebookCellKind
+} from "vscode";
 
 import { SparqlNotebookSerializer } from "../../notebook/file-io";
 
-async function loadNotebook(uri: vscode.Uri) {
-    const data = await fs.readFile(uri.fsPath);
+async function loadNotebook(uri: Uri) {
+    const data = await workspace.fs.readFile(uri);
     const nbSerialiser = new SparqlNotebookSerializer();
-    const source = new vscode.CancellationTokenSource();
+    const source = new CancellationTokenSource();
     const token = source.token;
     const nbData = nbSerialiser.deserializeNotebook(data, token);
     return nbData;
 }
 
-export const exportToMarkdown = async (documentToExportUri: vscode.Uri) => {
+export const exportToMarkdown = async (documentToExportUri: Uri) => {
     if (!documentToExportUri) {
         return;
     }
@@ -24,18 +27,18 @@ export const exportToMarkdown = async (documentToExportUri: vscode.Uri) => {
 
         const cells = currentNotebook.cells;
         cells.forEach((cell) => {
-            if (cell.kind === vscode.NotebookCellKind.Markup) {
+            if (cell.kind === NotebookCellKind.Markup) {
                 markdown += `${cell.value}\n`;
-            } else if (cell.kind === vscode.NotebookCellKind.Code) {
+            } else if (cell.kind === NotebookCellKind.Code) {
                 let sparqlQuery = cell.value;
-                if (cell.metadata?.file) {
+                if (cell.metadata?.["file"]) {
                     sparqlQuery = cell.value.replace(/^# from file.*\n/, '');
                 }
                 markdown += `\n\`\`\`sparql\n${sparqlQuery}\n\`\`\`\n`;
             }
         });
-        const newDocUri = vscode.Uri.file(`${documentToExportUri?.fsPath}.md`);
-        await vscode.workspace.fs.writeFile(
+        const newDocUri = Uri.file(`${documentToExportUri?.fsPath}.md`);
+        await workspace.fs.writeFile(
             newDocUri,
             new TextEncoder().encode(markdown)
         );
