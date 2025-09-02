@@ -1,14 +1,11 @@
 import { NotebookCell, NotebookCellOutput, RelativePattern, NotebookCellOutputItem, NotebookController, NotebookDocument, Uri, commands, notebooks, window, workspace, NotebookCellExecution } from 'vscode';
 import { extensionId } from "../extension";
 import { Endpoint, FileEndpoint, HttpEndpoint, } from "../endpoint";
-import { PrefixMap } from '../model/prefix-map';
 import { notebookEndpoint, SimpleHttpResponse } from '../endpoint/endpoint';
 import { SparqlNotebookCell } from './sparql-notebook-cell';
-import { shrink } from '@zazuko/prefixes';
 import { SparqlQuery } from '../endpoint/model/sparql-query';
 import { EndpointKind } from "../endpoint/const/endpoint-kind";
 import { MimeType } from '../const/enum/mime-type';
-import path = require('path');
 import { SparqlQueryHandler } from '../sparql-query-handler/sparql-query-handler';
 import { SelectQueryHandler } from '../sparql-query-handler/select-query-handler';
 import { AskQueryHandler } from '../sparql-query-handler/ask-query-handler';
@@ -17,10 +14,12 @@ import { ErrorQueryHandler } from '../sparql-query-handler/error-query-handler';
 import { ConstructQueryHandler } from '../sparql-query-handler/construct-query-handler';
 import { writeError } from '../sparql-query-handler/helper/write-error';
 import { SPARQLQueryKind } from '../const/enum/sparql-query-kind';
-import { getAcceptHeader } from '../endpoint/sparql-utils';
 import { HttpErrorStatus, HttpSuccessStatus } from '../endpoint/const/http-status';
 import { QLeverError } from '../endpoint/model/qlever-error';
 
+/**
+ * Controller for SPARQL notebooks.
+ */
 export class SparqlNotebookController {
   readonly controllerId = `${extensionId}-controller-id`;
   readonly notebookType = extensionId;
@@ -234,26 +233,45 @@ export class SparqlNotebookController {
     const notebookUri = window.activeNotebookEditor?.notebook.uri;
     const fileUri: Uri[] = [];
 
+
+    // Helper functions for browser-compatible path operations
+    function getDirName(path: string): string {
+      const idx = path.lastIndexOf("/");
+      return idx !== -1 ? path.substring(0, idx) : ".";
+    }
+    function getBaseName(path: string): string {
+      const idx = path.lastIndexOf("/");
+      return idx !== -1 ? path.substring(idx + 1) : path;
+    }
+    function joinPath(...parts: string[]): string {
+      return parts.join("/").replace(/\/+/g, "/");
+    }
+    function normalizePath(path: string): string {
+      // Remove duplicate slashes and resolve ./ and ../ (simple version)
+      const segments = [] as string[];
+      for (const part of path.split("/")) {
+        if (part === "..") segments.pop();
+        else if (part !== "." && part !== "") segments.push(part);
+      }
+      return "/" + segments.join("/");
+    }
+
     if (filePathPattern.startsWith('/')) {
       // Absolute pattern
-      const fileName = path.basename(filePathPattern);
-      const directory = path.dirname(filePathPattern);
+      const fileName = getBaseName(filePathPattern);
+      const directory = getDirName(filePathPattern);
       const relativePattern = new RelativePattern(directory, fileName);
       const files = await workspace.findFiles(relativePattern);
-
       fileUri.push(...files);
     } else {
       // Relative pattern
-
-      const notebookDirectory = path.dirname(notebookUri!.fsPath);
-      const normalizedPattern = path.normalize(path.join(notebookDirectory, filePathPattern));
-
-      const fileName = path.basename(normalizedPattern);
-      const directory = path.dirname(normalizedPattern);
-
+      const notebookDirectory = getDirName(notebookUri!.fsPath);
+      const joined = joinPath(notebookDirectory, filePathPattern);
+      const normalizedPattern = normalizePath(joined);
+      const fileName = getBaseName(normalizedPattern);
+      const directory = getDirName(normalizedPattern);
       const relativePattern = new RelativePattern(directory, fileName);
       const files = await workspace.findFiles(relativePattern);
-
       fileUri.push(...files);
       if (files.length === 0) {
         window.showErrorMessage(`No files found for pattern ${filePathPattern}`);

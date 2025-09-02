@@ -46,5 +46,11 @@
     "language": "sparql",
     "value": "# [endpoint=./rdf/a.trig]\n# [use_default_graph_as_union=false]\n\n\nSELECT * WHERE {\n    ?s ?p ?o\n}",
     "metadata": {}
+  },
+  {
+    "kind": 2,
+    "language": "sparql",
+    "value": "# [endpoint=./deep/*.ttl]\n\nSELECT * WHERE {\n    ?s ?p ?o\n}\n",
+    "metadata": {}
   }
 ]
