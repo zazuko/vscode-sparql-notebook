@@ -1,8 +1,8 @@
 
-import { randomUUID } from 'crypto';
 import { EndpointConfiguration } from './endpoint-configuration';
-import * as vscode from "vscode";
+import { ExtensionContext } from "vscode";
 import { extensionId } from '../extension';
+import { getUuid } from '../utils/uuid';
 
 export interface EndpointConfigurationV1 {
     // Configuration schema version (required)
@@ -35,13 +35,13 @@ export interface EndpointConfigurationV1WithPassword extends EndpointConfigurati
     qleverUpdateToken?: string;
 }
 
-export async function migrateEndpointConfigurationsToV1(configs: (EndpointConfiguration | EndpointConfigurationV1)[], context: vscode.ExtensionContext): Promise<EndpointConfigurationV1[]> {
+export async function migrateEndpointConfigurationsToV1(configs: (EndpointConfiguration | EndpointConfigurationV1)[], context: ExtensionContext): Promise<EndpointConfigurationV1[]> {
     const migrated = configs.map(async cfg => {
         if ('configVersion' in cfg && cfg.configVersion >= 1) {
             return cfg;
         }
         // get the password from the secret store
-        const uuid = randomUUID();
+        const uuid = getUuid();
         const passwordKey = await migratePassword(uuid, cfg.passwordKey || `${extensionId}.${cfg.name}`, context);
 
         return {
@@ -55,7 +55,7 @@ export async function migrateEndpointConfigurationsToV1(configs: (EndpointConfig
 }
 
 
-export async function migratePassword(uuid: string, oldPasswordKey: string, context: vscode.ExtensionContext): Promise<string> {
+export async function migratePassword(uuid: string, oldPasswordKey: string, context: ExtensionContext): Promise<string> {
     // check if the old password key allready the uuid pattern
     if (oldPasswordKey === `${extensionId}.${uuid}`) {
         return oldPasswordKey;

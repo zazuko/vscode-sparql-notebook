@@ -1,8 +1,7 @@
-import * as vscode from "vscode";
+import { getUuid } from '../../utils/uuid';
 
-import { extensionId } from "../../extension";
 import { EndpointConfigurationV1 } from "../../model/endpoint-configuration-v1";
-import { randomUUID } from "crypto";
+
 import { EndpointEditorPanel } from "../../ui/editor/editor-panel";
 
 /**
@@ -26,7 +25,7 @@ export function addConnection(
     return async () => {
         // 1. Create a new partial connection
         const newConnection: Partial<EndpointConfigurationV1> = {
-            id: randomUUID(),
+            id: getUuid(),
             configVersion: 1,
             name: "New Connection"
         };

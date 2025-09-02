@@ -187,7 +187,7 @@
     "build:renderer": "esbuild ./src/renderer/sparql-result-json.tsx --sourcemap --minify --jsx=automatic --tsconfig=./src/renderer/tsconfig.json --sourcemap --bundle --format=esm --platform=browser --outfile=./out/renderer/sparql-result-json.js",
     "build:webview": "cd src/webview/endpoint/endpoint-view && npm run build && rm -rf ../../../../out/webview/ && mkdir -p ../../../../out/webview/ && mv dist/endpoint-view ../../../../out/webview/ ",
     "copy:oxigraph": "cp node_modules/oxigraph/node_bg.wasm out/",
-    "esbuild": "npm run build:extension && npm run build:renderer && npm run build:webview",
+    "esbuild": "npm run build:extension && npm run build:renderer && npm run build:webview && npm run build:web",
     "clean": "rm -rf out/ && mkdir out/"
   },
   "devDependencies": {

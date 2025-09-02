@@ -1,6 +1,6 @@
 
 import { Uri, window } from 'vscode';
-import * as fs from 'fs';
+import { workspace } from 'vscode';
 
 import { Endpoint, SimpleHttpResponse } from '../endpoint';
 import { RdfMimeType, SparqlStore } from '../../sparql-store/sparql-store';
@@ -14,7 +14,7 @@ import { MimeType } from '../../const/enum/mime-type';
 export class FileEndpoint extends Endpoint {
     #url: string = '';
     readonly #store: SparqlStore;
-
+    override isQLeverEndpoint: boolean = false;
     /**
      * Creates a new instance of the HttpEndpoint class.
      * @param endpointUrl - The URL of the SPARQL endpoint.
@@ -70,7 +70,8 @@ export class FileEndpoint extends Endpoint {
         }
 
         try {
-            const fileContent = await fs.promises.readFile(rdfFile.fsPath, 'utf-8');
+            const fileContentBytes = await workspace.fs.readFile(rdfFile);
+            const fileContent = new TextDecoder('utf-8').decode(fileContentBytes);
             this.#store.load(fileContent, mimeType);
         } catch (e: any) {
             const message = e.message ?? e;
