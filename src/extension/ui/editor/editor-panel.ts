@@ -1,6 +1,13 @@
-import { WebviewPanel, ExtensionContext, ViewColumn, window, Uri, TreeItemCollapsibleState } from "vscode";
+import {
+    WebviewPanel,
+    ExtensionContext,
+    ViewColumn,
+    window,
+    Uri,
+    TreeItemCollapsibleState
+} from "vscode";
 
-import * as path from "path";
+
 
 import { EndpointConnectionTreeDataProvider } from "../../sparql-connection-menu/endpoint-tree-data-provider.class";
 import { SparqlNotebookCellStatusBarItemProvider } from "../../notebook/SparqlNotebookCellStatusBarItemProvider";
@@ -42,8 +49,7 @@ export class EndpointEditorPanel {
             ViewColumn.One,
             {
                 enableScripts: true,
-                localResourceRoots: [Uri.file(path.join(this.#context.extensionPath, 'out', 'webview', 'endpoint-view', 'browser'))
-                ]
+                localResourceRoots: [Uri.file(EndpointEditorPanel.joinPath(this.#context.extensionPath, 'out', 'webview', 'endpoint-view', 'browser'))]
             }
         );
         this.#panel.webview.html = this.#getWebviewContent(this.#panel, this.#context.extensionPath);
@@ -83,9 +89,9 @@ export class EndpointEditorPanel {
     // Utility to get webview HTML for Angular app
     #getWebviewContent(panel: WebviewPanel, extensionPath: string) {
         const appDistPath = Uri.file(
-            path.join(extensionPath, 'out', 'webview', 'endpoint-view', 'browser')
+            EndpointEditorPanel.joinPath(extensionPath, 'out', 'webview', 'endpoint-view', 'browser')
         );
-        const indexHtmlPath = path.join(appDistPath.fsPath, 'index.html');
+        const indexHtmlPath = EndpointEditorPanel.joinPath(appDistPath.fsPath, 'index.html');
         let indexHtml = '';
         try {
             indexHtml = require('fs').readFileSync(indexHtmlPath, 'utf8');
@@ -95,15 +101,20 @@ export class EndpointEditorPanel {
         // Rewrite local resource URLs to webview URIs
         indexHtml = indexHtml.replace(/src=\"(.+?)\"/g, (match, src) => {
             if (src.startsWith('http') || src.startsWith('data:')) return match;
-            const resourceUri = panel.webview.asWebviewUri(Uri.file(path.join(appDistPath.fsPath, src)));
+            const resourceUri = panel.webview.asWebviewUri(Uri.file(EndpointEditorPanel.joinPath(appDistPath.fsPath, src)));
             return `src=\"${resourceUri}\"`;
         });
         indexHtml = indexHtml.replace(/href=\"(.+?)\"/g, (match, href) => {
             if (href.startsWith('http') || href.startsWith('data:') || href.startsWith('#')) return match;
-            const resourceUri = panel.webview.asWebviewUri(Uri.file(path.join(appDistPath.fsPath, href)));
+            const resourceUri = panel.webview.asWebviewUri(Uri.file(EndpointEditorPanel.joinPath(appDistPath.fsPath, href)));
             return `href=\"${resourceUri}\"`;
         });
         return indexHtml;
+    }
+
+    // Browser-compatible path join utility
+    private static joinPath(...parts: string[]): string {
+        return parts.join("/").replace(/\/+/g, "/");
     }
 
 }
