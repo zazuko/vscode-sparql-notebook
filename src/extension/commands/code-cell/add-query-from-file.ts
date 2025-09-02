@@ -1,6 +1,21 @@
-import { NotebookCell, NotebookCellData, NotebookCellKind, NotebookEdit, NotebookRange, Uri, window, workspace, WorkspaceEdit } from "vscode";
-import * as path from 'path';
+import {
+    NotebookCell,
+    NotebookCellData,
+    NotebookCellKind,
+    NotebookEdit,
+    NotebookRange,
+    Uri,
+    window,
+    workspace,
+    WorkspaceEdit
+} from "vscode";
 
+/**
+ * Adds a SPARQL query from a file to the specified notebook cell.
+ * 
+ * @param cell The notebook cell to which the query will be added.
+ * @returns A promise that resolves when the query has been added.
+ */
 export async function addQueryFromFile(cell: NotebookCell) {
     const activeNotebook = cell.notebook;
 
@@ -26,11 +41,20 @@ export async function addQueryFromFile(cell: NotebookCell) {
                 return;
             }
             try {
-                const relativeSparqlFilePath = path.relative(path.dirname(activeNotebook.uri.fsPath), sparqlFilePath).replace(/\\/g, '/');
-                const notebookFilePath = activeNotebook.uri.fsPath;
-                const notebookFilename = path.basename(activeNotebook.uri.fsPath);
-                const notebookPathWithoutFilename = notebookFilePath.replace(new RegExp(`${notebookFilename}$`), '');
-                const fileContent = await workspace.fs.readFile(Uri.file(notebookPathWithoutFilename + relativeSparqlFilePath));
+
+                // Browser-compatible path operations
+                const notebookFsPath = activeNotebook.uri.fsPath;
+                // Get directory of notebook file
+                const lastSlashIdx = notebookFsPath.lastIndexOf("/");
+                const notebookDir = lastSlashIdx !== -1 ? notebookFsPath.substring(0, lastSlashIdx + 1) : "";
+                // Compute relative path (simple fallback: if sparqlFilePath starts with notebookDir, strip it)
+                let relativeSparqlFilePath = sparqlFilePath;
+                if (sparqlFilePath.startsWith(notebookDir)) {
+                    relativeSparqlFilePath = sparqlFilePath.substring(notebookDir.length);
+                }
+                relativeSparqlFilePath = relativeSparqlFilePath.replace(/\\/g, '/');
+                // Read file content
+                const fileContent = await workspace.fs.readFile(Uri.file(sparqlFilePath));
 
                 const newCell = new NotebookCellData(NotebookCellKind.Code, `# from file ${relativeSparqlFilePath}\n${(await fileContent).toString()}`, 'sparql');
 

@@ -2,8 +2,8 @@
 
 # [endpoint=https://lindas.admin.ch/query]
 #
-# change 
-# windows change
+# change with web extension code 
+# end back to notebook
 
 SELECT ?p ?o WHERE {
   <https://agriculture.ld.admin.ch/fsvo/animal-disease> ?p ?o .

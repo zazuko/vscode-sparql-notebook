@@ -1,15 +1,10 @@
+#
+# The query is broken 
 # [endpoint=https://lindas.admin.ch/query]
-PREFIX gont: <https://gont.ch/>
+
 PREFIX schema: <http://schema.org/>
-SELECT ?name ?abbr ?date WHERE {
-    { 
-        ?canton a gont:Canton;
-            gont:cantonAbbreviation ?abbr ;
-            gont:date ?date ;
-            gont:longName ?name . 
-    } UNION {
-        gont:Canton ?p ?o .
-    }
-    
-    
+
+SELECT * WHERE {
+      ?cantonIri a <https://schema.ld.admin.ch/Canton> ;
+             schema:alternateName ?canton .
 } 
