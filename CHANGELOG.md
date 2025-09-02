@@ -2,6 +2,9 @@
 
 All notable changes to the "vscode-sparql-notebook" extension will be documented in this file.
 
+## 1.0.12
+- Fix: Improved compatibility for Wikidata queries on Windows by ensuring the user agent is set correctly when using VS Code's fetch API.
+
 ## 1.0.11
 - Improve: Connection management and error handling
 - Refactor: There a not many functional changes in this version but the code has been cleaned up and reorganized for better readability and maintainability

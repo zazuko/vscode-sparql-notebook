@@ -56,6 +56,9 @@ export class HttpEndpoint extends Endpoint {
       headers['Authorization'] = `Basic ${encoded}`;
     }
 
+    // set the useragent header to vscode extension
+    headers['User-Agent'] = 'Mozilla/5.0 (compatible; vscode-sparql-notebook)';
+
     if (execution) {
       execution.token.onCancellationRequested((_: any) => {
         console.warn('Request cancelled');

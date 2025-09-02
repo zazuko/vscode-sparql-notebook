@@ -102,6 +102,7 @@ export class SparqlNotebookController {
 
     if (queryResult.status !== HttpSuccessStatus.OK && queryResult.status !== HttpSuccessStatus.NoContent) {
       this.#showHttpErrorMessage(queryResult, queryResult.statusText || 'Error', sparqlEndpoint, execution);
+      writeError(`SPARQL query failed: ${queryResult.status ?? ''} ${queryResult.statusText ?? ''} ${queryResult.data ?? ''}`);
       execution.end(false, Date.now());
       return;
     }
