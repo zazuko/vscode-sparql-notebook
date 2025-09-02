@@ -24,6 +24,7 @@
     "onNotebook:sparql-notebook"
   ],
   "main": "./out/extension.js",
+  "browser": "./out/web/extension.js",
   "contributes": {
     "notebooks": [
       {
@@ -181,6 +182,7 @@
     "lint": "eslint src --ext ts",
     "deploy": "npx vsce publish",
     "package": "npx vsce package",
+    "build:web": "node esbuild-web.js",
     "build:extension": "esbuild ./src/extension/extension.ts --sourcemap --minify --bundle --platform=node --external:vscode --external:pg-native --outfile=./out/extension.js",
     "build:renderer": "esbuild ./src/renderer/sparql-result-json.tsx --sourcemap --minify --jsx=automatic --tsconfig=./src/renderer/tsconfig.json --sourcemap --bundle --format=esm --platform=browser --outfile=./out/renderer/sparql-result-json.js",
     "build:webview": "cd src/webview/endpoint/endpoint-view && npm run build && rm -rf ../../../../out/webview/ && mkdir -p ../../../../out/webview/ && mv dist/endpoint-view ../../../../out/webview/ ",
@@ -189,6 +191,7 @@
     "clean": "rm -rf out/ && mkdir out/"
   },
   "devDependencies": {
+    "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
     "@types/glob": "^8.1.0",
     "@types/mocha": "^10.0.9",
     "@types/node": "18.x",
