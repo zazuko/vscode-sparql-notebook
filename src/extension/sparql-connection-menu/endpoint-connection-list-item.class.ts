@@ -5,30 +5,39 @@ import {
     Uri
 } from "vscode";
 
+
 import { EndpointConfigurationV1 } from "../model/endpoint-configuration-v1";
 
 export class EndpointConnectionListItem extends TreeItem {
+    readonly config: EndpointConfigurationV1;
+    readonly isActive: boolean;
+    override readonly collapsibleState: TreeItemCollapsibleState;
+    readonly assetsBaseUri: Uri;
+    override readonly command?: Command;
+
     constructor(
-        public readonly config: EndpointConfigurationV1,
-        public readonly isActive: boolean,
-        public override readonly collapsibleState: TreeItemCollapsibleState,
-        public override readonly command?: Command
+        config: EndpointConfigurationV1,
+        isActive: boolean,
+        collapsibleState: TreeItemCollapsibleState,
+        assetsBaseUri: Uri,
+        command?: Command
     ) {
         super(config.name, collapsibleState);
-
-        function joinAssetPath(...parts: string[]): string {
-            return parts.join("/").replace(/\/+/g, "/");
-        }
+        this.config = config;
+        this.isActive = isActive;
+        this.collapsibleState = collapsibleState;
+        this.assetsBaseUri = assetsBaseUri;
+        this.command = command;
         if (isActive) {
             this.iconPath = {
-                dark: Uri.file(joinAssetPath(assetsPath, "dark", "endpoint-connected.svg")),
-                light: Uri.file(joinAssetPath(assetsPath, "light", "endpoint-connected.svg")),
+                dark: Uri.joinPath(assetsBaseUri, "dark", "endpoint-connected.svg"),
+                light: Uri.joinPath(assetsBaseUri, "light", "endpoint-connected.svg"),
             };
             this.description = "Connected";
         } else {
             this.iconPath = {
-                dark: Uri.file(joinAssetPath(assetsPath, "dark", "endpoint.svg")),
-                light: Uri.file(joinAssetPath(assetsPath, "light", "endpoint.svg")),
+                dark: Uri.joinPath(assetsBaseUri, "dark", "endpoint.svg"),
+                light: Uri.joinPath(assetsBaseUri, "light", "endpoint.svg"),
             };
             this.description = "Inactive";
         }
@@ -36,13 +45,5 @@ export class EndpointConnectionListItem extends TreeItem {
     }
 }
 
-// __filename is an absolute path, so we can use string ops to get the assets folder
-function getAssetsPath(filename: string): string {
-    // Remove file name, go up two directories, then add /assets
-    const parts = filename.split("/");
-    parts.pop(); // remove file name
-    parts.pop(); // up one
-    parts.pop(); // up two
-    return parts.join("/") + "/assets";
-}
-export const assetsPath = getAssetsPath(__filename);
+
+
