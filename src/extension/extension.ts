@@ -1,4 +1,16 @@
-import * as vscode from "vscode";
+import {
+  commands,
+  ExtensionContext,
+  workspace,
+  notebooks,
+  window,
+  NotebookCellKind,
+  WorkspaceEdit,
+  NotebookEdit,
+  NotebookRange,
+  NotebookCellData,
+  Uri
+} from "vscode";
 
 import { SparqlNotebookController } from "./notebook/sparql-notebook-controller";
 import { EndpointConnectionTreeDataProvider } from "./sparql-connection-menu/endpoint-tree-data-provider.class";
@@ -30,7 +42,7 @@ export const connectionManager = connectionConfigurationManager;
  * 
  * @param context activate the form provider
  */
-export async function activate(context: vscode.ExtensionContext) {
+export async function activate(context: ExtensionContext) {
   await connectionManager.initialize(context);
 
   const connectionsSidepanel = new EndpointConnectionTreeDataProvider();
@@ -42,7 +54,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
   // Register command to show the endpoint editor webview
   context.subscriptions.push(
-    vscode.commands.registerCommand(
+    commands.registerCommand(
       `${extensionId}.showEndpointEditor`,
       () => endpointEditorPanel.showPanel()
     )
@@ -50,7 +62,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
   // register the sparql notebook serializer
   context.subscriptions.push(
-    vscode.workspace.registerNotebookSerializer(
+    workspace.registerNotebookSerializer(
       extensionId,
       new SparqlNotebookSerializer()
     )
@@ -61,26 +73,26 @@ export async function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(sparqlNotebookController);
 
   // register the cell status bar item provider
-  context.subscriptions.push(vscode.notebooks.registerNotebookCellStatusBarItemProvider(extensionId, sparqlNotebookCellStatusBarItemProvider));
+  context.subscriptions.push(notebooks.registerNotebookCellStatusBarItemProvider(extensionId, sparqlNotebookCellStatusBarItemProvider));
 
   // register the connections sidepanel
-  vscode.window.registerTreeDataProvider(storageKey, connectionsSidepanel);
+  window.registerTreeDataProvider(storageKey, connectionsSidepanel);
 
-  vscode.commands.registerCommand(
+  commands.registerCommand(
     `${extensionId}.deleteConnectionConfiguration`,
     deleteConnection(context, connectionsSidepanel)
   );
 
-  vscode.commands.registerCommand(
+  commands.registerCommand(
     `${extensionId}.addNewConnectionConfiguration`,
     addConnection(endpointEditorPanel)
   );
-  vscode.commands.registerCommand(
+  commands.registerCommand(
     `${extensionId}.connect`,
     connectToEndpoint(context, connectionsSidepanel, sparqlNotebookCellStatusBarItemProvider)
   );
 
-  const treeView = vscode.window.createTreeView('sparql-notebook-connections', {
+  const treeView = window.createTreeView('sparql-notebook-connections', {
     treeDataProvider: connectionsSidepanel
   });
 
@@ -95,21 +107,21 @@ export async function activate(context: vscode.ExtensionContext) {
   });
 
   // create store from file
-  vscode.commands.registerCommand(
+  commands.registerCommand(
     `${extensionId}.createStoreFromFile`,
     createStoreFromFile(sparqlNotebookCellStatusBarItemProvider)
   );
 
   //  export related commands
   context.subscriptions.push(
-    vscode.commands.registerCommand(
+    commands.registerCommand(
       `${extensionId}.exportToMarkdown`,
       exportToMarkdown
     )
   );
 
   // code cell related commands
-  vscode.commands.registerCommand(
+  commands.registerCommand(
     `${extensionId}.addQueryFromFile`,
     addQueryFromFile
   );
@@ -118,7 +130,7 @@ export async function activate(context: vscode.ExtensionContext) {
   // load external notebook files
   // Execute code after a notebook is loaded
   // Register the onDidChangeNotebookDocument event
-  context.subscriptions.push(vscode.workspace.onDidOpenNotebookDocument(notebookDocument => {
+  context.subscriptions.push(workspace.onDidOpenNotebookDocument(notebookDocument => {
     // Check if the notebook is a SPARQL Notebook
     if (notebookDocument.notebookType !== extensionId) {
       return;
@@ -130,7 +142,7 @@ export async function activate(context: vscode.ExtensionContext) {
     const notebookDirectory = path.dirname(notebookPath);
 
     // cells with a file metadata
-    notebookDocument.getCells().filter(cell => cell.kind === vscode.NotebookCellKind.Code && cell.metadata["file"]).forEach(async cell => {
+    notebookDocument.getCells().filter(cell => cell.kind === NotebookCellKind.Code && cell.metadata["file"]).forEach(async cell => {
       const activeNotebook = cell.notebook;
 
       if (activeNotebook) {
@@ -144,27 +156,27 @@ export async function activate(context: vscode.ExtensionContext) {
           }
 
 
-          const fileContent = await vscode.workspace.fs.readFile(vscode.Uri.file(path.join(notebookDirectory, relativeSparqlFilePath)));
-          const newCell = new vscode.NotebookCellData(vscode.NotebookCellKind.Code, `# from file ${relativeSparqlFilePath}\n${(await fileContent).toString()}`, 'sparql');
+          const fileContent = await workspace.fs.readFile(Uri.file(path.join(notebookDirectory, relativeSparqlFilePath)));
+          const newCell = new NotebookCellData(NotebookCellKind.Code, `# from file ${relativeSparqlFilePath}\n${(await fileContent).toString()}`, 'sparql');
 
           newCell.metadata = {
             file: relativeSparqlFilePath
           };
           // Logic to add the notebook cell using the fileContent
-          const notebookEdit = vscode.NotebookEdit.replaceCells(new vscode.NotebookRange(cell.index, cell.index + 1), [newCell]);
-          const edit = new vscode.WorkspaceEdit();
+          const notebookEdit = NotebookEdit.replaceCells(new NotebookRange(cell.index, cell.index + 1), [newCell]);
+          const edit = new WorkspaceEdit();
           edit.set(notebookDocument.uri, [notebookEdit]);
-          vscode.workspace.applyEdit(edit);
+          workspace.applyEdit(edit);
         } catch (error) {
           // Handle file read error
-          vscode.window.showErrorMessage(`Error reading file ${sparqlFilePath}: ${error}\n$Reset the file path for the cell. ${cell.index}`);
+          window.showErrorMessage(`Error reading file ${sparqlFilePath}: ${error}\n$Reset the file path for the cell. ${cell.index}`);
           console.error('Error reading file:', error);
         }
       }
     });
   }));
 
-  context.subscriptions.push(vscode.workspace.onDidSaveNotebookDocument(notebookDocument => {
+  context.subscriptions.push(workspace.onDidSaveNotebookDocument(notebookDocument => {
     // Check if the notebook is a SPARQL Notebook
     if (notebookDocument.notebookType !== extensionId) {
       return;
@@ -174,7 +186,7 @@ export async function activate(context: vscode.ExtensionContext) {
     const notebookDirectory = path.dirname(notebookPath);
 
     // cells with a file metadata
-    notebookDocument.getCells().filter(cell => cell.kind === vscode.NotebookCellKind.Code && cell.metadata["file"]).forEach(async cell => {
+    notebookDocument.getCells().filter(cell => cell.kind === NotebookCellKind.Code && cell.metadata["file"]).forEach(async cell => {
       const activeNotebook = cell.notebook;
       if (activeNotebook) {
         const sparqlFilePath = cell.metadata["file"].replace(/\\/g, '/');
@@ -186,11 +198,11 @@ export async function activate(context: vscode.ExtensionContext) {
 
           const sparqlQuery = cell.document.getText().replace(/^# from file.*[\r\n]/, '');
           const content = Buffer.from(sparqlQuery, 'utf-8');
-          await vscode.workspace.fs.writeFile(vscode.Uri.file(path.join(notebookDirectory, relativeSparqlFilePath)), content);
+          await workspace.fs.writeFile(Uri.file(path.join(notebookDirectory, relativeSparqlFilePath)), content);
 
 
         } catch (error) {
-          vscode.window.showErrorMessage(`Error writing file: ${sparqlFilePath}: ${error}`);
+          window.showErrorMessage(`Error writing file: ${sparqlFilePath}: ${error}`);
           console.error('Error writing file:', error);
         }
 
