@@ -1,5 +1,4 @@
-import * as vscode from "vscode";
-import { TextDecoder, TextEncoder } from "util";
+import { CancellationToken, NotebookData, NotebookSerializer } from "vscode";
 
 import { RawNotebookCell } from "./raw-notebook-cell.model";
 import { SparqlNotebookCell } from "./sparql-notebook-cell.class";
@@ -9,7 +8,7 @@ import { SparqlNotebookCell } from "./sparql-notebook-cell.class";
  * Sparql Notebook Serializer
  * This class is responsible for serializing and deserializing the notebook
  */
-export class SparqlNotebookSerializer implements vscode.NotebookSerializer {
+export class SparqlNotebookSerializer implements NotebookSerializer {
 
     /**
      * Implementation of the deserializeNotebook method.
@@ -21,8 +20,8 @@ export class SparqlNotebookSerializer implements vscode.NotebookSerializer {
      */
     async deserializeNotebook(
         content: Uint8Array,
-        _token: vscode.CancellationToken
-    ): Promise<vscode.NotebookData> {
+        _token: CancellationToken
+    ): Promise<NotebookData> {
         var contents = new TextDecoder().decode(content);
 
         let raw: RawNotebookCell[];
@@ -38,7 +37,7 @@ export class SparqlNotebookSerializer implements vscode.NotebookSerializer {
         }
         );
         const values = await Promise.all(cells);
-        return new vscode.NotebookData(values);
+        return new NotebookData(values);
 
 
     }
@@ -53,8 +52,8 @@ export class SparqlNotebookSerializer implements vscode.NotebookSerializer {
      * @returns 
      */
     async serializeNotebook(
-        data: vscode.NotebookData,
-        _token: vscode.CancellationToken
+        data: NotebookData,
+        _token: CancellationToken
     ): Promise<Uint8Array> {
         let contents: RawNotebookCell[] = [];
 

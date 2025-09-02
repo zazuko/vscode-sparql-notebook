@@ -27,10 +27,31 @@ import { addQueryFromFile } from "./commands/code-cell/add-query-from-file";
 import { createStoreFromFile } from "./commands/store-from-file/store-from-file";
 import { SparqlNotebookCellStatusBarItemProvider } from './notebook/SparqlNotebookCellStatusBarItemProvider';
 
-import * as path from "path";
 import { EndpointConnectionListItem } from "./sparql-connection-menu/endpoint-connection-list-item.class";
 import { connectionConfigurationManager } from "./connection/connectioin-configuration";
 import { EndpointEditorPanel } from "./ui/editor/editor-panel";
+
+
+// Browser-compatible path utilities
+function dirname(p: string): string {
+  const idx = p.lastIndexOf("/");
+  return idx !== -1 ? p.substring(0, idx) : ".";
+}
+function isAbsolute(p: string): boolean {
+  return p.startsWith("/");
+}
+function join(...parts: string[]): string {
+  return parts.join("/").replace(/\/+/g, "/");
+}
+function relative(from: string, to: string): string {
+  if (to.startsWith(from)) {
+    let rel = to.substring(from.length);
+    if (rel.startsWith("/")) rel = rel.substring(1);
+    return rel;
+  }
+  // fallback: just return to
+  return to;
+}
 
 
 export const extensionId = "sparql-notebook";
@@ -139,7 +160,7 @@ export async function activate(context: ExtensionContext) {
     // this have to be done here because we work with relative query file path
     // and the notebook path is not available in the deserializer
     const notebookPath = notebookDocument.uri.fsPath;
-    const notebookDirectory = path.dirname(notebookPath);
+    const notebookDirectory = dirname(notebookPath);
 
     // cells with a file metadata
     notebookDocument.getCells().filter(cell => cell.kind === NotebookCellKind.Code && cell.metadata["file"]).forEach(async cell => {
@@ -150,13 +171,13 @@ export async function activate(context: ExtensionContext) {
 
         try {
           let relativeSparqlFilePath = sparqlFilePath;
-          if (path.isAbsolute(sparqlFilePath)) {
-            relativeSparqlFilePath = path.relative(notebookDirectory, sparqlFilePath);
-            console.log('rel path', path.relative(notebookPath, sparqlFilePath));
+          if (isAbsolute(sparqlFilePath)) {
+            relativeSparqlFilePath = relative(notebookDirectory, sparqlFilePath);
+            console.log('rel path', relative(notebookPath, sparqlFilePath));
           }
 
 
-          const fileContent = await workspace.fs.readFile(Uri.file(path.join(notebookDirectory, relativeSparqlFilePath)));
+          const fileContent = await workspace.fs.readFile(Uri.file(join(notebookDirectory, relativeSparqlFilePath)));
           const newCell = new NotebookCellData(NotebookCellKind.Code, `# from file ${relativeSparqlFilePath}\n${(await fileContent).toString()}`, 'sparql');
 
           newCell.metadata = {
@@ -183,7 +204,7 @@ export async function activate(context: ExtensionContext) {
     }
     // write query files here 
     const notebookPath = notebookDocument.uri.fsPath;
-    const notebookDirectory = path.dirname(notebookPath);
+    const notebookDirectory = dirname(notebookPath);
 
     // cells with a file metadata
     notebookDocument.getCells().filter(cell => cell.kind === NotebookCellKind.Code && cell.metadata["file"]).forEach(async cell => {
@@ -192,13 +213,13 @@ export async function activate(context: ExtensionContext) {
         const sparqlFilePath = cell.metadata["file"].replace(/\\/g, '/');
         try {
           let relativeSparqlFilePath = sparqlFilePath;
-          if (path.isAbsolute(sparqlFilePath)) {
-            relativeSparqlFilePath = path.relative(notebookDirectory, sparqlFilePath);
+          if (isAbsolute(sparqlFilePath)) {
+            relativeSparqlFilePath = relative(notebookDirectory, sparqlFilePath);
           }
 
           const sparqlQuery = cell.document.getText().replace(/^# from file.*[\r\n]/, '');
           const content = Buffer.from(sparqlQuery, 'utf-8');
-          await workspace.fs.writeFile(Uri.file(path.join(notebookDirectory, relativeSparqlFilePath)), content);
+          await workspace.fs.writeFile(Uri.file(join(notebookDirectory, relativeSparqlFilePath)), content);
 
 
         } catch (error) {
