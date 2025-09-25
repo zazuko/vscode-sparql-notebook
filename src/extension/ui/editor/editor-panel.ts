@@ -88,28 +88,36 @@ export class EndpointEditorPanel {
 
     // Utility to get webview HTML for Angular app
     #getWebviewContent(panel: WebviewPanel, extensionPath: string) {
-        const appDistPath = Uri.file(
-            EndpointEditorPanel.joinPath(extensionPath, 'out', 'webview', 'endpoint-view', 'browser')
+        // Build URIs for Angular assets
+        const appDistUri = Uri.joinPath(
+            panel.webview.asWebviewUri(this.#context.extensionUri),
+            'out/webview/endpoint-view/browser'
         );
-        const indexHtmlPath = EndpointEditorPanel.joinPath(appDistPath.fsPath, 'index.html');
-        let indexHtml = '';
-        try {
-            indexHtml = require('fs').readFileSync(indexHtmlPath, 'utf8');
-        } catch (e) {
-            return `<html><body><h1>Could not load Angular app</h1><pre>${e}</pre></body></html>`;
-        }
-        // Rewrite local resource URLs to webview URIs
-        indexHtml = indexHtml.replace(/src=\"(.+?)\"/g, (match, src) => {
-            if (src.startsWith('http') || src.startsWith('data:')) return match;
-            const resourceUri = panel.webview.asWebviewUri(Uri.file(EndpointEditorPanel.joinPath(appDistPath.fsPath, src)));
-            return `src=\"${resourceUri}\"`;
-        });
-        indexHtml = indexHtml.replace(/href=\"(.+?)\"/g, (match, href) => {
-            if (href.startsWith('http') || href.startsWith('data:') || href.startsWith('#')) return match;
-            const resourceUri = panel.webview.asWebviewUri(Uri.file(EndpointEditorPanel.joinPath(appDistPath.fsPath, href)));
-            return `href=\"${resourceUri}\"`;
-        });
-        return indexHtml;
+        const mainJsUri = panel.webview.asWebviewUri(Uri.joinPath(
+            this.#context.extensionUri,
+            'out/webview/endpoint-view/browser/main.js'
+        ));
+        const stylesUri = panel.webview.asWebviewUri(Uri.joinPath(
+            this.#context.extensionUri,
+            'out/webview/endpoint-view/browser/styles.css'
+        ));
+
+        return /* html */ `
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${panel.webview.cspSource} 'unsafe-inline'; script-src ${panel.webview.cspSource};">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <link rel="stylesheet" href="${stylesUri}">
+                <title>SPARQL Notebook Endpoint Editor</title>
+            </head>
+            <body>
+                <app-root></app-root>
+                <script src="${mainJsUri}"></script>
+            </body>
+            </html>
+        `;
     }
 
     // Browser-compatible path join utility
