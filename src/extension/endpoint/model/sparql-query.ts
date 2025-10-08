@@ -72,10 +72,12 @@ export class SparqlQuery {
             }
         });
 
+        console.log(`Final matched endpoints: ${[...matchedEndpointStringSet].join(", ")}`);
         const endpoints: ExtractedEndpoint[] = [...matchedEndpointStringSet].flatMap(endpoint => {
             const kind = endpoint.startsWith("http://") || endpoint.startsWith('https://') ? EndpointKind.Http : EndpointKind.File;
             return [{ kind, endpoint }];
         });
+        console.log(`Extracted endpoints: ${JSON.stringify(endpoints)}`);
         return new EndpointSet(endpoints);
     }
 

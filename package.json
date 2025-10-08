@@ -185,8 +185,11 @@
     "build:renderer": "esbuild ./src/renderer/sparql-result-json.tsx --sourcemap --minify --jsx=automatic --tsconfig=./src/renderer/tsconfig.json --sourcemap --bundle --format=esm --platform=browser --outfile=./out/renderer/sparql-result-json.js",
     "build:webview": "cd src/webview/endpoint/endpoint-view && npm run build && rm -rf ../../../../out/webview/ && mkdir -p ../../../../out/webview/ && mv dist/endpoint-view ../../../../out/webview/ ",
     "copy:oxigraph": "cp node_modules/oxigraph/node_bg.wasm out/",
+    "build:test": "node esbuild.test.js",
     "esbuild": "npm run build:extension && npm run build:renderer && npm run build:webview",
-    "clean": "rm -rf out/ && mkdir out/"
+    "clean": "rm -rf out/ && mkdir out/",
+    "pretest": "npm run build:test",
+    "test": "vscode-test"
   },
   "devDependencies": {
     "@types/glob": "^8.1.0",
@@ -200,6 +203,8 @@
     "@types/webpack-env": "^1.18.5",
     "@typescript-eslint/eslint-plugin": "^8.12.2",
     "@typescript-eslint/parser": "^8.12.2",
+    "@vscode/test-cli": "^0.0.11",
+    "@vscode/test-electron": "^2.5.2",
     "css-loader": "^7.1.2",
     "esbuild": "^0.25.9",
     "eslint": "^9.13.0",

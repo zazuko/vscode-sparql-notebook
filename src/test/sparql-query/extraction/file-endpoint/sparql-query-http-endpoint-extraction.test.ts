@@ -1,8 +1,11 @@
-import { SparqlQuery } from '../../extension/endpoint/model/sparql-query';
+import assert from 'assert';
+import * as vscode from 'vscode';
+
+
 export const HTTP_ENDPOINT_URL = 'http://example.com/sparql';
 export const FILE_ENDPOINT_URL = 'file://example.com/sparql';
-export const HTTP_ENDPOINT_COMMENT = `# [endpoint: ${HTTP_ENDPOINT_URL}]`;
-export const FILE_ENDPOINT_COMMENT = `# [endpoint: ${FILE_ENDPOINT_URL}]`;
+export const HTTP_ENDPOINT_COMMENT = `# [endpoint=${HTTP_ENDPOINT_URL}]`;
+export const FILE_ENDPOINT_COMMENT = `# [endpoint=${FILE_ENDPOINT_URL}]`;
 
 export const CONSTRUCT_QUERY = `
 #
@@ -15,6 +18,15 @@ WHERE {
   ?s ?p ?o
 }
 `;
+
+
+suite('Extension Test Suite', () => {
+  vscode.window.showInformationMessage('SparqlQuery Class: Extract HTTP endpoint from Query');
+
+
+
+});
+
 
 export const HTTP_ENDPOINT_CONSTRUCT_QUERY_STRING = `
 #
@@ -41,7 +53,3 @@ WHERE {
   ?s ?p ?o
 }
 `;
-
-export const httpEndpointConstructQuery = new SparqlQuery(HTTP_ENDPOINT_CONSTRUCT_QUERY_STRING);
-export const fileEndpointConstructQuery = new SparqlQuery(FILE_ENDPOINT_CONSTRUCT_QUERY_STRING);
-export const constructQuery = new SparqlQuery(CONSTRUCT_QUERY);
