@@ -17,9 +17,17 @@ suite('Extension Test Suite', () => {
 
 	test('SPARQL Query', () => {
 
-		assert.strictEqual(httpEndpointConstructQuery.extractEndpoint(), HTTP_ENDPOINT_URL);
-		assert.strictEqual(fileEndpointConstructQuery.extractEndpoint(), FILE_ENDPOINT_URL);
-		assert.strictEqual(constructQuery.extractEndpoint(), undefined);
+
+		const httpEndpoints = httpEndpointConstructQuery.extractEndpoint().getEndpoints();
+		assert.strictEqual(httpEndpoints.length, 1);
+		assert.strictEqual(httpEndpoints[0].endpoint, HTTP_ENDPOINT_URL);
+
+		const fileEndpoints = fileEndpointConstructQuery.extractEndpoint().getEndpoints();
+		assert.strictEqual(fileEndpoints.length, 1);
+		assert.strictEqual(fileEndpoints[0].endpoint, FILE_ENDPOINT_URL);
+
+		const noEndpoints = constructQuery.extractEndpoint().getEndpoints();
+		assert.strictEqual(noEndpoints.length, 0);
 	}
 	);
 });

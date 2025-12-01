@@ -177,6 +177,7 @@
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
+    "test": "tsc -p src/test/tsconfig.json && vscode-test",
     "compile": "npm run clean && npm run copy:oxigraph &&npm run esbuild",
     "lint": "eslint src --ext ts",
     "deploy": "npx vsce publish",
@@ -200,6 +201,8 @@
     "@types/webpack-env": "^1.18.5",
     "@typescript-eslint/eslint-plugin": "^8.12.2",
     "@typescript-eslint/parser": "^8.12.2",
+    "@vscode/test-cli": "^0.0.12",
+    "@vscode/test-electron": "^2.5.2",
     "css-loader": "^7.1.2",
     "esbuild": "^0.25.9",
     "eslint": "^9.13.0",

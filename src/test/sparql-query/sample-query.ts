@@ -1,8 +1,8 @@
 import { SparqlQuery } from '../../extension/endpoint/model/sparql-query';
 export const HTTP_ENDPOINT_URL = 'http://example.com/sparql';
 export const FILE_ENDPOINT_URL = 'file://example.com/sparql';
-export const HTTP_ENDPOINT_COMMENT = `# [endpoint: ${HTTP_ENDPOINT_URL}]`;
-export const FILE_ENDPOINT_COMMENT = `# [endpoint: ${FILE_ENDPOINT_URL}]`;
+export const HTTP_ENDPOINT_COMMENT = `# [endpoint=${HTTP_ENDPOINT_URL}]`;
+export const FILE_ENDPOINT_COMMENT = `# [endpoint=${FILE_ENDPOINT_URL}]`;
 
 export const CONSTRUCT_QUERY = `
 #
@@ -19,6 +19,7 @@ WHERE {
 export const HTTP_ENDPOINT_CONSTRUCT_QUERY_STRING = `
 #
 # This is a comment
+# ${HTTP_ENDPOINT_COMMENT}
 
 CONSTRUCT {
   ?s ?p ?o
