@@ -50,9 +50,9 @@
   {
     "kind": 2,
     "language": "sparql",
-    "value": "# from file queries/z-external-query.rq\n\n\n# [endpoint=https://lindas.admin.ch/query]\n#\n# change \n# windows change\n\nSELECT ?p ?o WHERE {\n  <https://agriculture.ld.admin.ch/fsvo/animal-disease> ?p ?o .\n} \n",
+    "value": "# from file new-query/query.sparql\n# SPARQL Query\n\n\nfooo\n",
     "metadata": {
-      "file": "queries/z-external-query.rq"
+      "file": "new-query/query.sparql"
     }
   }
 ]
