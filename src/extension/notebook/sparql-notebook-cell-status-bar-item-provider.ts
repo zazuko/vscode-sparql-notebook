@@ -51,17 +51,19 @@ export class ConnectionSourceStatusBarItem extends NotebookCellStatusBarItem {
 
 
 export class CellContentStatusBarItem extends NotebookCellStatusBarItem {
-    private readonly icon = ' $(code)';
-    private itemText = 'Cell';
+    private readonly defaultIcon = ' $(code)';
+    private readonly defaultText = 'Cell';
 
     constructor(cell: SparqlNotebookCell, alignment: NotebookCellStatusBarAlignment) {
         super('', alignment);
 
-        if (cell.metadata.file) {
-            this.itemText = 'File';
+        if (cell.metadata?.['file']) {
+            this.text = `$(file-symlink-file) Linked: ${cell.metadata['file']}`;
+            this.tooltip = `Cell is bound to external file: ${cell.metadata['file']}`;
+        } else {
+            this.text = `${this.defaultIcon} ${this.defaultText}`;
+            this.tooltip = `Cell text source: Cell`;
         }
-        this.text = `${this.icon} ${this.itemText}`;
-        this.tooltip = `Cell text source: ${cell.metadata.file ?? "Cell"}`;
     }
 }
 

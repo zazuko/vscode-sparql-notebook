@@ -221,8 +221,6 @@
     "react-dom": "^18.3.1"
   },
   "extensionDependencies": [
-    "stardog-union.stardog-rdf-grammars",
-    "stardog-union.vscode-langserver-sparql",
-    "RandomFractalsInc.vscode-data-table"
+    "vemonet.stardog-rdf-grammars"
   ]
 }
