@@ -97,6 +97,11 @@
           "command": "sparql-notebook.addQueryFromFile",
           "group": "cell/insert@1",
           "when": "resourceExtname == .sparqlbook"
+        },
+        {
+          "command": "sparql-notebook.saveCellToFile",
+          "group": "cell/insert@2",
+          "when": "resourceExtname == .sparqlbook"
         }
       ]
     },
@@ -107,6 +112,14 @@
         "icon": {
           "dark": "assets/dark/add.svg",
           "light": "assets/light/add.svg"
+        }
+      },
+      {
+        "command": "sparql-notebook.saveCellToFile",
+        "title": "Save Cell to File ...",
+        "icon": {
+          "dark": "assets/dark/save.svg",
+          "light": "assets/light/save.svg"
         }
       },
       {

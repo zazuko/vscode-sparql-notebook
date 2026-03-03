@@ -11,6 +11,7 @@ import { connectToEndpoint } from "./commands/sparql-connection/connect-to-endpo
 
 import { exportToMarkdown } from "./commands/export/export-to-markdown";
 import { addQueryFromFile } from "./commands/code-cell/add-query-from-file";
+import { saveCellToFile } from "./commands/code-cell/save-cell-to-file";
 
 import { createStoreFromFile } from "./commands/store-from-file/store-from-file";
 import { SparqlNotebookCellStatusBarItemProvider } from './notebook/SparqlNotebookCellStatusBarItemProvider';
@@ -112,6 +113,11 @@ export async function activate(context: vscode.ExtensionContext) {
   vscode.commands.registerCommand(
     `${extensionId}.addQueryFromFile`,
     addQueryFromFile
+  );
+
+  vscode.commands.registerCommand(
+    `${extensionId}.saveCellToFile`,
+    saveCellToFile
   );
 
 
