@@ -29,17 +29,21 @@
 <#queryService> a fuseki:Service ;
     fuseki:name                     "query" ;
     fuseki:serviceQuery             "sparql" ;
+    fuseki:serviceShacl             "shacl" ;
     fuseki:dataset                  :dataset-ds-owl ;
-    fuseki:readGraphStore           true .
+    fuseki:readGraphStore           true ;
+    fuseki:endpoint [ fuseki:operation fuseki:shacl    ; fuseki:name "shacl"  ] .
 
 # Read-write endpoint (queries + updates)
 <#rwService> a fuseki:Service ;
     fuseki:name                     "rw" ;
     fuseki:serviceQuery             "sparql" ;
     fuseki:serviceUpdate            "update" ;
+    fuseki:serviceShacl             "shacl" ;
     fuseki:dataset                  :dataset-ds-owl ;
     fuseki:readGraphStore           true ;
-    fuseki:updateGraphStore         true .
+    fuseki:updateGraphStore         true ;
+    fuseki:endpoint [ fuseki:operation fuseki:shacl    ; fuseki:name "shacl"  ] .
 
 # Write-only endpoint (updates only)
 <#updateService> a fuseki:Service ;

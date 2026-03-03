@@ -112,6 +112,61 @@ export class HttpEndpoint extends Endpoint {
     return httpResponse;
   }
 
+  /**
+   * Validates a SHACL graph against the endpoint.
+   * @param shaclGraphAsTurtle - The SHACL graph to validate.
+   * @param execution - The execution object.
+   */
+  public async validate(shaclGraphAsTurtle: string, execution?: any): Promise<SimpleHttpResponse> {
+    const abortController = new AbortController();
 
+    const headers: Record<string, string> = {
+      'Content-Type': 'text/turtle',
+      Accept: 'text/turtle',
+    };
 
+    // Basic Auth if needed
+    if (this.#user && this.#password) {
+      const encoded = Buffer.from(`${this.#user}:${this.#password}`).toString('base64');
+      headers['Authorization'] = `Basic ${encoded}`;
+    }
+
+    headers['User-Agent'] = 'Mozilla/5.0 (compatible; vscode-sparql-notebook)';
+
+    if (execution) {
+      execution.token.onCancellationRequested((_: any) => {
+        console.warn('Request cancelled');
+        abortController.abort();
+      });
+    }
+
+    console.log('Executing SHACL validation (fetch):', { url: this.#url, headers });
+
+    let response: Response;
+    try {
+      response = await fetch(this.#url, {
+        method: 'POST',
+        headers,
+        body: shaclGraphAsTurtle,
+        signal: abortController.signal,
+      });
+    } catch (err: any) {
+      if (err.name === 'AbortError') {
+        throw new Error('Request was aborted');
+      }
+      throw err;
+    }
+
+    const mimeTypeStr = response.headers.get('content-type') || '';
+    console.log('SHACL validation response:', response.status, response.statusText, mimeTypeStr);
+    const data = await response.text();
+
+    const httpResponse: SimpleHttpResponse = {
+      headers: { "content-type": mimeTypeStr.split(';')[0] },
+      data,
+      status: response.status,
+      statusText: response.statusText
+    };
+    return httpResponse;
+  }
 }

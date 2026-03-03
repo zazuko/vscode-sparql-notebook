@@ -11,7 +11,8 @@ export async function addQueryFromFile(cell: vscode.NotebookCell) {
             filters: {
                 // eslint-disable-next-line @typescript-eslint/naming-convention
                 'SPARQL Query Files': ['sparql', 'rq'],
-
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                'SHACL Files': ['shacl', 'ttl'],
                 // eslint-disable-next-line @typescript-eslint/naming-convention
                 'All Files': ['*']
             }
@@ -19,23 +20,27 @@ export async function addQueryFromFile(cell: vscode.NotebookCell) {
 
         const fileUri = await vscode.window.showOpenDialog(options);
         if (fileUri && fileUri.length > 0) {
-            const sparqlFilePath = fileUri[0].fsPath;
+            const filePath = fileUri[0].fsPath;
             const activeNotebook = vscode.window.activeNotebookEditor?.notebook;
             if (!activeNotebook) {
                 console.warn('No active notebook');
                 return;
             }
             try {
-                const relativeSparqlFilePath = path.relative(path.dirname(activeNotebook.uri.fsPath), sparqlFilePath).replace(/\\/g, '/');
+                const relativeFilePath = path.relative(path.dirname(activeNotebook.uri.fsPath), filePath).replace(/\\/g, '/');
                 const notebookFilePath = activeNotebook.uri.fsPath;
                 const notebookFilename = path.basename(activeNotebook.uri.fsPath);
                 const notebookPathWithoutFilename = notebookFilePath.replace(new RegExp(`${notebookFilename}$`), '');
-                const fileContent = await vscode.workspace.fs.readFile(vscode.Uri.file(notebookPathWithoutFilename + relativeSparqlFilePath));
+                const fileContent = await vscode.workspace.fs.readFile(vscode.Uri.file(notebookPathWithoutFilename + relativeFilePath));
 
-                const newCell = new vscode.NotebookCellData(vscode.NotebookCellKind.Code, `# from file ${relativeSparqlFilePath}\n${(await fileContent).toString()}`, 'sparql');
+                // Determine language based on file extension
+                const ext = path.extname(filePath).toLowerCase();
+                const languageId = (ext === '.shacl' || ext === '.ttl') ? 'shacl' : 'sparql';
+
+                const newCell = new vscode.NotebookCellData(vscode.NotebookCellKind.Code, `# from file ${relativeFilePath}\n${(await fileContent).toString()}`, languageId);
 
                 newCell.metadata = {
-                    file: relativeSparqlFilePath
+                    file: relativeFilePath
                 };
                 // Logic to add the notebook cell using the fileContent
                 const notebookEdit = vscode.NotebookEdit.replaceCells(new vscode.NotebookRange(cell.index, cell.index + 1), [newCell]);
@@ -44,7 +49,7 @@ export async function addQueryFromFile(cell: vscode.NotebookCell) {
                 vscode.workspace.applyEdit(edit);
             } catch (error) {
                 // Handle file read error
-                vscode.window.showErrorMessage(`Error reading file ${sparqlFilePath}: ${error}`);
+                vscode.window.showErrorMessage(`Error reading file ${filePath}: ${error}`);
                 console.error('Error reading file:', error);
             }
 

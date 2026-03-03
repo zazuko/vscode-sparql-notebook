@@ -133,4 +133,13 @@ export class FileEndpoint extends Endpoint {
                 return undefined;
         }
     }
+
+    /**
+     * SHACL validation is not supported for file endpoint.
+     * @param shaclGraphAsTurtle - The SHACL graph in Turtle format.
+     * @param execution - The execution object.
+     */
+    public async validate(shaclGraphAsTurtle: string, execution?: any): Promise<SimpleHttpResponse> {
+        throw new Error("SHACL validation is not supported for file endpoints.");
+    }
 }

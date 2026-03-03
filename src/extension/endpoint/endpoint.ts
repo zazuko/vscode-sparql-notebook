@@ -9,6 +9,7 @@ import { SparqlQuery } from "./model/sparql-query";
 export abstract class Endpoint {
     public abstract url: string;
     abstract query(sparqlQuery: SparqlQuery, execution?: any): Promise<SimpleHttpResponse> | never;
+    abstract validate(shaclGraphAsTurtle: string, execution?: any): Promise<SimpleHttpResponse>;
     abstract readonly isQLeverEndpoint: boolean;
 }
 

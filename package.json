@@ -18,10 +18,12 @@
     "Data Science"
   ],
   "keywords": [
-    "sparql"
+    "sparql",
+    "shacl"
   ],
   "activationEvents": [
-    "onNotebook:sparql-notebook"
+    "onNotebook:sparql-notebook",
+    "onNotebook:sparql-markdown-notebook"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -33,6 +35,20 @@
         "selector": [
           {
             "filenamePattern": "*.sparqlbook"
+          }
+        ]
+      },
+      {
+        "id": "sparql-markdown-notebook",
+        "type": "sparql-markdown-notebook",
+        "displayName": "SPARQL Markdown Notebook",
+        "priority": "option",
+        "selector": [
+          {
+            "filenamePattern": "*.md"
+          },
+          {
+            "filenamePattern": "*.markdown"
           }
         ]
       }
@@ -170,6 +186,11 @@
             "type": "boolean",
             "default": true,
             "description": "Format output using prefixes from query."
+          },
+          "sparqlbook.markdownIntegration.enabled": {
+            "type": "boolean",
+            "default": true,
+            "description": "Enable SPARQL/SHACL notebook functionality for markdown files. When enabled, you can open markdown files with 'Open With...' and select 'SPARQL Markdown Notebook' to execute SPARQL and SHACL code blocks."
           }
         }
       }
@@ -178,16 +199,16 @@
   "scripts": {
     "vscode:prepublish": "npm run compile",
     "test": "tsc -p src/test/tsconfig.json && vscode-test",
-    "compile": "npm run clean && npm run copy:oxigraph &&npm run esbuild",
+    "compile": "npm run clean && npm run copy:oxigraph && npm run esbuild",
     "lint": "eslint src --ext ts",
     "deploy": "npx vsce publish",
     "package": "npx vsce package",
     "build:extension": "esbuild ./src/extension/extension.ts --sourcemap --minify --bundle --platform=node --external:vscode --external:pg-native --outfile=./out/extension.js",
     "build:renderer": "esbuild ./src/renderer/sparql-result-json.tsx --sourcemap --minify --jsx=automatic --tsconfig=./src/renderer/tsconfig.json --sourcemap --bundle --format=esm --platform=browser --outfile=./out/renderer/sparql-result-json.js",
-    "build:webview": "cd src/webview/endpoint/endpoint-view && npm run build && rm -rf ../../../../out/webview/ && mkdir -p ../../../../out/webview/ && mv dist/endpoint-view ../../../../out/webview/ ",
-    "copy:oxigraph": "cp node_modules/oxigraph/node_bg.wasm out/",
+    "build:webview": "cd src/webview/endpoint/endpoint-view && npm install && npx ng build && npx shx rm -rf ../../../../out/webview/ && npx shx mkdir -p ../../../../out/webview/ && npx shx mv dist/endpoint-view ../../../../out/webview/",
+    "copy:oxigraph": "npx shx cp node_modules/oxigraph/node_bg.wasm out/",
     "esbuild": "npm run build:extension && npm run build:renderer && npm run build:webview",
-    "clean": "rm -rf out/ && mkdir out/"
+    "clean": "npx shx rm -rf out/ && npx shx mkdir out/"
   },
   "devDependencies": {
     "@types/glob": "^8.1.0",
@@ -208,6 +229,7 @@
     "eslint": "^9.13.0",
     "os-browserify": "^0.3.0",
     "path-browserify": "^1.0.1",
+    "shx": "^0.4.0",
     "style-loader": "^4.0.0",
     "ts-loader": "^9.5.1",
     "typescript": "^5.6.3",
@@ -218,9 +240,10 @@
     "@zazuko/prefixes": "^2.6.1",
     "oxigraph": "^0.5.5",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "tslib": "^2.8.1"
   },
   "extensionDependencies": [
-    "vemonet.stardog-rdf-grammars"
+    "stardog-union.stardog-rdf-grammars"
   ]
 }

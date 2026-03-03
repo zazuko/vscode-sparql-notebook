@@ -3,7 +3,8 @@ import * as vscode from "vscode";
 import { SparqlNotebookController } from "./notebook/sparql-notebook-controller";
 import { EndpointConnectionTreeDataProvider } from "./sparql-connection-menu/endpoint-tree-data-provider.class";
 
-import { SparqlNotebookSerializer } from "./notebook/file-io";
+import { SparqlNotebookSerializer, MarkdownNotebookSerializer } from "./notebook/file-io";
+import { MarkdownNotebookController, markdownNotebookType } from "./notebook/markdown-notebook-controller";
 
 import { deleteConnection } from "./commands/sparql-connection/delete-connection";
 import { addConnection } from "./commands/sparql-connection/add-connection";
@@ -59,6 +60,24 @@ export async function activate(context: vscode.ExtensionContext) {
   // register the notebook controller
   const sparqlNotebookController = new SparqlNotebookController();
   context.subscriptions.push(sparqlNotebookController);
+
+  // Register markdown notebook integration if enabled
+  const markdownConfig = vscode.workspace.getConfiguration("sparqlbook");
+  const markdownIntegrationEnabled = markdownConfig.get("markdownIntegration.enabled", true);
+
+  if (markdownIntegrationEnabled) {
+    // register the markdown notebook serializer
+    context.subscriptions.push(
+      vscode.workspace.registerNotebookSerializer(
+        markdownNotebookType,
+        new MarkdownNotebookSerializer()
+      )
+    );
+
+    // register the markdown notebook controller
+    const markdownNotebookController = new MarkdownNotebookController();
+    context.subscriptions.push(markdownNotebookController);
+  }
 
   // register the cell status bar item provider
   context.subscriptions.push(vscode.notebooks.registerNotebookCellStatusBarItemProvider(extensionId, sparqlNotebookCellStatusBarItemProvider));

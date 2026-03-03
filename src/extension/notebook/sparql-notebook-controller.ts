@@ -1,30 +1,16 @@
-import { NotebookCell, RelativePattern, NotebookCellOutputItem, NotebookController, NotebookDocument, Uri, commands, notebooks, window, workspace, NotebookCellExecution } from 'vscode';
+import { NotebookCell, NotebookController, NotebookDocument, notebooks } from 'vscode';
 import { extensionId } from "../extension";
-import { SparqlNotebookCell } from './sparql-notebook-cell';
-import path = require('path');
-import { SparqlQueryHandler } from '../sparql-query-handler/sparql-query-handler';
-import { SelectQueryHandler } from '../sparql-query-handler/select-query-handler';
-import { AskQueryHandler } from '../sparql-query-handler/ask-query-handler';
-import { UpdateQueryHandler } from '../sparql-query-handler/update-query-handler';
-import { ErrorQueryHandler } from '../sparql-query-handler/error-query-handler';
-import { ConstructQueryHandler } from '../sparql-query-handler/construct-query-handler';
-import { writeError } from '../sparql-query-handler/helper/write-error';
-import { SPARQLQueryKind } from '../const/enum/sparql-query-kind';
-import { HttpErrorStatus, HttpSuccessStatus } from '../endpoint/const/http-status';
-import { EndpointResolver } from './endpoint-resolver';
-import { NotebookErrorRenderer } from './notebook-error-renderer';
+import { NotebookCellExecutor } from './notebook-cell-executor';
 
 export class SparqlNotebookController {
   readonly controllerId = `${extensionId}-controller-id`;
   readonly notebookType = extensionId;
   readonly label = "Sparql Notebook";
-  readonly supportedLanguages = ["sparql"];
+  readonly supportedLanguages = ["sparql", "shacl"];
 
   readonly #controller: NotebookController;
+  readonly #executor: NotebookCellExecutor;
   #executionOrder = 0;
-
-  private endpointResolver: EndpointResolver;
-  private errorRenderer: NotebookErrorRenderer;
 
   constructor() {
     // Create a new notebook controller
@@ -38,15 +24,15 @@ export class SparqlNotebookController {
     this.#controller.supportedLanguages = this.supportedLanguages;
     this.#controller.supportsExecutionOrder = true;
 
+    // Initialize the shared executor
+    this.#executor = new NotebookCellExecutor();
+
     // this is executing the cells
     this.#controller.executeHandler = this.#execute.bind(this);
-
-    this.endpointResolver = new EndpointResolver();
-    this.errorRenderer = new NotebookErrorRenderer();
   }
 
   /**
-   * Executes the given cells by calling the _doExecution method for each cell.
+   * Executes the given cells by calling the executor for each cell.
    * @param cells - The cells to execute.
    * @param _notebook - The notebook document containing the cells.
    * @param _controller - The notebook controller for the notebook document.
@@ -57,77 +43,15 @@ export class SparqlNotebookController {
     }
   }
 
-
   async #executeCell(nbCell: NotebookCell): Promise<void> {
-
-    const sparqlCell = new SparqlNotebookCell(nbCell);
-
-    const execution = this.#controller.createNotebookCellExecution(sparqlCell.cell);
+    const execution = this.#controller.createNotebookCellExecution(nbCell);
     execution.executionOrder = ++this.#executionOrder;
     execution.start(Date.now());
 
-    const sparqlQuery = sparqlCell.sparqlQuery;
-    const notebookUri = nbCell.notebook.uri;
-    const sparqlEndpoint = await this.endpointResolver.getDocumentOrConnectionClient(sparqlQuery, notebookUri);
-
-    if (sparqlEndpoint === null) {
-      this.errorRenderer.showConnectionErrorMessage(sparqlQuery, execution);
-      execution.end(false, Date.now());
-      return;
-    }
-
-    // run the query
-    const queryResult = await sparqlEndpoint.query(sparqlQuery, execution).catch(
-      (error) => {
-        this.errorRenderer.showNetworkErrorMessage(error, execution);
-        execution.end(false, Date.now());
-        return;
-      });
-
-    if (!queryResult) {
-      execution.replaceOutput([
-        writeError('No result')
-      ]);
-      execution.end(false, Date.now());
-      return;
-    }
-
-    if (queryResult.status === HttpErrorStatus.BadRequest) {
-      this.errorRenderer.showHttpErrorMessage(queryResult, 'Bad Request', sparqlEndpoint, execution);
-      execution.end(false, Date.now());
-      return;
-    }
-
-    if (queryResult.status !== HttpSuccessStatus.OK && queryResult.status !== HttpSuccessStatus.NoContent) {
-      this.errorRenderer.showHttpErrorMessage(queryResult, queryResult.statusText || 'Error', sparqlEndpoint, execution);
-      writeError(`SPARQL query failed: ${queryResult.status ?? ''} ${queryResult.statusText ?? ''} ${queryResult.data ?? ''}`);
-      execution.end(false, Date.now());
-      return;
-    }
-
-
-    const handler = this.#getHandlerForType(sparqlQuery.kind);
-    handler.handle(queryResult, sparqlCell, execution);
+    await this.#executor.executeCell(nbCell, execution);
   }
 
   dispose() {
     this.#controller.dispose();
   }
-
-  #getHandlerForType(type: string): SparqlQueryHandler {
-    switch (type) {
-      case SPARQLQueryKind.select: return new SelectQueryHandler();
-      case SPARQLQueryKind.ask: return new AskQueryHandler();
-      case SPARQLQueryKind.construct: return new ConstructQueryHandler();
-      case SPARQLQueryKind.describe: return new ConstructQueryHandler();
-      case SPARQLQueryKind.insert: return new UpdateQueryHandler();
-      case SPARQLQueryKind.create: return new UpdateQueryHandler();
-      case SPARQLQueryKind.drop: return new UpdateQueryHandler();
-      case SPARQLQueryKind.clear: return new UpdateQueryHandler();
-      case SPARQLQueryKind.delete: return new UpdateQueryHandler();
-      case SPARQLQueryKind.load: return new UpdateQueryHandler();
-      default: return new ErrorQueryHandler();
-    }
-  }
-
 }

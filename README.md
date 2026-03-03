@@ -8,10 +8,12 @@ Use a SPARQL notebook to:
 - Provide hands-on SPARQL training
 - Document data available via SPARQL
 - Validate data via SPARQL
+- Validate RDF data using SHACL shapes
 - Run queries against a SPARQL endpoint
 - Run queries against a local RDF file
+- Execute SPARQL/SHACL code blocks directly from markdown files
 
-This notebook can render SPARQL SELECT results and RDF graphs via SPARQL CONSTRUCT queries.
+This notebook can render SPARQL SELECT results and RDF graphs via SPARQL CONSTRUCT queries. It also supports SHACL validation against remote endpoints.
 
 ![sparql-notebook](https://user-images.githubusercontent.com/8033981/157274845-e722bace-16aa-4055-8a07-0b8fc5a8b112.gif)
 
@@ -33,7 +35,10 @@ This extension is still pretty raw but it works for us [tm]. Bug reports & contr
 - Configure endpoint connections in the SPARQL Notebook side panel.
 - Export a `.sparqlbook` file to Markdown.
 - Attach `.sparql` or `.rq` files to cells.
+- Attach `.shacl` or `.ttl` files for SHACL validation cells.
 - Use a local RDF file as a data source.
+- Validate RDF data using SHACL shapes against remote endpoints (e.g., Apache Jena Fuseki).
+- **Markdown Integration**: Open any `.md` file as a SPARQL Markdown Notebook to execute SPARQL and SHACL code blocks with inline results.
 
 ## Installation
 
@@ -103,6 +108,49 @@ You can attach a query file to a cell. The query file will load and execute when
 
 ### Cell Status Bar
 The cell status bar indicates whether the cell uses a query file.
+
+## Markdown Integration
+
+You can execute SPARQL and SHACL code blocks directly from any markdown file. This is useful for creating executable documentation, tutorials, or README files with runnable examples.
+
+### How to Use
+
+1. Right-click on any `.md` or `.markdown` file
+2. Select **"Open With..."**
+3. Choose **"SPARQL Markdown Notebook"**
+
+The file opens as a notebook where:
+- Regular markdown text becomes markdown cells
+- Code blocks marked with ` ```sparql ` become executable SPARQL cells
+- Code blocks marked with ` ```shacl ` become executable SHACL cells
+- Other code blocks (JavaScript, Python, etc.) remain as markdown
+
+### Example
+
+Create a markdown file with SPARQL code blocks:
+
+````markdown
+# My Query Documentation
+
+This query fetches data:
+
+```sparql
+# [endpoint=https://dbpedia.org/sparql]
+SELECT ?city WHERE { ?city a dbo:City } LIMIT 10
+```
+````
+
+When opened as a SPARQL Markdown Notebook, click the play button to execute the query and see results inline.
+
+### Configuration
+
+The markdown integration is enabled by default. Disable it in settings:
+
+```json
+{
+  "sparqlbook.markdownIntegration.enabled": false
+}
+```
 
 ## FAQ
 
