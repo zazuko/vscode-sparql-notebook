@@ -173,6 +173,40 @@ Key advantages include:
 After the transformation pipeline is complete, **validation queries provided by the customer** can be executed against the resulting RDF dataset. These queries verify that the output conforms to the expected structure and content of the target model.
 
 
+## SPARQL Anything
+
+This has nothing todo with this notebook but i will show you how to use SPARQL Anything. We don't ship it with this extension but you can get it from https://sparql-anything.cc/.
+You can run it in server mode and connect the notebook to it. 
+
+Run sparql-anything in server mode:
+```bash
+java -jar sparql-anything-server-<version>.jar 
+```
+
+Then you can use it in the notebook like this:
+
+```sparql
+# [endpoint=http://localhost:3000/sparql.anything]
+
+PREFIX fx: <http://sparql.xyz/facade-x/ns/>
+PREFIX schema: <http://schema.org/>
+PREFIX xyz: <http://sparql.xyz/facade-x/data/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX myns: <http://example.org/myns/>
+
+CONSTRUCT {
+   ?s ?p ?o .
+} WHERE {
+     # file relative to the SPARQL anything server
+     SERVICE<x-sparql-anything:>{
+        fx:properties fx:location "../input/2024-03-08 AKN4ZH ACT A0.xml";  
+                      fx:media-type "application/xml".  
+            ?s ?p ?o .
+    }
+}
+```
+
 # Share Your Use Case
 
 > If you have an interesting use case or have implemented a unique transformation pipeline, we would love to hear about it! Please feel free to reach out or submit a Pull Request to contribute your examples to this documentation.

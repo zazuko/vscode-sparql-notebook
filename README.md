@@ -21,10 +21,11 @@ This extension is still pretty raw but it works for us [tm]. Bug reports & contr
 
 ## Get the Extension
 - [VSCode Marketplace](https://marketplace.visualstudio.com/items?itemName=Zazuko.sparql-notebook)
--  [Open VSX Registry](https://open-vsx.org/extension/zazuko/sparql-notebook)
+- [Open VSX Registry](https://open-vsx.org/extension/zazuko/sparql-notebook)
 
-## Manual
-- [Manual](./doc/00_intro.md)
+## Use cases
+SPARQL Notebook is very flexible and can be used for many different purposes. Check out the [use cases](./doc/01_use_cases.md) for more examples how to use it.
+
 
 ## Features
 
@@ -130,10 +131,15 @@ Right click a `.sparqlbook`file and select `Export to Markdown`.
 This extension uses the [
 Notebook API ](https://code.visualstudio.com/api/extension-guides/notebook). Contributions & bug fixes are always welcome!
 h
+
+
+> And if you are a company and you are using this tool in production, please consider sponsoring the project. This will help us to continue developing and maintaining this tool.
+
 ## Credits
 
 - Stardog VSCode Extensions, https://github.com/stardog-union/stardog-vsc
 - Oxigraph, https://github.com/oxigraph
 - Random Fractals Inc., https://marketplace.visualstudio.com/items?itemName=RandomFractalsInc.vscode-data-table
+- RDF Sketch, https://github.com/zazuko/rdf-sketch
 
 And all contributors ❤️
