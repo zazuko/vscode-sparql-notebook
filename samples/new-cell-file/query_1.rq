@@ -1,0 +1,11 @@
+#
+# [endpoint=https://lindas.admin.ch/query]
+#
+PREFIX gont: <https://gont.ch/>
+PREFIX schema: <http://schema.org/>
+
+SELECT * WHERE {
+        ?canton a <https://schema.ld.admin.ch/Canton> ; 
+        schema:name ?name .
+        FILTER(lang(?name) = 'de')
+} 

@@ -108,7 +108,7 @@
     "commands": [
       {
         "command": "sparql-notebook.addQueryFromFile",
-        "title": "Add Query from File ...",
+        "title": "Link Query File ...",
         "icon": {
           "dark": "assets/dark/add.svg",
           "light": "assets/light/add.svg"
