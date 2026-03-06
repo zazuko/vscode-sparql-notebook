@@ -2,6 +2,11 @@
 
 All notable changes to the "vscode-sparql-notebook" extension will be documented in this file.
 
+## 1.0.14
+- "Save cell to File" provides a dialog to save the cell content to a file.
+- Improve: The cell status bar item now shows the file name if the cell is linked to a file.
+- "Add Query from File" is now "Add Query from File ..." and provides a dialog to select the file or create a new sparql query file. 
+
 ## 1.0.13
 - Fix: Add a default base to RDF parser to avoid issues with relative IRIs.
 

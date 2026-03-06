@@ -7,6 +7,20 @@
       "type": "npm",
       "script": "compile",
       "group": "build"
+    },
+    {
+      "label": "Set Open VSX Dependencies",
+      "type": "shell",
+      "command": "node ${workspaceFolder}/vsx-utils/replace-deps.js",
+      "group": "none",
+      "problemMatcher": []
+    },
+    {
+      "label": "Set VS Code Dependencies",
+      "type": "shell",
+      "command": "node ${workspaceFolder}/vsx-utils/restore-deps.js",
+      "group": "none",
+      "problemMatcher": []
     }
   ]
 }

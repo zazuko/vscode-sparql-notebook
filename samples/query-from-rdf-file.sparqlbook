@@ -38,8 +38,10 @@
   {
     "kind": 2,
     "language": "sparql",
-    "value": "DESCRIBE <https://agriculture.ld.admin.ch/fsvo/animal-disease>",
-    "metadata": {}
+    "value": "# from file new-cell-file/test.rq\n#[endpoint=https://int.lindas.admin.ch/query]\n# cool\nDESCRIBE <https://agriculture.ld.admin.ch/fsvo/animal-disease>",
+    "metadata": {
+      "file": "new-cell-file/test2.rq"
+    }
   },
   {
     "kind": 2,
@@ -50,9 +52,9 @@
   {
     "kind": 2,
     "language": "sparql",
-    "value": "# from file queries/z-external-query.rq\n\n\n# [endpoint=https://lindas.admin.ch/query]\n#\n# change \n# windows change\n\nSELECT ?p ?o WHERE {\n  <https://agriculture.ld.admin.ch/fsvo/animal-disease> ?p ?o .\n} \n",
+    "value": "# from file new-query/query.sparql\n# SPARQL Query\n\n\nfooo\n",
     "metadata": {
-      "file": "queries/z-external-query.rq"
+      "file": "new-query/query.sparql"
     }
   }
 ]

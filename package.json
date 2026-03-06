@@ -9,7 +9,7 @@
   "repository": {
     "url": "https://github.com/zazuko/vscode-sparql-notebook.git"
   },
-  "version": "1.0.13",
+  "version": "1.0.14",
   "engines": {
     "vscode": "^1.90.0"
   },
@@ -97,16 +97,29 @@
           "command": "sparql-notebook.addQueryFromFile",
           "group": "cell/insert@1",
           "when": "resourceExtname == .sparqlbook"
+        },
+        {
+          "command": "sparql-notebook.saveCellToFile",
+          "group": "cell/insert@2",
+          "when": "resourceExtname == .sparqlbook"
         }
       ]
     },
     "commands": [
       {
         "command": "sparql-notebook.addQueryFromFile",
-        "title": "Add Query from File",
+        "title": "Add Query from File ...",
         "icon": {
           "dark": "assets/dark/add.svg",
           "light": "assets/light/add.svg"
+        }
+      },
+      {
+        "command": "sparql-notebook.saveCellToFile",
+        "title": "Save Cell to File ...",
+        "icon": {
+          "dark": "assets/dark/save.svg",
+          "light": "assets/light/save.svg"
         }
       },
       {
@@ -203,7 +216,7 @@
     "@typescript-eslint/parser": "^8.12.2",
     "@vscode/test-cli": "^0.0.12",
     "@vscode/test-electron": "^2.5.2",
-    "css-loader": "^7.1.4",
+    "css-loader": "^7.1.2",
     "esbuild": "^0.25.9",
     "eslint": "^9.13.0",
     "os-browserify": "^0.3.0",
@@ -215,8 +228,8 @@
     "util": "^0.12.5"
   },
   "dependencies": {
-    "@zazuko/prefixes": "^2.6.1",
-    "oxigraph": "^0.5.5",
+    "@zazuko/prefixes": "^2.2.0",
+    "oxigraph": "^0.5.0-beta.4 ",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
