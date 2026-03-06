@@ -38,9 +38,9 @@
   {
     "kind": 2,
     "language": "sparql",
-    "value": "#[endpoint=https://int.lindas.admin.ch/query]\nDESCRIBE <https://agriculture.ld.admin.ch/fsvo/animal-disease>",
+    "value": "# from file new-cell-file/test.rq\n#[endpoint=https://int.lindas.admin.ch/query]\n# cool\nDESCRIBE <https://agriculture.ld.admin.ch/fsvo/animal-disease>",
     "metadata": {
-      "file": "new-cell-file/test.rq"
+      "file": "new-cell-file/test2.rq"
     }
   },
   {

@@ -19,7 +19,8 @@
       "label": "Set VS Code Dependencies",
       "type": "shell",
       "command": "node ${workspaceFolder}/vsx-utils/restore-deps.js",
-      "group": "none"
+      "group": "none",
+      "problemMatcher": []
     }
   ]
 }

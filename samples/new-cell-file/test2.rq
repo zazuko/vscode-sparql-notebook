@@ -1,0 +1,3 @@
+#[endpoint=https://int.lindas.admin.ch/query]
+# cool
+DESCRIBE <https://agriculture.ld.admin.ch/fsvo/animal-disease>
